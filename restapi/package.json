@@ -1,0 +1,21 @@
+{
+  "name": "csgo-tracker",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "sqlite3": "^5.0.2",
+    "uuid": "^3.4.0"
+  },
+  "devDependencies": {
+    "eslint": "^7.28.0",
+    "eslint-config-airbnb": "^18.2.1"
+  }
+}
