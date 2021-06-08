@@ -8,6 +8,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 require('./routes/rgame')(app);
+require('./routes/rmatch')(app);
 
 fs.access('stats.db')
   .then(() => app.listen(8080, () => console.log('Server started')))

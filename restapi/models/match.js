@@ -1,4 +1,5 @@
 const { Database } = require('sqlite3');
+const { rowToMatch } = require('../util/mappers');
 
 module.exports = {
   /**
@@ -84,7 +85,7 @@ module.exports = {
   },
 
   /**
-   * Deletes a mathc
+   * Deletes a match
    * @param {string} id id of the match
    */
   delete: (id) => {
@@ -97,5 +98,40 @@ module.exports = {
         .finalize();
     });
     db.close();
+  },
+
+  /**
+   * Gets all the matches asynchronously
+   * @return {Promise<Match[]>} promise that resolves to the list of matches
+   */
+  getAll: () => {
+    const db = new Database('stats.db');
+    return new Promise((resolve, reject) => {
+      db.all('SELECT * FROM MATCHES', (err, rows) => {
+        db.close();
+        if (err) reject(err);
+        const results = rows.map(rowToMatch);
+        resolve(results);
+      });
+    });
+  },
+
+  /**
+   * Gets a match by id asynchronously
+   * @param {string} id id of the match
+   * @return {Promise<Match|null>} promise that resolves to the match
+   * or null if there is no such match
+   */
+  get: (id) => {
+    const db = new Database('stats.db');
+    return new Promise((resolve, reject) => {
+      db.prepare('SELECT * FROM MATCHES WHERE id = ?')
+        .bind([id])
+        .get((err, row) => {
+          db.close();
+          if (err) reject(err);
+          resolve(row ? rowToMatch(row) : null);
+        }).finalize();
+    });
   },
 };
