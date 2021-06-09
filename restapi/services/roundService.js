@@ -99,4 +99,13 @@ module.exports = {
    * @returns {Promise<Rounds.Round[]>} list of rounds of the match
    */
   findByMatch: (matchId) => Rounds.getByMatch(matchId),
+
+  /**
+   * Finds a round of a match
+   * @param {string} matchId id of the match
+   * @param {number} n number of the round
+   * @returns {Promise<Rounds.Round|null>} the round
+   * or null if there was no such round
+   */
+  findByMatchAndNumber: (matchId, n) => Rounds.getByMatchAndNumber(matchId, n),
 };

@@ -6,6 +6,7 @@
   "rules": {
     "linebreak-style": "off",
     "operator-linebreak": "off",
+    "implicit-arrow-linebreak": "off",
     "comma-dangle": [
       "error",
       {

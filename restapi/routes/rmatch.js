@@ -29,7 +29,7 @@ module.exports = (app) => {
     }
   });
 
-  app.get('/match/:id/rounds', async (req, res) => {
+  app.get('/match/:id/round', async (req, res) => {
     try {
       const rounds = await roundService.findByMatch(req.params.id);
       if (rounds.length > 0) {
@@ -42,6 +42,36 @@ module.exports = (app) => {
     } catch (err) {
       res.status(500);
       res.json({ error: 'An error occurred while getting the rounds' });
+    }
+  });
+
+  app.get('/match/:id/round/:n', async (req, res) => {
+    try {
+      const round = await roundService.findByMatchAndNumber(
+        req.params.id,
+        req.params.n
+      );
+      if (round) {
+        res.status(200);
+        res.json(round);
+      } else {
+        res.status(404);
+        res.json({ error: 'Round not found' });
+      }
+    } catch (err) {
+      res.status(500);
+      res.json({ error: 'An error occurred while getting the round' });
+    }
+  });
+
+  app.delete('/match/:id', (req, res) => {
+    try {
+      matchService.deleteMatch(req.params.id);
+      res.status(200);
+      res.send('Match deleted');
+    } catch (err) {
+      res.status(500);
+      res.json({ error: 'An error occurred while deleting the match' });
     }
   });
 };

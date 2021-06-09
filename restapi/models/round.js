@@ -67,9 +67,9 @@ module.exports = {
    * @param {string} matchId id of the match
    * @return {Promise<Round[]>} promise that resolves to the list of rounds
    */
-  getByMatch: (matchId) => {
-    const db = new Database('stats.db');
-    return new Promise((resolve, reject) => {
+  getByMatch: (matchId) =>
+    new Promise((resolve, reject) => {
+      const db = new Database('stats.db');
       db.prepare('SELECT * FROM ROUNDS WHERE match_id = ?')
         .bind([matchId])
         .all((err, rows) => {
@@ -78,6 +78,25 @@ module.exports = {
           resolve(rows.map(rowToRound));
         })
         .finalize();
-    });
-  },
+    }),
+
+  /**
+   * Gets a rounds of a match
+   * @param {string} matchId id of the match
+   * @param {number} n number of the round
+   * @return {Promise<Round|null>} promise that resolves to a round
+   * or null if there is no such round
+   */
+  getByMatchAndNumber: (matchId, n) =>
+    new Promise((resolve, reject) => {
+      const db = new Database('stats.db');
+      db.prepare('SELECT * FROM ROUNDS WHERE match_id = ? AND n_round = ?')
+        .bind([matchId, n])
+        .get((err, row) => {
+          db.close();
+          if (err) reject(err);
+          resolve(row ? rowToRound(row) : null);
+        })
+        .finalize();
+    }),
 };

@@ -104,16 +104,15 @@ module.exports = {
    * Gets all the matches asynchronously
    * @return {Promise<Match[]>} promise that resolves to the list of matches
    */
-  getAll: () => {
-    const db = new Database('stats.db');
-    return new Promise((resolve, reject) => {
+  getAll: () =>
+    new Promise((resolve, reject) => {
+      const db = new Database('stats.db');
       db.all('SELECT * FROM MATCHES', (err, rows) => {
         db.close();
         if (err) reject(err);
         resolve(rows.map(rowToMatch));
       });
-    });
-  },
+    }),
 
   /**
    * Gets a match by id asynchronously
@@ -121,9 +120,9 @@ module.exports = {
    * @return {Promise<Match|null>} promise that resolves to the match
    * or null if there is no such match
    */
-  get: (id) => {
-    const db = new Database('stats.db');
-    return new Promise((resolve, reject) => {
+  get: (id) =>
+    new Promise((resolve, reject) => {
+      const db = new Database('stats.db');
       db.prepare('SELECT * FROM MATCHES WHERE id = ?')
         .bind([id])
         .get((err, row) => {
@@ -132,6 +131,5 @@ module.exports = {
           resolve(row ? rowToMatch(row) : null);
         })
         .finalize();
-    });
-  },
+    }),
 };
