@@ -110,8 +110,7 @@ module.exports = {
       db.all('SELECT * FROM MATCHES', (err, rows) => {
         db.close();
         if (err) reject(err);
-        const results = rows.map(rowToMatch);
-        resolve(results);
+        resolve(rows.map(rowToMatch));
       });
     });
   },
@@ -131,7 +130,8 @@ module.exports = {
           db.close();
           if (err) reject(err);
           resolve(row ? rowToMatch(row) : null);
-        }).finalize();
+        })
+        .finalize();
     });
   },
 };

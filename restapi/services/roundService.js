@@ -92,4 +92,11 @@ module.exports = {
   saveCurrentRound: () => {
     Rounds.add(this.currentRound);
   },
+
+  /**
+   * Finds all rounds of a match
+   * @param {string} matchId id of the match
+   * @returns {Promise<Rounds.Round[]>} list of rounds of the match
+   */
+  findByMatch: (matchId) => Rounds.getByMatch(matchId),
 };

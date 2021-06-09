@@ -1,4 +1,5 @@
 const { Database } = require('sqlite3');
+const { rowToRound } = require('../util/mappers');
 
 module.exports = {
   /**
@@ -59,5 +60,24 @@ module.exports = {
         .finalize();
     });
     db.close();
+  },
+
+  /**
+   * Gets all the rounds of a match
+   * @param {string} matchId id of the match
+   * @return {Promise<Round[]>} promise that resolves to the list of rounds
+   */
+  getByMatch: (matchId) => {
+    const db = new Database('stats.db');
+    return new Promise((resolve, reject) => {
+      db.prepare('SELECT * FROM ROUNDS WHERE match_id = ?')
+        .bind([matchId])
+        .all((err, rows) => {
+          db.close();
+          if (err) reject(err);
+          resolve(rows.map(rowToRound));
+        })
+        .finalize();
+    });
   },
 };
