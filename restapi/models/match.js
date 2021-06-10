@@ -1,5 +1,4 @@
 const { Database } = require('sqlite3');
-const { rowToMatch } = require('../util/mappers');
 
 module.exports = {
   /**
@@ -24,7 +23,7 @@ module.exports = {
    * Adds a match
    * @param {Match} match match to add
    */
-  add: (match) => {
+  add(match) {
     const db = new Database('stats.db');
     db.prepare(
       'INSERT INTO Matches ' +
@@ -56,7 +55,7 @@ module.exports = {
    * Updates a match
    * @param {Match} match updated match
    */
-  update: (match) => {
+  update(match) {
     const db = new Database('stats.db');
     db.prepare(
       'UPDATE Matches SET player_id = ?, map = ?, mode = ?, date = ?, duration_seconds = ?, rounds_won = ?, ' +
@@ -88,7 +87,7 @@ module.exports = {
    * Deletes a match
    * @param {string} id id of the match
    */
-  delete: (id) => {
+  delete(id) {
     const db = new Database('stats.db');
     db.serialize(() => {
       db.exec('PRAGMA foreign_keys = ON')
@@ -104,15 +103,16 @@ module.exports = {
    * Gets all the matches asynchronously
    * @return {Promise<Match[]>} promise that resolves to the list of matches
    */
-  getAll: () =>
-    new Promise((resolve, reject) => {
+  getAll() {
+    return new Promise((resolve, reject) => {
       const db = new Database('stats.db');
       db.all('SELECT * FROM MATCHES', (err, rows) => {
         db.close();
         if (err) reject(err);
-        resolve(rows.map(rowToMatch));
+        resolve(rows.map(this.rowToMatch));
       });
-    }),
+    });
+  },
 
   /**
    * Gets a match by id asynchronously
@@ -120,16 +120,41 @@ module.exports = {
    * @return {Promise<Match|null>} promise that resolves to the match
    * or null if there is no such match
    */
-  get: (id) =>
-    new Promise((resolve, reject) => {
+  get(id) {
+    return new Promise((resolve, reject) => {
       const db = new Database('stats.db');
       db.prepare('SELECT * FROM MATCHES WHERE id = ?')
         .bind([id])
         .get((err, row) => {
           db.close();
           if (err) reject(err);
-          resolve(row ? rowToMatch(row) : null);
+          resolve(row ? this.rowToMatch(row) : null);
         })
         .finalize();
-    }),
+    });
+  },
+
+  /**
+   * Maps a row to a match
+   * @param {*} row row to map
+   * @returns {Match} match object
+   */
+  rowToMatch(row) {
+    return {
+      id: row.id,
+      playerId: row.player_id,
+      map: row.map,
+      mode: row.mode,
+      date: new Date(row.date),
+      duration: row.duration_seconds,
+      roundsWon: row.rounds_won,
+      roundsLost: row.rounds_lost,
+      kills: row.kills,
+      killshs: row.killshs,
+      deaths: row.deaths,
+      assists: row.assists,
+      score: row.score,
+      mvps: row.mvps,
+    };
+  },
 };

@@ -11,13 +11,13 @@ require('./routes/rgame')(app);
 require('./routes/rmatch')(app);
 
 fs.access('stats.db')
-  .then(() => app.listen(8080, () => console.log('Server started')))
+  .then(() => app.listen(8090, () => console.log('Server started')))
   .catch(async () => {
     // Creates the database for storing stats
     const db = new Database('stats.db');
     const schema = await fs.readFile('schema.sql');
     db.exec(schema.toString(), () => {
-      app.listen(8080, () => console.log('Server started'));
+      app.listen(8090, () => console.log('Server started'));
       db.close();
     });
   });

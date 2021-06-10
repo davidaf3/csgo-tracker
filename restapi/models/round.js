@@ -1,5 +1,4 @@
 const { Database } = require('sqlite3');
-const { rowToRound } = require('../util/mappers');
 
 module.exports = {
   /**
@@ -27,7 +26,7 @@ module.exports = {
    * Adds a round
    * @param {Round} round round to add
    */
-  add: (round) => {
+  add(round) {
     const db = new Database('stats.db');
     db.serialize(() => {
       db.exec('PRAGMA foreign_keys = ON')
@@ -67,18 +66,19 @@ module.exports = {
    * @param {string} matchId id of the match
    * @return {Promise<Round[]>} promise that resolves to the list of rounds
    */
-  getByMatch: (matchId) =>
-    new Promise((resolve, reject) => {
+  getByMatch(matchId) {
+    return new Promise((resolve, reject) => {
       const db = new Database('stats.db');
       db.prepare('SELECT * FROM ROUNDS WHERE match_id = ?')
         .bind([matchId])
         .all((err, rows) => {
           db.close();
           if (err) reject(err);
-          resolve(rows.map(rowToRound));
+          resolve(rows.map(this.rowToRound));
         })
         .finalize();
-    }),
+    });
+  },
 
   /**
    * Gets a rounds of a match
@@ -87,16 +87,44 @@ module.exports = {
    * @return {Promise<Round|null>} promise that resolves to a round
    * or null if there is no such round
    */
-  getByMatchAndNumber: (matchId, n) =>
-    new Promise((resolve, reject) => {
+  getByMatchAndNumber(matchId, n) {
+    return new Promise((resolve, reject) => {
       const db = new Database('stats.db');
       db.prepare('SELECT * FROM ROUNDS WHERE match_id = ? AND n_round = ?')
         .bind([matchId, n])
         .get((err, row) => {
           db.close();
           if (err) reject(err);
-          resolve(row ? rowToRound(row) : null);
+          resolve(row ? this.rowToRound(row) : null);
         })
         .finalize();
-    }),
+    });
+  },
+
+  /**
+   * Maps a row to a round
+   * @param {*} row row to map
+   * @returns {Round} round object
+   */
+  rowToRound(row) {
+    return {
+      id: row.id,
+      matchId: row.match_id,
+      n: row.n_round,
+      team: row.team,
+      equipValue: row.equip_value,
+      initMoney: row.init_money,
+      initArmor: row.init_armor,
+      helmet: row.helmet === 1,
+      duration: row.duration_seconds,
+      winner: row.winner,
+      winType: row.win_type,
+      died: row.died === 1,
+      kills: row.kills,
+      killshs: row.killshs,
+      assists: row.assists,
+      score: row.score,
+      mvp: row.mvp === 1,
+    };
+  },
 };
