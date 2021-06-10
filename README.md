@@ -1,2 +1,2 @@
 # csgo-tracker
-csgo-tracker is a simple node.js app that lets you track your CS:GO matches and stats.
+csgo-tracker is a simple node.js app that lets you track your CS:GO matches and stats using [Valve's game state integration](https://developer.valvesoftware.com/wiki/Counter-Strike:_Global_Offensive_Game_State_Integration).

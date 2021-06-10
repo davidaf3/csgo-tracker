@@ -38,7 +38,7 @@ module.exports = {
     duration: row.duration_seconds,
     winner: row.winner,
     winType: row.win_type,
-    died: row.died,
+    died: row.died === 1,
     kills: row.kills,
     killshs: row.killshs,
     assists: row.assists,

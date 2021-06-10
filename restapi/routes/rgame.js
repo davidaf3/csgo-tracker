@@ -121,8 +121,7 @@ module.exports = (app) => {
       };
 
       matchService.updateCurrentMatch({
-        killshs:
-          matchService.getCurrentMatch().killshs + killshs,
+        killshs: matchService.getCurrentMatch().killshs + killshs,
         kills: req.body.player.match_stats.kills,
         assists: req.body.player.match_stats.assists,
         score: req.body.player.match_stats.score,
@@ -174,8 +173,7 @@ module.exports = (app) => {
         };
 
         matchStats = {
-          killshs:
-            matchService.getCurrentMatch().killshs + roundStats.killshs,
+          killshs: matchService.getCurrentMatch().killshs + roundStats.killshs,
           kills: req.body.player.match_stats.kills,
           assists: req.body.player.match_stats.assists,
           score: req.body.player.match_stats.score,
@@ -195,9 +193,7 @@ module.exports = (app) => {
             (roundService.getCurrentRound().score ?? 0),
           mvps:
             matchService.getCurrentMatch().mvps +
-            roundService.getCurrentRound().mvp
-              ? 1
-              : 0,
+            (roundService.getCurrentRound().mvp ? 1 : 0),
         };
       }
 
