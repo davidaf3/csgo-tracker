@@ -1,2 +1,6 @@
 /restapi/node_modules/
 /restapi/stats.db
+/webapp/node_modules/
+/webapp/dist/
+/.vscode/
+vetur.config.js
