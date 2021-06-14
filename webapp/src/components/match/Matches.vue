@@ -6,6 +6,7 @@
         v-for="match in matches"
         :key="match.id"
         :match="match"
+        :selected="selectedMatch?.id === match.id"
         @click="selectMatch(match)"
       />
     </div>
@@ -51,6 +52,8 @@
   }
   #matches-list {
     width: 30%;
+    display: flex;
+    flex-direction: column;
   }
   #match-details {
     flex: 1;

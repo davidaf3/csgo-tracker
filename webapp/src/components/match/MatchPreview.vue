@@ -1,5 +1,5 @@
 <template>
-  <div class="match-preview">
+  <div class="match-preview" :class="{selected}" :style="backgroundStyle">
     <p>{{ match.map }}</p>
     <p>{{ match.roundsWon }} - {{ match.roundsLost }}</p>
   </div>
@@ -13,16 +13,31 @@
         type: Object,
         required: true,
       },
+      selected: {
+        type: Boolean,
+        default: false,
+      },
+    },
+    data() {
+      return {
+        backgroundStyle: {
+          backgroundImage: `url('img/maps/${this.match.map}.jpg')`,
+          backgroundColor: '#cccccc',
+          backgroundPosition: 'center',
+          backgroundSize: 'cover',
+        },
+      };
     },
   };
 </script>
 
 <style scoped>
   p {
+    font-weight: bold;
+    color: black;
     text-align: center;
   }
-  .match-preview {
-    border: solid 0.1em;
-    margin-bottom: 0.1em;
+  .match-preview:hover, .selected {
+    box-shadow: inset 0 0 10px #000000;
   }
 </style>
