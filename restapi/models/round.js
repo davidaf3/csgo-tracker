@@ -69,7 +69,7 @@ module.exports = {
   getByMatch(matchId) {
     return new Promise((resolve, reject) => {
       const db = new Database('stats.db');
-      db.prepare('SELECT * FROM ROUNDS WHERE match_id = ?')
+      db.prepare('SELECT * FROM ROUNDS WHERE match_id = ? ORDER BY n_round')
         .bind([matchId])
         .all((err, rows) => {
           db.close();

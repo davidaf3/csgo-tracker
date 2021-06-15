@@ -106,7 +106,7 @@ module.exports = {
   getAll() {
     return new Promise((resolve, reject) => {
       const db = new Database('stats.db');
-      db.all('SELECT * FROM MATCHES', (err, rows) => {
+      db.all('SELECT * FROM MATCHES ORDER BY date DESC', (err, rows) => {
         db.close();
         if (err) reject(err);
         resolve(rows.map(this.rowToMatch));

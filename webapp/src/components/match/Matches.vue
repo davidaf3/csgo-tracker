@@ -1,5 +1,4 @@
 <template>
-  <h1>Matches</h1>
   <div id="matches-panel">
     <div id="matches-list">
       <MatchPreview
@@ -48,10 +47,10 @@
 
 <style>
   #matches-panel {
+    margin-top: 1em;
     display: flex;
   }
   #matches-list {
-    width: 30%;
     display: flex;
     flex-direction: column;
   }
