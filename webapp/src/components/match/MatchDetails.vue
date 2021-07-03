@@ -1,5 +1,6 @@
 <template>
   <div id="rounds">
+    <MoneyChart :rounds="rounds" />
     <RoundsChart
       :rounds="rounds"
       :max-kills-per-round="match.mode === 'casual' ? 10 : 5"
@@ -11,12 +12,14 @@
 
 <script>
   import RoundsChart from './RoundsChart.vue';
+  import MoneyChart from './MoneyChart.vue';
   import { getRounds } from '../../api/api';
 
   export default {
     name: 'MatchDetails',
     components: {
       RoundsChart,
+      MoneyChart,
     },
     props: {
       match: {
@@ -42,7 +45,6 @@
         getRounds(this.match.id).then(rounds => {
           this.rounds = rounds;
           this.maxKillsPerRound = this.match.mode === 'casual' ? 10 : 5;
-          this.matchChanged = true;
         });
       },
     },
@@ -52,6 +54,8 @@
 <style>
   #rounds {
     display: flex;
+    flex-flow: column;
     justify-content: center;
+    align-items: center;
   }
 </style>
