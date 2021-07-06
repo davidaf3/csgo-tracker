@@ -1,5 +1,7 @@
 <template>
-  <canvas id="moneyChart" width="400" height="100"></canvas>
+  <div id="chartContainer">
+    <canvas id="moneyChart"></canvas>
+  </div>
 </template>
 
 <script>
@@ -18,6 +20,8 @@
     },
     watch: {
       rounds() {
+        document.getElementById('chartContainer').style.width =
+          `${this.rounds.length * 20 + 185}px`;
         if (chart === null) {
           this.createChart();
           return;
@@ -53,10 +57,13 @@
           type: 'line',
           data,
           options: {
+            color: '#fff',
+            maintainAspectRatio: false,
             responsive: true,
             plugins: {
               legend: {
-                position: 'top',
+                position: 'right',
+                maxWidth: '160',
               },
             },
           },
@@ -84,3 +91,10 @@
     },
   };
 </script>
+
+<style>
+  #chartContainer {
+    height: 200px;
+    margin-left: 105px;
+  }
+</style>

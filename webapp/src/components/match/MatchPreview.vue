@@ -117,6 +117,10 @@
     flex-direction: column;
     align-items: center;
   }
+  .card-header {
+    width: 100%;
+    text-align: center;
+  }
   .card-body {
     padding: 0.5em;
     flex: 1;

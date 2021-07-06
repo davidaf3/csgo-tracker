@@ -47,12 +47,16 @@
 
 <style>
   #matches-panel {
-    margin-top: 1em;
+    margin-top: 1vh;
+    margin-bottom: 1vh;
     display: flex;
   }
   #matches-list {
+    height: 90vh;
     display: flex;
     flex-direction: column;
+    overflow-y: auto;
+    padding-right: 0.5em;
   }
   #match-details {
     flex: 1;

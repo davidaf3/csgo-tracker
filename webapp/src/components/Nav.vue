@@ -50,6 +50,9 @@
 </script>
 
 <style scoped>
+  nav {
+    height: 8%;
+  }
   .navbar-brand {
     font-size: 1.4em;
   }

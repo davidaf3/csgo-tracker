@@ -30,8 +30,19 @@
     height: 100%;
   }
   #content {
+    height: 92%;
     color: white;
     flex: 1 1 auto;
     background: #282c34;
+  }
+  ::-webkit-scrollbar {
+    width: 7px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #282c34;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
   }
 </style>
