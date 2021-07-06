@@ -226,6 +226,7 @@ module.exports = (app) => {
 
       console.log('MATCH OVER');
       matchService.saveCurrentMatch();
+      roundService.setNextRoundInitMoney(800);
     }
 
     // Match quit
