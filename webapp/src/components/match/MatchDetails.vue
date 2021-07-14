@@ -39,6 +39,52 @@
         <span>{{ Math.round(match.duration / 60) }} min</span>
       </div>
     </div>
+    <div id="playerStats">
+      <table class="table table-dark">
+        <thead>
+          <tr>
+            <td v-if="player"></td>
+            <td>Kills</td>
+            <td>Assists</td>
+            <td>Deaths</td>
+            <td>K/D</td>
+            <td>Headshot%</td>
+            <td>MVPs</td>
+            <td>Score</td>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td v-if="player">
+              <a :href="player.profileurl">
+                <img class="avatar" :src="player.avatar" alt="avatar" />{{
+                  player.personaname
+                }}</a
+              >
+            </td>
+            <td>{{ match.kills }}</td>
+            <td>{{ match.assists }}</td>
+            <td>{{ match.deaths }}</td>
+            <td>
+              {{
+                Math.round(
+                  (match.kills / match.deaths + Number.EPSILON) * 100
+                ) / 100
+              }}
+            </td>
+            <td>
+              {{
+                Math.round(
+                  ((match.killshs / match.kills) * 100 + Number.EPSILON) * 100
+                ) / 100
+              }}%
+            </td>
+            <td>{{ match.mvps }}</td>
+            <td>{{ match.score }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
     <div id="rounds">
       <MoneyChart :rounds="rounds" />
       <RoundsChart
@@ -54,7 +100,7 @@
 <script>
   import RoundsChart from './RoundsChart.vue';
   import MoneyChart from './MoneyChart.vue';
-  import { getRounds } from '../../api/api';
+  import { getRounds, getPlayerInfo } from '../../api/api';
 
   export default {
     name: 'MatchDetails',
@@ -71,22 +117,30 @@
     data() {
       return {
         rounds: [],
+        player: null,
         matchDate: new Date(this.match.date),
       };
     },
     watch: {
       match() {
         this.updateRounds();
+        this.updatePlayer();
         this.matchDate = new Date(this.match.date);
       },
     },
     created() {
       this.updateRounds();
+      this.updatePlayer();
     },
     methods: {
       updateRounds() {
         getRounds(this.match.id).then(rounds => {
           this.rounds = rounds;
+        });
+      },
+      updatePlayer() {
+        getPlayerInfo(this.match.playerId).then(player => {
+          this.player = player;
         });
       },
     },
@@ -114,5 +168,17 @@
   }
   .matchInfoBox {
     margin-left: 2em;
+  }
+  a,
+  a:visited {
+    text-decoration: none;
+    color: white;
+  }
+  a:hover {
+    text-decoration: underline;
+    color: white;
+  }
+  .avatar {
+    margin-right: 0.5em;
   }
 </style>

@@ -2,5 +2,6 @@
 /restapi/stats.db
 /webapp/node_modules/
 /webapp/dist/
+/restapi/secrets.js
 /.vscode/
 vetur.config.js

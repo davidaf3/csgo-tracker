@@ -60,5 +60,7 @@
   }
   #match-details {
     flex: 1;
+    height: 90vh;
+    overflow-y: auto;
   }
 </style>

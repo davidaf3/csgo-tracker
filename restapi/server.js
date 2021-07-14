@@ -20,6 +20,7 @@ app.use((req, res, next) => {
 
 require('./routes/rgame')(app);
 require('./routes/rmatch')(app);
+require('./routes/rsteamapi')(app);
 
 fs.access('stats.db')
   .then(() => app.listen(8090, () => console.log('Server started')))

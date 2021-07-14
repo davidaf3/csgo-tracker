@@ -43,13 +43,14 @@ module.exports = (app) => {
     if (
       req.body.player?.state?.health === 0 &&
       req.body.previously?.player?.state?.health > 0 &&
-      req.body.player?.steamid === matchService.getCurrentMatch()?.playerId &&
+      req.body.player?.steamid === '76561198198149093' &&
       req.body.map?.phase !== 'warmup' &&
       roundService.getCurrentRound()
     ) {
       console.log('YOU DIED');
       const roundInfo = {
         died: true,
+        // TODO check if I need to add saved headshots
         killshs:
           (req.body.player.state.round_killhs ?? 0) +
           (roundService.getCurrentRound().killshs ?? 0),
@@ -69,9 +70,6 @@ module.exports = (app) => {
       roundService.updateCurrentRound(roundInfo);
       matchService.updateCurrentMatch({
         deaths: matchService.getCurrentMatch().deaths + 1,
-        killshs:
-          matchService.getCurrentMatch().killshs +
-          (req.body.player.state.round_killhs ?? 0),
       });
     }
 
@@ -83,23 +81,12 @@ module.exports = (app) => {
       req.body.map?.phase !== 'warmup' &&
       roundService.getCurrentRound()
     ) {
-      let killshs = 0;
-
-      // Add hs if player survived
-      if (
-        !req.body.previously?.player?.steamid &&
-        req.body.previously?.player?.state?.round_killhs
-      ) {
-        killshs = req.body.previously?.player?.state?.round_killhs;
-      }
-
       console.log('ROUND ENDED');
       const winString = req.body.map.round_wins
         ? req.body.map.round_wins[req.body.map.round.toString()]
         : `${req.body.round.win_team.toLowerCase()}_win`;
 
       const roundInfo = {
-        killshs,
         kills:
           req.body.player.match_stats.kills -
           matchService.getCurrentMatch().kills,
@@ -120,8 +107,22 @@ module.exports = (app) => {
           1000,
       };
 
+      // Add hs if the previous player was the main player
+      // TODO check if hs are added twice (if the player dies but the steamid does not change)
+      if (
+        !req.body.previously?.player?.steamid &&
+        req.body.previously?.player?.state?.round_killhs
+      ) {
+        roundInfo.killshs = req.body.previously?.player?.state?.round_killhs;
+      }
+
+      roundService.updateCurrentRound(roundInfo);
+      roundService.saveCurrentRound();
+
       matchService.updateCurrentMatch({
-        killshs: matchService.getCurrentMatch().killshs + killshs,
+        killshs:
+          matchService.getCurrentMatch().killshs +
+          (roundService.getCurrentRound().killshs ?? 0),
         kills: req.body.player.match_stats.kills,
         assists: req.body.player.match_stats.assists,
         score: req.body.player.match_stats.score,
@@ -133,8 +134,6 @@ module.exports = (app) => {
           matchService.getCurrentMatch().roundsLost +
           (roundInfo.winner !== roundService.getCurrentRound().team ? 1 : 0),
       });
-      roundService.updateCurrentRound(roundInfo);
-      roundService.saveCurrentRound();
 
       roundService.setNextRoundInitMoney(req.body.player.state.money);
     }
@@ -152,7 +151,7 @@ module.exports = (app) => {
       let roundStats = {};
       let matchStats = {};
 
-      // Add stats if player survived
+      // Add stats if the current player is the main player
       if (
         req.body.player?.steamid === matchService.getCurrentMatch().playerId
       ) {
@@ -173,6 +172,7 @@ module.exports = (app) => {
         };
 
         matchStats = {
+          // TODO check if hs are added twice (if the player dies but the steamid does not change)
           killshs: matchService.getCurrentMatch().killshs + roundStats.killshs,
           kills: req.body.player.match_stats.kills,
           assists: req.body.player.match_stats.assists,
@@ -182,6 +182,9 @@ module.exports = (app) => {
       } else {
         // If the player died, update the match with the round info stored when he died
         matchStats = {
+          killshs:
+            matchService.getCurrentMatch().killshs +
+            (roundService.getCurrentRound().killshs ?? 0),
           kills:
             matchService.getCurrentMatch().kills +
             (roundService.getCurrentRound().kills ?? 0),

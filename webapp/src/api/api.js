@@ -70,3 +70,18 @@ export async function getRounds(matchId) {
     return [];
   }
 }
+
+/**
+ * Gets info about a player
+ * @param {string} steamId id of the player
+ */
+export async function getPlayerInfo(steamId) {
+  try {
+    const response = await fetch(`http://localhost:8090/player/${steamId}`, {
+      method: 'GET',
+    });
+    return await response.json();
+  } catch (err) {
+    return {};
+  }
+}
