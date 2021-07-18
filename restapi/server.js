@@ -1,6 +1,7 @@
 const fs = require('fs/promises');
 const { Database } = require('sqlite3');
 const express = require('express');
+const path = require('path');
 
 const app = express();
 
@@ -22,12 +23,12 @@ require('./routes/rgame')(app);
 require('./routes/rmatch')(app);
 require('./routes/rsteamapi')(app);
 
-fs.access('stats.db')
+fs.access(path.join(__dirname, 'stats.db'))
   .then(() => app.listen(8090, () => console.log('Server started')))
   .catch(async () => {
     // Creates the database for storing stats
-    const db = new Database('stats.db');
-    const schema = await fs.readFile('schema.sql');
+    const db = new Database(path.join(__dirname, 'stats.db'));
+    const schema = await fs.readFile(path.join(__dirname, 'schema.sql'));
     db.exec(schema.toString(), () => {
       app.listen(8090, () => console.log('Server started'));
       db.close();

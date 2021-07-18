@@ -1,4 +1,7 @@
 const { Database } = require('sqlite3');
+const path = require('path');
+
+const dbFile = path.join(__dirname, '..', 'stats.db');
 
 module.exports = {
   /**
@@ -24,7 +27,7 @@ module.exports = {
    * @param {Match} match match to add
    */
   add(match) {
-    const db = new Database('stats.db');
+    const db = new Database(dbFile);
     db.prepare(
       'INSERT INTO Matches ' +
         '(id, player_id, map, mode, date, duration_seconds, rounds_won, rounds_lost, kills, killshs, deaths, assists, score, mvps)' +
@@ -56,7 +59,7 @@ module.exports = {
    * @param {Match} match updated match
    */
   update(match) {
-    const db = new Database('stats.db');
+    const db = new Database(dbFile);
     db.prepare(
       'UPDATE Matches SET player_id = ?, map = ?, mode = ?, date = ?, duration_seconds = ?, rounds_won = ?, ' +
         'rounds_lost = ?, kills = ?, killshs = ?, deaths = ?, assists = ?, score = ?, mvps = ?' +
@@ -88,7 +91,7 @@ module.exports = {
    * @param {string} id id of the match
    */
   delete(id) {
-    const db = new Database('stats.db');
+    const db = new Database(dbFile);
     db.serialize(() => {
       db.exec('PRAGMA foreign_keys = ON')
         .prepare('DELETE FROM Matches WHERE id = ?')
@@ -105,7 +108,7 @@ module.exports = {
    */
   getAll() {
     return new Promise((resolve, reject) => {
-      const db = new Database('stats.db');
+      const db = new Database(dbFile);
       db.all('SELECT * FROM MATCHES ORDER BY date DESC', (err, rows) => {
         db.close();
         if (err) reject(err);
@@ -122,7 +125,7 @@ module.exports = {
    */
   get(id) {
     return new Promise((resolve, reject) => {
-      const db = new Database('stats.db');
+      const db = new Database(dbFile);
       db.prepare('SELECT * FROM MATCHES WHERE id = ?')
         .bind([id])
         .get((err, row) => {
