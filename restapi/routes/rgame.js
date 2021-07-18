@@ -35,6 +35,7 @@ module.exports = (app) => {
         equipValue: req.body.player.state.equip_value,
         initArmor: req.body.player.state.armor,
         helmet: req.body.player.state.helmet,
+        killshs: 0,
       };
       roundService.createRound(round);
     }
@@ -43,7 +44,7 @@ module.exports = (app) => {
     if (
       req.body.player?.state?.health === 0 &&
       req.body.previously?.player?.state?.health > 0 &&
-      req.body.player?.steamid === '76561198198149093' &&
+      req.body.player?.steamid === matchService.getCurrentMatch()?.playerId &&
       req.body.map?.phase !== 'warmup' &&
       roundService.getCurrentRound()
     ) {
