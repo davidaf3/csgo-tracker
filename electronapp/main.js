@@ -1,22 +1,24 @@
-const { app, protocol, BrowserWindow } = require("electron");
-const path = require("path");
+const { app, protocol, BrowserWindow } = require('electron');
+const path = require('path');
 
 // Start express app
-require(path.join(__dirname, "..", "restapi", "server.js"));
+require(path.join(__dirname, '..', 'restapi', 'server.js'));
 
 function createWindow() {
-  const PROTOCOL = "file";
+  const PROTOCOL = 'file';
   protocol.interceptFileProtocol(PROTOCOL, (request, callback) => {
     let url = request.url.substr(PROTOCOL.length + 1);
-    url = path.join(__dirname, "dist", url);
+    url = path.join(__dirname, '..', 'webapp', 'dist', url);
     url = path.normalize(url);
     callback({ path: url });
   });
 
   const window = new BrowserWindow({
     show: false,
+    backgroundColor: '#282c34',
   });
-  window.loadURL("file:///index.html");
+  window.removeMenu();
+  window.loadURL('file:///index.html');
   window.maximize();
   window.show();
 }
