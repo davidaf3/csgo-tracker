@@ -20,8 +20,6 @@
     },
     watch: {
       rounds() {
-        document.getElementById('chartContainer').style.width =
-          `${this.rounds.length * 20 + 185}px`;
         if (chart === null) {
           this.createChart();
           return;
@@ -62,8 +60,7 @@
             responsive: true,
             plugins: {
               legend: {
-                position: 'right',
-                maxWidth: '160',
+                position: 'top',
               },
             },
           },
@@ -71,6 +68,7 @@
 
         const ctx = document.getElementById('moneyChart').getContext('2d');
         chart = new Chart(ctx, config);
+        this.alignCharts();
       },
       updateChart() {
         if (chart) {
@@ -86,7 +84,21 @@
           this.rounds.forEach(round => datasets[1].data.push(round.equipValue));
 
           chart.update();
+          this.alignCharts();
         }
+      },
+      alignCharts() {
+        const yScaleWidth = Math.floor(chart.scales.y.width);
+
+        document.getElementById(
+          'roundsChart'
+        ).style.marginLeft = `${yScaleWidth - 10}px`;
+
+        document.getElementById('chartContainer').style.width = `${this.rounds
+          .length *
+          20 -
+          10 +
+          yScaleWidth}px`;
       },
     },
   };
@@ -95,6 +107,5 @@
 <style>
   #chartContainer {
     height: 200px;
-    margin-left: 105px;
   }
 </style>

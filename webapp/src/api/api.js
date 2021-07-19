@@ -74,6 +74,7 @@ export async function getRounds(matchId) {
 /**
  * Gets info about a player
  * @param {string} steamId id of the player
+ * @returns {Object} info about the player
  */
 export async function getPlayerInfo(steamId) {
   try {

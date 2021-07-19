@@ -92,7 +92,11 @@
         :max-kills-per-round="match.mode === 'casual' ? 10 : 5"
         :has-half-time="match.mode === 'competitive'"
         :half-time-round="match.mode === 'competitive' ? 15 : null"
+        :select-round="setSelectedRound"
       />
+    </div>
+    <div v-if="selectedRound" id="selectedRound">
+      <p>{{ rounds[selectedRound - 1].winType }}</p>
     </div>
   </div>
 </template>
@@ -117,6 +121,7 @@
     data() {
       return {
         rounds: [],
+        selectedRound: null,
         player: null,
         matchDate: new Date(this.match.date),
       };
@@ -136,6 +141,7 @@
       updateRounds() {
         getRounds(this.match.id).then(rounds => {
           this.rounds = rounds;
+          this.selectedRound = null;
         });
       },
       updatePlayer() {
@@ -143,20 +149,28 @@
           this.player = player;
         });
       },
+      setSelectedRound(nRound) {
+        this.selectedRound = nRound;
+      },
     },
   };
 </script>
 
-<style>
+<style scoped>
   h1 {
     margin-bottom: 1em;
   }
-  #details,
-  #rounds {
+  #details {
     display: flex;
     flex-flow: column;
     justify-content: center;
     align-items: center;
+  }
+  #rounds {
+    display: flex;
+    flex-flow: column;
+    justify-content: left;
+    align-items: left;
   }
 
   #matchInfo {

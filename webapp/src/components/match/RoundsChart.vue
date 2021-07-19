@@ -1,5 +1,6 @@
 <template>
   <svg
+    id="roundsChart"
     :height="20 * maxKillsPerRound + 40"
     :width="rounds.length * 20"
     xmlns="http://www.w3.org/2000/svg"
@@ -19,7 +20,7 @@
       </linearGradient>
     </defs>
     <g :transform="`scale(1,-1) translate(0,-${20 * maxKillsPerRound + 40})`">
-      <g v-for="round in rounds" :key="round.n">
+      <g v-for="round in rounds" :key="round.n" @click="selectRound(round.n)">
         <rect
           v-if="round.winner == round.team"
           :x="
@@ -142,6 +143,10 @@
         type: Number,
         required: false,
         default: 0,
+      },
+      selectRound: {
+        type: Function,
+        required: true,
       },
     },
     updated() {
