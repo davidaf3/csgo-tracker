@@ -106,6 +106,6 @@
 
 <style>
   #chartContainer {
-    height: 200px;
+    height: 175px;
   }
 </style>

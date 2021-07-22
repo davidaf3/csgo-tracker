@@ -1,6 +1,5 @@
 <template>
   <div id="details">
-    <h1>{{ match.roundsWon }} - {{ match.roundsLost }}</h1>
     <div id="matchInfo">
       <img
         :src="`img/map-icons/map_icon_${match.map}.svg`"
@@ -39,6 +38,7 @@
         <span>{{ Math.round(match.duration / 60) }} min</span>
       </div>
     </div>
+    <h1>{{ match.roundsWon }} - {{ match.roundsLost }}</h1>
     <div id="playerStats">
       <table class="table table-dark">
         <thead>
@@ -86,6 +86,7 @@
       </table>
     </div>
     <div id="rounds">
+      <h5>Rounds</h5>
       <MoneyChart :rounds="rounds" />
       <RoundsChart
         :rounds="rounds"
@@ -96,7 +97,57 @@
       />
     </div>
     <div v-if="selectedRound" id="selectedRound">
-      <p>{{ rounds[selectedRound - 1].winType }}</p>
+      <h5>Round {{ selectedRound }}</h5>
+      <div id="selectedRoundInfo">
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item">
+            Team: {{ rounds[selectedRound - 1].team }}
+          </li>
+          <li class="list-group-item">
+            Winner: {{ rounds[selectedRound - 1].winner }}
+          </li>
+          <li class="list-group-item">
+            Win type: {{ parseWinType(rounds[selectedRound - 1].winType) }}
+          </li>
+          <li class="list-group-item">
+            Duration: {{ Math.round(rounds[selectedRound - 1].duration) }} s
+          </li>
+        </ul>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item">
+            Kills: {{ rounds[selectedRound - 1].kills }}
+          </li>
+          <li class="list-group-item">
+            Headshots: {{ rounds[selectedRound - 1].killshs }}
+          </li>
+          <li class="list-group-item">
+            Assists: {{ rounds[selectedRound - 1].assists }}
+          </li>
+          <li class="list-group-item">
+            Died: {{ rounds[selectedRound - 1].died ? 'Yes' : 'No' }}
+          </li>
+          <li class="list-group-item">
+            Score: {{ rounds[selectedRound - 1].score }}
+          </li>
+          <li class="list-group-item">
+            MVP: {{ rounds[selectedRound - 1].mvp ? 'Yes' : 'No' }}
+          </li>
+        </ul>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item">
+            Initial money: {{ rounds[selectedRound - 1].initMoney }}
+          </li>
+          <li class="list-group-item">
+            Equipment value: {{ rounds[selectedRound - 1].equipValue }}
+          </li>
+          <li class="list-group-item">
+            Initial armor: {{ rounds[selectedRound - 1].initArmor }}
+          </li>
+          <li class="list-group-item">
+            Helmet: {{ rounds[selectedRound - 1].helmet ? 'Yes' : 'No' }}
+          </li>
+        </ul>
+      </div>
     </div>
   </div>
 </template>
@@ -152,13 +203,18 @@
       setSelectedRound(nRound) {
         this.selectedRound = nRound;
       },
+      parseWinType(winType) {
+        const parsedWinType = winType.split('_')[2];
+        return parsedWinType.charAt(0).toUpperCase() + parsedWinType.slice(1);
+      },
     },
   };
 </script>
 
 <style scoped>
   h1 {
-    margin-bottom: 1em;
+    margin: 0.75em 0;
+    font-size: 50px;
   }
   #details {
     display: flex;
@@ -167,18 +223,19 @@
     align-items: center;
   }
   #rounds {
+    margin-top: 1em;
     display: flex;
     flex-flow: column;
     justify-content: left;
     align-items: left;
   }
-
   #matchInfo {
+    align-self: flex-start;
     display: flex;
     flex-flow: row;
     justify-content: center;
     align-items: center;
-    margin-bottom: 1em;
+    margin: 1em 0 0 3em;
   }
   .matchInfoBox {
     margin-left: 2em;
@@ -194,5 +251,23 @@
   }
   .avatar {
     margin-right: 0.5em;
+  }
+  #selectedRoundInfo {
+    display: flex;
+    flex-flow: row;
+    justify-content: center;
+    align-items: flex-start;
+    margin-bottom: 2em;
+  }
+  #selectedRoundInfo ul{
+    margin-right: 2em;
+  }
+  #selectedRoundInfo ul:last-child{
+    margin-right: 0;
+  }
+  .list-group-item {
+    color: white;
+    background-color: #282c34;
+    border-color: rgba(255, 255, 255, 0.250);
   }
 </style>
