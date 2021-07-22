@@ -1,7 +1,4 @@
 const { Database } = require('sqlite3');
-const path = require('path');
-
-const dbFile = path.join(__dirname, '..', 'stats.db');
 
 module.exports = {
   /**
@@ -26,11 +23,19 @@ module.exports = {
    */
 
   /**
+   * Initializes the module
+   * @param {string} dbFile path to the database file
+   */
+  init(dbFile) {
+    this.dbFile = dbFile;
+  },
+
+  /**
    * Adds a round
    * @param {Round} round round to add
    */
   add(round) {
-    const db = new Database(dbFile);
+    const db = new Database(this.dbFile);
     db.serialize(() => {
       db.exec('PRAGMA foreign_keys = ON')
         .prepare(
@@ -71,7 +76,7 @@ module.exports = {
    */
   getByMatch(matchId) {
     return new Promise((resolve, reject) => {
-      const db = new Database(dbFile);
+      const db = new Database(this.dbFile);
       db.prepare('SELECT * FROM ROUNDS WHERE match_id = ? ORDER BY n_round')
         .bind([matchId])
         .all((err, rows) => {
@@ -92,7 +97,7 @@ module.exports = {
    */
   getByMatchAndNumber(matchId, n) {
     return new Promise((resolve, reject) => {
-      const db = new Database(dbFile);
+      const db = new Database(this.dbFile);
       db.prepare('SELECT * FROM ROUNDS WHERE match_id = ? AND n_round = ?')
         .bind([matchId, n])
         .get((err, row) => {

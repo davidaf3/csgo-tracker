@@ -1,5 +1,5 @@
 {
-  "name": "csgo-tracker",
+  "name": "csgo-tracker-restapi",
   "version": "1.0.0",
   "description": "",
   "main": "server.js",

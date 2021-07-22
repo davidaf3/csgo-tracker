@@ -1,8 +1,15 @@
 /* eslint-disable import/extensions */
 const { v4: uuidv4 } = require('uuid');
-const Matches = require('../models/match');
 
 module.exports = {
+  /**
+   * Initializes the module
+   * @param {any} Matches matches model
+   */
+  init(Matches) {
+    this.Matches = Matches;
+  },
+
   /**
    * Creates a match
    * @param {{
@@ -21,20 +28,22 @@ module.exports = {
    *    score: number,
    * }} match match info
    */
-  createMatch: (match) => {
+  createMatch(match) {
     this.currentMatch = {
       id: uuidv4(),
       date: new Date(),
       ...match,
     };
-    Matches.add(this.currentMatch);
+    this.Matches.add(this.currentMatch);
   },
 
   /**
    * Returns the current match
    * @returns {Matches.Match} current match info
    */
-  getCurrentMatch: () => this.currentMatch,
+  getCurrentMatch() {
+    return this.currentMatch;
+  },
 
   /**
    * Updates de current match
@@ -55,7 +64,7 @@ module.exports = {
    *    score?: number,
    * }} updatedMatch updated match info
    */
-  updateCurrentMatch: (updatedMatch) => {
+  updateCurrentMatch(updatedMatch) {
     this.currentMatch = {
       ...this.currentMatch,
       ...updatedMatch,
@@ -65,23 +74,25 @@ module.exports = {
   /**
    * Saves the current match
    */
-  saveCurrentMatch: () => {
-    Matches.update(this.currentMatch);
+  saveCurrentMatch() {
+    this.Matches.update(this.currentMatch);
   },
 
   /**
    * Deletes a match by id
    * @param {string} id match id
    */
-  deleteMatch: (id) => {
-    Matches.delete(id);
+  deleteMatch(id) {
+    this.Matches.delete(id);
   },
 
   /**
    * Finds all matches asynchronously
    * @return {Promise<Matches.Match[]>} promise that resolves to the list of matches
    */
-  findAll: () => Matches.getAll(),
+  findAll() {
+    return this.Matches.getAll();
+  },
 
   /**
    * Finds a match by id
@@ -89,5 +100,7 @@ module.exports = {
    * @return {Promise<Matches.Match|null>} promise that resolves to the match
    * or null if there is no such match
    */
-  findById: (id) => Matches.get(id),
+  findById(id) {
+    return this.Matches.get(id);
+  },
 };

@@ -19,18 +19,31 @@ app.use((req, res, next) => {
   next();
 });
 
-require('./routes/rgame')(app);
-require('./routes/rmatch')(app);
+const Matches = require('./models/match');
+const Rounds = require('./models/round');
+
+require('./routes/rgame')(app, Matches, Rounds);
+require('./routes/rmatch')(app, Matches, Rounds);
 require('./routes/rsteamapi')(app);
 
-fs.access(path.join(__dirname, 'stats.db'))
-  .then(() => app.listen(8090, () => console.log('Server started')))
-  .catch(async () => {
-    // Creates the database for storing stats
-    const db = new Database(path.join(__dirname, 'stats.db'));
-    const schema = await fs.readFile(path.join(__dirname, 'schema.sql'));
-    db.exec(schema.toString(), () => {
-      app.listen(8090, () => console.log('Server started'));
-      db.close();
+/**
+ * Starts the rest api
+ * @param {string} dbFile path to the database file
+ */
+module.exports = (dbFile) => {
+  Matches.init(dbFile);
+  Rounds.init(dbFile);
+  console.log(dbFile);
+
+  fs.access(dbFile)
+    .then(() => app.listen(8090, () => console.log('Server started')))
+    .catch(async () => {
+      // Creates the database for storing stats
+      const db = new Database(dbFile);
+      const schema = await fs.readFile(path.join(__dirname, 'schema.sql'));
+      db.exec(schema.toString(), () => {
+        app.listen(8090, () => console.log('Server started'));
+        db.close();
+      });
     });
-  });
+};

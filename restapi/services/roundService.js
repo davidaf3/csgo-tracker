@@ -1,7 +1,14 @@
 const { v4: uuidv4 } = require('uuid');
-const Rounds = require('../models/round');
 
 module.exports = {
+  /**
+   * Initializes the module
+   * @param {any} Rounds rounds model
+   */
+  init(Rounds) {
+    this.Rounds = Rounds;
+  },
+
   /**
    * Creates a round
    * @param {{
@@ -14,7 +21,7 @@ module.exports = {
    *    helmet: boolean,
    * }} round round info
    */
-  createRound: (round) => {
+  createRound(round) {
     this.currentRound = {
       id: uuidv4(),
       initMoney: this.nextRoundInitMoney ?? 800,
@@ -27,7 +34,7 @@ module.exports = {
    * Sets the initial money for the next round
    * @param {number} money initial money for the next round
    */
-  setNextRoundInitMoney: (money) => {
+  setNextRoundInitMoney(money) {
     this.nextRoundInitMoney = money;
   },
 
@@ -54,7 +61,9 @@ module.exports = {
    *    mvp?: boolean,
    * }} current round info
    */
-  getCurrentRound: () => this.currentRound,
+  getCurrentRound() {
+    return this.currentRound;
+  },
 
   /**
    * Updates de current round
@@ -79,7 +88,7 @@ module.exports = {
    *    mvp?: boolean,
    * }} updatedRound updated round info
    */
-  updateCurrentRound: (updatedRound) => {
+  updateCurrentRound(updatedRound) {
     this.currentRound = {
       ...this.currentRound,
       ...updatedRound,
@@ -89,8 +98,8 @@ module.exports = {
   /**
    * Saves the current round
    */
-  saveCurrentRound: () => {
-    Rounds.add(this.currentRound);
+  saveCurrentRound() {
+    this.Rounds.add(this.currentRound);
   },
 
   /**
@@ -98,7 +107,9 @@ module.exports = {
    * @param {string} matchId id of the match
    * @returns {Promise<Rounds.Round[]>} list of rounds of the match
    */
-  findByMatch: (matchId) => Rounds.getByMatch(matchId),
+  findByMatch(matchId) {
+    return this.Rounds.getByMatch(matchId);
+  },
 
   /**
    * Finds a round of a match
@@ -107,5 +118,7 @@ module.exports = {
    * @returns {Promise<Rounds.Round|null>} the round
    * or null if there was no such round
    */
-  findByMatchAndNumber: (matchId, n) => Rounds.getByMatchAndNumber(matchId, n),
+  findByMatchAndNumber(matchId, n) {
+    return this.Rounds.getByMatchAndNumber(matchId, n);
+  },
 };

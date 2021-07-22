@@ -1,7 +1,10 @@
 const matchService = require('../services/matchService');
 const roundService = require('../services/roundService');
 
-module.exports = (app) => {
+module.exports = (app, Matches, Rounds) => {
+  matchService.init(Matches);
+  roundService.init(Rounds);
+
   app.post('/game', (req, res) => {
     // Match start
     if (req.body.added?.player?.match_stats) {
