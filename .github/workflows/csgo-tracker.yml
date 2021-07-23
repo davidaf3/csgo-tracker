@@ -28,6 +28,7 @@ jobs:
         with:
           node-version: 14
       - run: npm ci
+      - run: echo "${{secrets.RESTAPI_SECRETS}}" | Out-File secrets.js
   build-electronapp:
     needs: [build-restapi, build-webapp]
     runs-on: windows-latest
