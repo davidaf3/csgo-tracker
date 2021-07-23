@@ -6,7 +6,6 @@ on:
 
 jobs:
   build-electronapp:
-    needs: [build-restapi, build-webapp]
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v2
