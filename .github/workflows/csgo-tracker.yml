@@ -31,7 +31,8 @@ jobs:
       - name: Install electronapp dependencies
         run: |
           npm i
-          xcopy /s ..\webapp\dist resources
+          New-Item -Name "resources" -ItemType "directory"
+          Copy-Item -Path ..\webapp\dist\* -Destination  resources -Recurse
       - name: Build electronapp
         run: npm run dist
       - name: Compress electronapp
