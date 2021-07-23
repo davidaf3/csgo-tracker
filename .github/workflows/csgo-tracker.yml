@@ -14,18 +14,21 @@ jobs:
         with:
           node-version: 14
       - name: Install restapi dependencies
-        run: cd restapi
-        run: npm ci
-        run: echo "${{secrets.RESTAPI_SECRETS}}" | Out-File secrets.js
+        run: |
+          cd restapi
+          npm ci; echo "${{secrets.RESTAPI_SECRETS}}"
+          Out-File secrets.js
       - name: Install webapp dependencies
-        run: cd ..\webapp
-        run: npm ci
+        run: |
+          cd ..\webapp
+          npm ci
       - name: Build webapp
         run: npm run build
       - name: Install electronapp dependencies
-        run: cd ..\electronapp
-        run: npm ci
-        run: xcopy /s ..\webapp\dist resources
+        run: |
+          cd ..\electronapp
+          npm ci
+          xcopy /s ..\webapp\dist resources
       - name: Build electronapp
         run: npm run dist
       - name: Compress electronapp
