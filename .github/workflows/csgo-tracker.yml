@@ -30,7 +30,7 @@ jobs:
           npm run build
       - name: Install electronapp dependencies
         run: |
-          npm ci
+          npm i
           xcopy /s ..\webapp\dist resources
       - name: Build electronapp
         run: npm run dist
