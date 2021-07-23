@@ -28,8 +28,9 @@ jobs:
         run: xcopy /s ..\webapp\dist resources
       - name: Build electronapp
         run: npm run dist
-      - name: Upload electronapp
+      - name: Compress electronapp
         run: Compress-Archive .\dist\ csgo-tracker.zip
+      - name: Upload electronapp
         uses: actions/upload-artifact@v2
         with:
           name: csgo-tracker.zip
