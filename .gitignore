@@ -6,4 +6,6 @@
 /.vscode/
 vetur.config.js
 /electronapp/node_modules/
+/electronapp/resources/
 /electronapp/dist/
+/electronapp/build/

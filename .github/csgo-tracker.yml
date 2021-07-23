@@ -1,0 +1,48 @@
+name: CI for csgo-tracker
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  build-webapp:
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: webapp
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 14
+      - run: npm ci
+      - run: npm run build
+  build-restapi:
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: restapi
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 14
+      - run: npm ci
+  build-electronapp:
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: electronapp
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 14
+      - run: npm ci
+      - run: xcopy /s ..\webapp\dist resources
+      - run: npm run dist
+      - run: Compress-Archive .\dist\ csgo-tracker.zip
+      - uses: actions/upload-artifact@v2
+        with:
+          name: csgo-tracker.zip
+          path: csgo-tracker.zip

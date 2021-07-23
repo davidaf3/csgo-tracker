@@ -3,13 +3,31 @@
   "version": "1.0.0",
   "description": "Electron app",
   "main": "main.js",
+  "build": {
+    "appId": "csgotracker",
+    "productName": "csgo-tracker",
+    "files": [
+      "!.prettierrc"
+    ],
+    "nsis": {
+      "artifactName": "csgo-tracker-installer.exe"
+    }
+  },
   "scripts": {
     "start": "electron .",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder",
+    "postinstall": "electron-builder install-app-deps"
   },
   "author": "David Álvarez Fidalgo",
   "license": "ISC",
+  "dependencies": {
+    "csgo-tracker-restapi": "file:../restapi"
+  },
   "devDependencies": {
-    "electron": "^13.1.7"
+    "electron": "^13.1.7",
+    "electron-builder": "^22.11.7",
+    "electron-rebuild": "^2.3.5"
   }
 }

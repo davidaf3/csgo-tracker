@@ -2,13 +2,14 @@ const { app, protocol, BrowserWindow } = require('electron');
 const path = require('path');
 
 // Start express app
-require(path.join(__dirname, '..', 'restapi', 'server.js'));
+const startRestAPI = require('csgo-tracker-restapi');
+startRestAPI(path.join(__dirname, '..', 'stats.db'));
 
 function createWindow() {
   const PROTOCOL = 'file';
   protocol.interceptFileProtocol(PROTOCOL, (request, callback) => {
     let url = request.url.substr(PROTOCOL.length + 1);
-    url = path.join(__dirname, '..', 'webapp', 'dist', url);
+    url = path.join(__dirname, 'resources', url);
     url = path.normalize(url);
     callback({ path: url });
   });
