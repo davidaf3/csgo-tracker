@@ -31,6 +31,6 @@ jobs:
       - name: Upload electronapp
         run: Compress-Archive .\dist\ csgo-tracker.zip
         uses: actions/upload-artifact@v2
-          with:
-            name: csgo-tracker.zip
-            path: csgo-tracker.zip
+        with:
+          name: csgo-tracker.zip
+          path: csgo-tracker.zip
