@@ -7,6 +7,9 @@ on:
 jobs:
   build-electronapp:
     runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: electronapp
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
@@ -14,7 +17,7 @@ jobs:
           node-version: 14
       - name: Install restapi dependencies
         run: |
-          cd restapi
+          cd ..\restapi
           npm ci; echo "${{secrets.RESTAPI_SECRETS}}"
           Out-File secrets.js
       - name: Install webapp dependencies
@@ -25,7 +28,6 @@ jobs:
         run: npm run build
       - name: Install electronapp dependencies
         run: |
-          cd ..\electronapp
           npm ci
           xcopy /s ..\webapp\dist resources
       - name: Build electronapp
