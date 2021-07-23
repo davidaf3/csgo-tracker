@@ -36,7 +36,7 @@ jobs:
       - name: Build electronapp
         run: npm run dist
       - name: Compress electronapp
-        run: Compress-Archive .\dist\ csgo-tracker.zip
+        run: 7z a -tzip csgo-tracker.zip .\dist\*
       - name: Upload electronapp
         uses: actions/upload-artifact@v2
         with:
