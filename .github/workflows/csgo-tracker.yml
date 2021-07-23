@@ -18,8 +18,8 @@ jobs:
       - name: Install restapi dependencies
         run: |
           cd ..\restapi
-          npm ci; echo "${{secrets.RESTAPI_SECRETS}}"
-          Out-File secrets.js
+          npm ci
+          echo "${{secrets.RESTAPI_SECRETS}}" | Out-File secrets.js
       - name: Install webapp dependencies
         run: |
           cd ..\webapp
