@@ -29,6 +29,7 @@ jobs:
           node-version: 14
       - run: npm ci
   build-electronapp:
+    needs: [build-restapi, build-webapp]
     runs-on: windows-latest
     defaults:
       run:
