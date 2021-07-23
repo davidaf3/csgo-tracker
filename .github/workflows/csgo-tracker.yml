@@ -25,7 +25,9 @@ jobs:
           cd ..\webapp
           npm ci
       - name: Build webapp
-        run: npm run build
+        run: |
+          cd ..\webapp
+          npm run build
       - name: Install electronapp dependencies
         run: |
           npm ci
