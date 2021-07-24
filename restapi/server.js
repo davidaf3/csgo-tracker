@@ -22,8 +22,11 @@ app.use((req, res, next) => {
 const Matches = require('./models/match');
 const Rounds = require('./models/round');
 
-require('./routes/rgame')(app, Matches, Rounds);
-require('./routes/rmatch')(app, Matches, Rounds);
+const matchService = require('./services/matchService');
+const roundService = require('./services/roundService');
+
+require('./routes/rgame')(app, matchService, roundService);
+require('./routes/rmatch')(app, matchService, roundService);
 require('./routes/rsteamapi')(app);
 
 /**
@@ -33,7 +36,9 @@ require('./routes/rsteamapi')(app);
 module.exports = (dbFile) => {
   Matches.init(dbFile);
   Rounds.init(dbFile);
-  console.log(dbFile);
+
+  matchService.init(Matches);
+  roundService.init(Rounds);
 
   fs.access(dbFile)
     .then(() => app.listen(8090, () => console.log('Server started')))

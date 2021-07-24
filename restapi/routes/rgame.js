@@ -1,13 +1,11 @@
-const matchService = require('../services/matchService');
-const roundService = require('../services/roundService');
-
-module.exports = (app, Matches, Rounds) => {
-  matchService.init(Matches);
-  roundService.init(Rounds);
-
+module.exports = (app, matchService, roundService) => {
   app.post('/game', (req, res) => {
     // Match start
-    if (req.body.added?.player?.match_stats) {
+    if (
+      !matchService.getCurrentMatch() &&
+      req.body.added?.player?.match_stats &&
+      req.body.map.mode === 'competitive'
+    ) {
       console.log('MATCH STARTED');
       matchService.createMatch({
         playerId: req.body.player.steamid,
@@ -20,14 +18,15 @@ module.exports = (app, Matches, Rounds) => {
         killshs: 0,
         ...req.body.player.match_stats,
       });
+      roundService.setNextRoundInitMoney(800);
     }
 
     // Round start
     if (
+      matchService.getCurrentMatch() &&
       req.body.previously?.round?.phase === 'freezetime' &&
       req.body.round?.phase === 'live' &&
-      req.body.map?.phase !== 'warmup' &&
-      matchService.getCurrentMatch()
+      req.body.map?.phase !== 'warmup'
     ) {
       console.log('ROUND STARTED');
       const round = {
@@ -45,11 +44,12 @@ module.exports = (app, Matches, Rounds) => {
 
     // Player death
     if (
+      matchService.getCurrentMatch() &&
+      roundService.getCurrentRound() &&
       req.body.player?.state?.health === 0 &&
       req.body.previously?.player?.state?.health > 0 &&
       req.body.player?.steamid === matchService.getCurrentMatch()?.playerId &&
-      req.body.map?.phase !== 'warmup' &&
-      roundService.getCurrentRound()
+      req.body.map?.phase !== 'warmup'
     ) {
       console.log('YOU DIED');
       const roundInfo = {
@@ -79,11 +79,12 @@ module.exports = (app, Matches, Rounds) => {
 
     // Round end
     if (
+      matchService.getCurrentMatch() &&
+      roundService.getCurrentRound() &&
       req.body.previously?.round?.phase === 'over' &&
       req.body.round?.phase === 'freezetime' &&
       req.body.map?.round > 0 &&
-      req.body.map?.phase !== 'warmup' &&
-      roundService.getCurrentRound()
+      req.body.map?.phase !== 'warmup'
     ) {
       console.log('ROUND ENDED');
       const winString = req.body.map.round_wins
@@ -144,6 +145,7 @@ module.exports = (app, Matches, Rounds) => {
 
     // Match end and last round end
     if (
+      matchService.getCurrentMatch() &&
       req.body.map?.phase === 'gameover' &&
       req.body.previously?.map?.phase === 'live'
     ) {
@@ -233,14 +235,15 @@ module.exports = (app, Matches, Rounds) => {
 
       console.log('MATCH OVER');
       matchService.saveCurrentMatch();
-      roundService.setNextRoundInitMoney(800);
+      matchService.closeCurrentMatch();
     }
 
     // Match quit
-    if (req.body.previously?.map === true && matchService.getCurrentMatch()) {
+    if (matchService.getCurrentMatch() && req.body.previously?.map === true) {
       console.log('QUIT');
       if (!matchService.getCurrentMatch().over) {
         matchService.deleteMatch(matchService.getCurrentMatch().id);
+        matchService.closeCurrentMatch();
       }
     }
 

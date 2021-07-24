@@ -1,10 +1,4 @@
-const matchService = require('../services/matchService');
-const roundService = require('../services/roundService');
-
-module.exports = (app, Matches, Rounds) => {
-  matchService.init(Matches);
-  roundService.init(Rounds);
-
+module.exports = (app, matchService, roundService) => {
   app.get('/match', async (req, res) => {
     try {
       const matches = await matchService.findAll();

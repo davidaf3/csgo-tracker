@@ -79,6 +79,13 @@ module.exports = {
   },
 
   /**
+   * Closes the current match
+   */
+  closeCurrentMatch() {
+    this.currentMatch = null;
+  },
+
+  /**
    * Deletes a match by id
    * @param {string} id match id
    */
