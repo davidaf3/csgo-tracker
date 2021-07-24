@@ -90,9 +90,6 @@
       <MoneyChart :rounds="rounds" />
       <RoundsChart
         :rounds="rounds"
-        :max-kills-per-round="match.mode === 'casual' ? 10 : 5"
-        :has-half-time="match.mode === 'competitive'"
-        :half-time-round="match.mode === 'competitive' ? 15 : null"
         :select-round="setSelectedRound"
       />
     </div>

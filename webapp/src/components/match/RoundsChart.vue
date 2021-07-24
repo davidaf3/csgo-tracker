@@ -23,10 +23,7 @@
       <g v-for="round in rounds" :key="round.n" @click="selectRound(round.n)">
         <rect
           v-if="round.winner == round.team"
-          :x="
-            20 * (round.n - 1) +
-              (hasHalfTime && round.n > halfTimeRound ? 3 : 0)
-          "
+          :x="20 * (round.n - 1) + (round.n > halfTimeRound ? 3 : 0)"
           y="40"
           width="20"
           :fill="`url(#${round.team}Grad)`"
@@ -43,10 +40,7 @@
         </rect>
         <rect
           v-if="round.winner != round.team"
-          :x="
-            20 * (round.n - 1) +
-              (hasHalfTime && round.n > halfTimeRound ? 3 : 0)
-          "
+          :x="20 * (round.n - 1) + (round.n > halfTimeRound ? 3 : 0)"
           y="-40"
           width="20"
           fill="url(#deathGrad)"
@@ -66,11 +60,7 @@
           <image
             v-for="kill in roundToKills(round)"
             :key="kill.n"
-            :x="
-              20 * (round.n - 1) +
-                3 +
-                (hasHalfTime && round.n > halfTimeRound ? 3 : 0)
-            "
+            :x="20 * (round.n - 1) + 3 + (round.n > halfTimeRound ? 3 : 0)"
             :y="-(kill.n * 20 + 57)"
             transform="scale(1,-1)"
             width="14"
@@ -79,11 +69,7 @@
           />
           <image
             v-if="round.died"
-            :x="
-              20 * (round.n - 1) +
-                3 +
-                (hasHalfTime && round.n > halfTimeRound ? 3 : 0)
-            "
+            :x="20 * (round.n - 1) + 3 + (round.n > halfTimeRound ? 3 : 0)"
             y="-37"
             transform="scale(1,-1)"
             width="14"
@@ -91,7 +77,7 @@
             href="/img/death.png"
           />
         </g>
-        <g v-if="hasHalfTime && round.n === halfTimeRound">
+        <g v-if="round.n === halfTimeRound">
           <line
             :x1="20 * round.n + 1.5"
             y1="20"
@@ -131,23 +117,16 @@
         type: Array,
         required: true,
       },
-      maxKillsPerRound: {
-        type: Number,
-        required: true,
-      },
-      hasHalfTime: {
-        type: Boolean,
-        required: true,
-      },
-      halfTimeRound: {
-        type: Number,
-        required: false,
-        default: 0,
-      },
       selectRound: {
         type: Function,
         required: true,
       },
+    },
+    data() {
+      return {
+        maxKillsPerRound: 5,
+        halfTimeRound: 15,
+      };
     },
     updated() {
       this.platyAnimation();
