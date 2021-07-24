@@ -90,13 +90,12 @@
       alignCharts() {
         const yScaleWidth = Math.floor(chart.scales.y.width);
 
-        document.getElementById(
-          'roundsChart'
-        ).style.marginLeft = `${yScaleWidth - 10}px`;
+         const roundsChart = document.getElementById('roundsChart');
+        roundsChart.style.margin = `0 ${yScaleWidth - 10}px`;
 
-        document.getElementById('chartContainer').style.width = `${this.rounds
-          .length *
-          20 -
+        const moneyChartContainer = document.getElementById('chartContainer');
+        moneyChartContainer.style.marginRight = `${yScaleWidth - 10}px`;
+        moneyChartContainer.style.width = `${this.rounds.length * 20 -
           10 +
           yScaleWidth}px`;
       },

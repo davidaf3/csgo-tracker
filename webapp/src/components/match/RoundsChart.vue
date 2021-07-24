@@ -22,7 +22,7 @@
     <g :transform="`scale(1,-1) translate(0,-${20 * maxKillsPerRound + 40})`">
       <g v-for="round in rounds" :key="round.n" @click="selectRound(round.n)">
         <rect
-          v-if="round.winner == round.team"
+          v-if="round.winner === round.team"
           :x="20 * (round.n - 1) + (round.n > halfTimeRound ? 3 : 0)"
           y="40"
           width="20"
@@ -39,7 +39,7 @@
           />
         </rect>
         <rect
-          v-if="round.winner != round.team"
+          v-if="round.winner !== round.team"
           :x="20 * (round.n - 1) + (round.n > halfTimeRound ? 3 : 0)"
           y="-40"
           width="20"
