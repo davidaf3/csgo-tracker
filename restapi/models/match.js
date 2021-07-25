@@ -17,6 +17,7 @@ module.exports = {
    * @property {number} deaths number of deaths
    * @property {number} mvps number of mvps won
    * @property {number} score score of the player
+   * @property {boolean} over whether the match is over or not
    */
 
   /**
@@ -35,8 +36,8 @@ module.exports = {
     const db = new Database(this.dbFile);
     db.prepare(
       'INSERT INTO Matches ' +
-        '(id, player_id, map, mode, date, duration_seconds, rounds_won, rounds_lost, kills, killshs, deaths, assists, score, mvps)' +
-        'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+        '(id, player_id, map, mode, date, duration_seconds, rounds_won, rounds_lost, kills, killshs, deaths, assists, score, mvps, over) ' +
+        'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
     )
       .bind([
         match.id,
@@ -53,6 +54,7 @@ module.exports = {
         match.assists,
         match.score,
         match.mvps,
+        match.over,
       ])
       .run()
       .finalize();
@@ -67,7 +69,7 @@ module.exports = {
     const db = new Database(this.dbFile);
     db.prepare(
       'UPDATE Matches SET player_id = ?, map = ?, mode = ?, date = ?, duration_seconds = ?, rounds_won = ?, ' +
-        'rounds_lost = ?, kills = ?, killshs = ?, deaths = ?, assists = ?, score = ?, mvps = ?' +
+        'rounds_lost = ?, kills = ?, killshs = ?, deaths = ?, assists = ?, score = ?, mvps = ?, over = ? ' +
         'WHERE id = ?'
     )
       .bind([
@@ -84,6 +86,7 @@ module.exports = {
         match.assists,
         match.score,
         match.mvps,
+        match.over,
         match.id,
       ])
       .run()
@@ -163,6 +166,7 @@ module.exports = {
       assists: row.assists,
       score: row.score,
       mvps: row.mvps,
+      over: row.over === 1,
     };
   },
 };

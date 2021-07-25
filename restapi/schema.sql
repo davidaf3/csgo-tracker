@@ -14,7 +14,8 @@ create table Matches(
     deaths NUMBER not null,
     assists NUMBER not null,
     score NUMBER not null,
-    mvps NUMBER not null
+    mvps NUMBER not null,
+    over NUMBER not null,
 );
 
 create table Rounds(

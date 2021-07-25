@@ -14,6 +14,7 @@
  * @property {number} deaths number of deaths
  * @property {number} mvps number of mvps won
  * @property {number} score score of the player
+ * @property {boolean} over wheter the match is over or not
  */
 
 /**

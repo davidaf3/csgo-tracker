@@ -28,8 +28,9 @@ module.exports = (app, matchService, roundService) => {
 
   app.get('/match/:id/round', async (req, res) => {
     try {
-      const rounds = await roundService.findByMatch(req.params.id);
-      if (rounds.length > 0) {
+      const match = await matchService.findById(req.params.id);
+      if (match) {
+        const rounds = await roundService.findByMatch(req.params.id);
         res.status(200);
         res.json(rounds);
       } else {
