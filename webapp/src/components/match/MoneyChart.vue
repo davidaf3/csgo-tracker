@@ -20,12 +20,13 @@
     },
     watch: {
       rounds() {
-        if (chart === null) {
-          this.createChart();
-          return;
-        }
         this.updateChart();
       },
+    },
+    mounted() {
+      if (chart === null) {
+        this.createChart();
+      }
     },
     unmounted() {
       chart.destroy();
@@ -90,7 +91,7 @@
       alignCharts() {
         const yScaleWidth = Math.floor(chart.scales.y.width);
 
-         const roundsChart = document.getElementById('roundsChart');
+        const roundsChart = document.getElementById('roundsChart');
         roundsChart.style.margin = `0 ${yScaleWidth - 10}px`;
 
         const moneyChartContainer = document.getElementById('chartContainer');

@@ -12,26 +12,11 @@
       </div>
       <div class="matchInfoBox">
         <h5>Mode</h5>
-        <span>{{
-          match.mode.charAt(0).toUpperCase() + match.mode.slice(1)
-        }}</span>
+        <span>{{ capitalizedGameMode }}</span>
       </div>
       <div class="matchInfoBox">
         <h5>Date</h5>
-        <span>
-          {{
-            matchDate.toLocaleDateString('en', {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric',
-            })
-          }},
-          {{
-            matchDate
-              .toLocaleTimeString()
-              .slice(0, matchDate.toLocaleTimeString().lastIndexOf(':'))
-          }}
-        </span>
+        <span>{{ formattedDate }}</span>
       </div>
       <div class="matchInfoBox">
         <h5>Duration</h5>
@@ -65,33 +50,18 @@
             <td>{{ match.kills }}</td>
             <td>{{ match.assists }}</td>
             <td>{{ match.deaths }}</td>
-            <td>
-              {{
-                Math.round(
-                  (match.kills / match.deaths + Number.EPSILON) * 100
-                ) / 100
-              }}
-            </td>
-            <td>
-              {{
-                Math.round(
-                  ((match.killshs / match.kills) * 100 + Number.EPSILON) * 100
-                ) / 100
-              }}%
-            </td>
+            <td>{{ kdr }}</td>
+            <td>{{ hsPerCent }}%</td>
             <td>{{ match.mvps }}</td>
             <td>{{ match.score }}</td>
           </tr>
         </tbody>
       </table>
     </div>
-    <div id="rounds">
+    <div v-if="rounds.length > 0" id="rounds">
       <h5>Rounds</h5>
       <MoneyChart :rounds="rounds" />
-      <RoundsChart
-        :rounds="rounds"
-        :select-round="setSelectedRound"
-      />
+      <RoundsChart :rounds="rounds" :select-round="setSelectedRound" />
     </div>
     <div v-if="selectedRound" id="selectedRound">
       <h5>Round {{ selectedRound }}</h5>
@@ -104,7 +74,7 @@
             Winner: {{ rounds[selectedRound - 1].winner }}
           </li>
           <li class="list-group-item">
-            Win type: {{ parseWinType(rounds[selectedRound - 1].winType) }}
+            Win type: {{ winType }}
           </li>
           <li class="list-group-item">
             Duration: {{ Math.round(rounds[selectedRound - 1].duration) }} s
@@ -174,6 +144,45 @@
         matchDate: new Date(this.match.date),
       };
     },
+    computed: {
+      capitalizedGameMode() {
+        return this.match.mode.charAt(0).toUpperCase() + this.match.mode.slice(1);
+      },
+      formattedDate() {
+        const dateString = this.matchDate.toLocaleDateString('en', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+        });
+        const timeString = this.matchDate
+          .toLocaleTimeString()
+          .slice(0, this.matchDate.toLocaleTimeString().lastIndexOf(':'));
+
+        return `${dateString},${timeString}`;
+      },
+      kdr() {
+        return (
+          Math.round(
+            (this.match.kills /
+              (this.match.deaths > 0 ? this.match.deaths : 1) +
+              Number.EPSILON) *
+              100
+          ) / 100
+        );
+      },
+      hsPerCent() {
+        return this.match.kills > 0
+          ? Math.round(
+              ((this.match.killshs / this.match.kills) * 100 + Number.EPSILON) *
+                100
+            ) / 100
+          : 0;
+      },
+      winType() {
+        const parsedWinType = this.rounds[this.selectedRound - 1].winType.split('_')[2];
+        return parsedWinType.charAt(0).toUpperCase() + parsedWinType.slice(1);
+      },
+    },
     watch: {
       match() {
         this.updateRounds();
@@ -199,10 +208,6 @@
       },
       setSelectedRound(nRound) {
         this.selectedRound = nRound;
-      },
-      parseWinType(winType) {
-        const parsedWinType = winType.split('_')[2];
-        return parsedWinType.charAt(0).toUpperCase() + parsedWinType.slice(1);
       },
     },
   };
@@ -256,15 +261,15 @@
     align-items: flex-start;
     margin-bottom: 2em;
   }
-  #selectedRoundInfo ul{
+  #selectedRoundInfo ul {
     margin-right: 2em;
   }
-  #selectedRoundInfo ul:last-child{
+  #selectedRoundInfo ul:last-child {
     margin-right: 0;
   }
   .list-group-item {
     color: white;
     background-color: #282c34;
-    border-color: rgba(255, 255, 255, 0.250);
+    border-color: rgba(255, 255, 255, 0.25);
   }
 </style>

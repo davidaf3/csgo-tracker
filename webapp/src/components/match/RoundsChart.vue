@@ -23,7 +23,7 @@
       <g v-for="round in rounds" :key="round.n" @click="selectRound(round.n)">
         <rect
           v-if="round.winner === round.team"
-          :x="20 * (round.n - 1) + (round.n > halfTimeRound ? 3 : 0)"
+          :x="getRectX(round.n)"
           y="40"
           width="20"
           :fill="`url(#${round.team}Grad)`"
@@ -40,7 +40,7 @@
         </rect>
         <rect
           v-if="round.winner !== round.team"
-          :x="20 * (round.n - 1) + (round.n > halfTimeRound ? 3 : 0)"
+          :x="getRectX(round.n)"
           y="-40"
           width="20"
           fill="url(#deathGrad)"
@@ -60,7 +60,7 @@
           <image
             v-for="kill in roundToKills(round)"
             :key="kill.n"
-            :x="20 * (round.n - 1) + 3 + (round.n > halfTimeRound ? 3 : 0)"
+            :x="getImgX(round.n)"
             :y="-(kill.n * 20 + 57)"
             transform="scale(1,-1)"
             width="14"
@@ -69,7 +69,7 @@
           />
           <image
             v-if="round.died"
-            :x="20 * (round.n - 1) + 3 + (round.n > halfTimeRound ? 3 : 0)"
+            :x="getImgX(round.n)"
             y="-37"
             transform="scale(1,-1)"
             width="14"
@@ -122,15 +122,20 @@
         required: true,
       },
     },
-    data() {
+    setup() {
       return {
         maxKillsPerRound: 5,
         halfTimeRound: 15,
       };
     },
+    mounted() {
+      this.platyAnimation();
+    },
+
     updated() {
       this.platyAnimation();
     },
+
     methods: {
       platyAnimation() {
         document
@@ -167,6 +172,12 @@
       },
       showHalfMark() {
         document.querySelector('#halfMark').style.visibility = 'visible';
+      },
+      getRectX(nRound) {
+        return 20 * (nRound - 1) + (nRound > this.halfTimeRound ? 3 : 0);
+      },
+      getImgX(nRound) {
+        return 20 * (nRound - 1) + 3 + (nRound > this.halfTimeRound ? 3 : 0);
       },
     },
   };

@@ -11,25 +11,11 @@
           {{ match.map }}
         </div>
         <div class="img-top-right">
-          {{ match.mode.charAt(0).toUpperCase() + match.mode.slice(1) }}
+          {{ capitalizedGameMode }}
         </div>
         <div class="img-center">
-          <p>
-            {{
-              matchDate.toLocaleDateString('en', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-              })
-            }}
-          </p>
-          <p>
-            {{
-              matchDate
-                .toLocaleTimeString()
-                .slice(0, matchDate.toLocaleTimeString().lastIndexOf(':'))
-            }}
-          </p>
+          <p>{{ formattedMatchDate }}</p>
+          <p>{{ formattedMatchTime }}</p>
         </div>
       </div>
       <div class="col card-right">
@@ -39,7 +25,14 @@
         <div v-if="selected" class="card-body-selected"></div>
         <div v-else class="card-body">
           <p>{{ match.roundsWon }} - {{ match.roundsLost }}</p>
-          <p>{{ Math.round(match.duration / 60) }} min</p>
+          <p v-if="match.over">{{ Math.round(match.duration / 60) }} min</p>
+          <p v-else>
+            <img
+              src="img/match-in-progress.svg"
+              alt="In progress"
+              height="20"
+            />
+          </p>
         </div>
       </div>
     </div>
@@ -59,21 +52,47 @@
         default: false,
       },
     },
-    data() {
-      let matchClass = 'bg-secondary';
-      let matchResult = 'Tie';
-      if (this.match.roundsWon > this.match.roundsLost) {
-        matchClass = 'bg-success';
-        matchResult = 'Victory';
-      } else if (this.match.roundsWon < this.match.roundsLost) {
-        matchClass = 'bg-danger';
-        matchResult = 'Defeat';
-      }
+    setup(props) {
       return {
-        matchClass,
-        matchResult,
-        matchDate: new Date(this.match.date),
+        matchDate: new Date(props.match.date),
       };
+    },
+    computed: {
+      capitalizedGameMode() {
+        return (
+          this.match.mode.charAt(0).toUpperCase() + this.match.mode.slice(1)
+        );
+      },
+      formattedMatchDate() {
+        return this.matchDate.toLocaleDateString('en', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+        });
+      },
+      formattedMatchTime() {
+        return this.matchDate
+          .toLocaleTimeString()
+          .slice(0, this.matchDate.toLocaleTimeString().lastIndexOf(':'));
+      },
+      matchClass() {
+        if (this.match.roundsWon > this.match.roundsLost) {
+          return 'bg-success';
+        }
+        if (this.match.roundsWon < this.match.roundsLost) {
+          return 'bg-danger';
+        }
+        return 'bg-secondary';
+      },
+      matchResult() {
+        if (this.match.roundsWon > this.match.roundsLost) {
+          return 'Victory';
+        }
+        if (this.match.roundsWon < this.match.roundsLost) {
+          return 'Defeat';
+        }
+        return 'Tie';
+      },
     },
   };
 </script>
