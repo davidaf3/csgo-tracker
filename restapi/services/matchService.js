@@ -26,6 +26,7 @@ module.exports = {
    *    mvps: number,
    *    score: number,
    * }} match match info
+   * @returns {Promise} promise that resolves when the match is created
    */
   createMatch(match) {
     this.currentMatch = {
@@ -33,7 +34,7 @@ module.exports = {
       date: new Date(),
       ...match,
     };
-    this.Matches.add(this.currentMatch);
+    return this.Matches.add(this.currentMatch);
   },
 
   /**
@@ -72,9 +73,10 @@ module.exports = {
 
   /**
    * Saves the current match
+   * @returns {Promise} promise that resolves when the match is saved
    */
   saveCurrentMatch() {
-    this.Matches.update(this.currentMatch);
+    return this.Matches.update(this.currentMatch);
   },
 
   /**

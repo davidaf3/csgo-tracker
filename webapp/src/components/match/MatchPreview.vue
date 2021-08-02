@@ -76,6 +76,9 @@
           .slice(0, this.matchDate.toLocaleTimeString().lastIndexOf(':'));
       },
       matchClass() {
+        if (!this.match.over) {
+          return 'bg-primary';
+        }
         if (this.match.roundsWon > this.match.roundsLost) {
           return 'bg-success';
         }
@@ -85,6 +88,9 @@
         return 'bg-secondary';
       },
       matchResult() {
+        if (!this.match.over) {
+          return 'Live';
+        }
         if (this.match.roundsWon > this.match.roundsLost) {
           return 'Victory';
         }

@@ -97,9 +97,10 @@ module.exports = {
 
   /**
    * Saves the current round
+   * @returns {Promise} promise that resolves when the round is saved
    */
   saveCurrentRound() {
-    this.Rounds.add(this.currentRound);
+    return this.Rounds.add(this.currentRound);
   },
 
   /**

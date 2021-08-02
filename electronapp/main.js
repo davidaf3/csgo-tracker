@@ -3,6 +3,7 @@ const path = require('path');
 
 // Start express app
 const startRestAPI = require('csgo-tracker-restapi');
+
 startRestAPI(path.join(__dirname, '..', 'stats.db'));
 
 function createWindow() {

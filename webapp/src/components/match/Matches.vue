@@ -16,9 +16,11 @@
 </template>
 
 <script>
-  import { getMatches } from '../../api/api';
+  import { getMatches, getMatch } from '../../api/api';
   import MatchPreview from './MatchPreview.vue';
   import MatchDetails from './MatchDetails.vue';
+
+  const socket = new WebSocket('ws://localhost:8090');
 
   export default {
     name: 'Matches',
@@ -33,13 +35,61 @@
       };
     },
     created() {
-      getMatches().then(matches => {
-        this.matches = matches;
-      });
+      this.updateMatches();
+      socket.addEventListener('message', this.onWsMessage.bind(this));
+
+      this.wsMessageCallbacks = new Map();
+      this.wsMessageCallbacks.set('match started', this.retrieveAndAddMatch);
+      this.wsMessageCallbacks.set('round ended', this.retrieveAndUpdateMatch);
+      this.wsMessageCallbacks.set('quit', this.removeMatchIfNotOver);
     },
     methods: {
+      updateMatches() {
+        getMatches().then(matches => {
+          this.matches = matches;
+        });
+      },
       selectMatch(match) {
         this.selectedMatch = match;
+      },
+      onWsMessage(message) {
+        const { gameEvent, matchId } = JSON.parse(message.data);
+        const callback = this.wsMessageCallbacks.get(gameEvent);
+        if (callback) callback(matchId);
+      },
+      async retrieveAndAddMatch(matchId) {
+        const newMatch = await getMatch(matchId);
+        if (newMatch) this.matches.unshift(newMatch);
+      },
+      async retrieveAndUpdateMatch(matchId) {
+        const updatedMatch = await getMatch(matchId);
+        const matchIndex = this.matches.findIndex(
+          match => match.id === matchId
+        );
+
+        if (updatedMatch && matchIndex >= 0) {
+          this.matches[matchIndex] = updatedMatch;
+
+          // Check if the updated match is the currently selected match
+          if (this.selectedMatch.id === matchId) {
+            this.selectedMatch = updatedMatch;
+          }
+        }
+      },
+      removeMatchIfNotOver(matchId) {
+        const matchIndex = this.matches.findIndex(
+          match => match.id === matchId
+        );
+
+        // Remove the match if it is not over
+        if (matchIndex >= 0 && !this.matches[matchIndex].over) {
+          this.matches.splice(matchIndex, 1);
+
+          // Check if the removed match is the currently selected match
+          if (this.selectedMatch.id === matchId) {
+            this.selectedMatch = null;
+          }
+        }
       },
     },
   };

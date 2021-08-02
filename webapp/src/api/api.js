@@ -33,6 +33,22 @@ export async function getMatches() {
 }
 
 /**
+ * Gets a match
+ * @param {string} id match id
+ * @return {Promise<Match>} match
+ */
+ export async function getMatch(id) {
+  try {
+    const response = await fetch(`http://localhost:8090/match/${id}`, {
+      method: 'GET',
+    });
+    return await response.json();
+  } catch (err) {
+    return null;
+  }
+}
+
+/**
  * @typedef {Object} Round
  * @property {string} id id of the round
  * @property {string} matchId id of the match

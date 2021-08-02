@@ -1,4 +1,8 @@
+const EventEmitter = require('events');
+
 module.exports = (app, matchService, roundService) => {
+  const gameEventEmitter = new EventEmitter();
+
   app.post('/game', (req, res) => {
     // Match start
     if (
@@ -7,17 +11,27 @@ module.exports = (app, matchService, roundService) => {
       req.body.map.mode === 'competitive'
     ) {
       console.log('MATCH STARTED');
-      matchService.createMatch({
-        playerId: req.body.player.steamid,
-        map: req.body.map.name,
-        mode: req.body.map.mode,
-        duration: 0,
-        over: false,
-        roundsWon: 0,
-        roundsLost: 0,
-        killshs: 0,
-        ...req.body.player.match_stats,
-      });
+
+      matchService
+        .createMatch({
+          playerId: req.body.player.steamid,
+          map: req.body.map.name,
+          mode: req.body.map.mode,
+          duration: 0,
+          over: false,
+          roundsWon: 0,
+          roundsLost: 0,
+          killshs: 0,
+          ...req.body.player.match_stats,
+        })
+        .then(() => {
+          gameEventEmitter.emit(
+            'game-event',
+            'match started',
+            matchService.getCurrentMatch().id
+          );
+        });
+
       roundService.setNextRoundInitMoney(800);
     }
 
@@ -29,6 +43,7 @@ module.exports = (app, matchService, roundService) => {
       req.body.map?.phase !== 'warmup'
     ) {
       console.log('ROUND STARTED');
+
       const round = {
         matchId: matchService.getCurrentMatch().id,
         n: req.body.map.round + 1,
@@ -40,6 +55,12 @@ module.exports = (app, matchService, roundService) => {
         killshs: 0,
       };
       roundService.createRound(round);
+
+      gameEventEmitter.emit(
+        'game-event',
+        'round started',
+        matchService.getCurrentMatch().id
+      );
     }
 
     // Player death
@@ -52,12 +73,10 @@ module.exports = (app, matchService, roundService) => {
       req.body.map?.phase !== 'warmup'
     ) {
       console.log('YOU DIED');
+
       const roundInfo = {
         died: true,
-        // TODO check if I need to add saved headshots
-        killshs:
-          (req.body.player.state.round_killhs ?? 0) +
-          (roundService.getCurrentRound().killshs ?? 0),
+        killshs: req.body.player.state.round_killhs ?? 0,
         kills:
           req.body.player.match_stats.kills -
           matchService.getCurrentMatch().kills,
@@ -75,6 +94,12 @@ module.exports = (app, matchService, roundService) => {
       matchService.updateCurrentMatch({
         deaths: matchService.getCurrentMatch().deaths + 1,
       });
+
+      gameEventEmitter.emit(
+        'game-event',
+        'you died',
+        matchService.getCurrentMatch().id
+      );
     }
 
     // Round end
@@ -87,6 +112,7 @@ module.exports = (app, matchService, roundService) => {
       req.body.map?.phase !== 'warmup'
     ) {
       console.log('ROUND ENDED');
+
       const winString = req.body.map.round_wins
         ? req.body.map.round_wins[req.body.map.round.toString()]
         : `${req.body.round.win_team.toLowerCase()}_win`;
@@ -113,7 +139,6 @@ module.exports = (app, matchService, roundService) => {
       };
 
       // Add hs if the previous player was the main player
-      // TODO check if hs are added twice (if the player dies but the steamid does not change)
       if (
         !req.body.previously?.player?.steamid &&
         req.body.previously?.player?.state?.round_killhs
@@ -122,7 +147,6 @@ module.exports = (app, matchService, roundService) => {
       }
 
       roundService.updateCurrentRound(roundInfo);
-      roundService.saveCurrentRound();
 
       matchService.updateCurrentMatch({
         killshs:
@@ -138,6 +162,21 @@ module.exports = (app, matchService, roundService) => {
         roundsLost:
           matchService.getCurrentMatch().roundsLost +
           (roundInfo.winner !== roundService.getCurrentRound().team ? 1 : 0),
+        duration:
+          (new Date().getTime() -
+            matchService.getCurrentMatch().date.getTime()) /
+          1000,
+      });
+
+      Promise.all([
+        roundService.saveCurrentRound(),
+        matchService.saveCurrentMatch(),
+      ]).then(() => {
+        gameEventEmitter.emit(
+          'game-event',
+          'round ended',
+          matchService.getCurrentMatch().id
+        );
       });
 
       roundService.setNextRoundInitMoney(req.body.player.state.money);
@@ -150,6 +189,7 @@ module.exports = (app, matchService, roundService) => {
       req.body.previously?.map?.phase === 'live'
     ) {
       console.log('ROUND ENDED');
+
       const winString = req.body.map.round_wins
         ? req.body.map.round_wins[req.body.map.round.toString()]
         : `${req.body.round.win_team.toLowerCase()}_win`;
@@ -178,7 +218,6 @@ module.exports = (app, matchService, roundService) => {
         };
 
         matchStats = {
-          // TODO check if hs are added twice (if the player dies but the steamid does not change)
           killshs: matchService.getCurrentMatch().killshs + roundStats.killshs,
           kills: req.body.player.match_stats.kills,
           assists: req.body.player.match_stats.assists,
@@ -231,18 +270,38 @@ module.exports = (app, matchService, roundService) => {
           1000,
       });
       roundService.updateCurrentRound(roundInfo);
-      roundService.saveCurrentRound();
+      Promise.all([
+        roundService.saveCurrentRound(),
+        matchService.saveCurrentMatch(),
+      ]).then(() => {
+        gameEventEmitter.emit(
+          'game-event',
+          'round ended',
+          matchService.getCurrentMatch().id
+        );
+      });
 
       console.log('MATCH OVER');
-      matchService.saveCurrentMatch();
+      gameEventEmitter.emit(
+        'game-event',
+        'match over',
+        matchService.getCurrentMatch().id
+      );
+
       matchService.closeCurrentMatch();
     }
 
     // Match quit
     if (matchService.getCurrentMatch() && req.body.previously?.map === true) {
       console.log('QUIT');
+
       if (!matchService.getCurrentMatch().over) {
         matchService.deleteMatch(matchService.getCurrentMatch().id);
+        gameEventEmitter.emit(
+          'game-event',
+          'quit',
+          matchService.getCurrentMatch().id
+        );
         matchService.closeCurrentMatch();
       }
     }
@@ -257,4 +316,6 @@ module.exports = (app, matchService, roundService) => {
 
     res.sendStatus(200);
   });
+
+  return gameEventEmitter;
 };

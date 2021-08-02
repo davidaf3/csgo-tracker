@@ -158,7 +158,7 @@
           .toLocaleTimeString()
           .slice(0, this.matchDate.toLocaleTimeString().lastIndexOf(':'));
 
-        return `${dateString},${timeString}`;
+        return `${dateString}, ${timeString}`;
       },
       kdr() {
         return (

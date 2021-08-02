@@ -31,67 +31,81 @@ module.exports = {
   /**
    * Adds a match
    * @param {Match} match match to add
+   * @returns {Promise} promise that resolves when the match is added
    */
   add(match) {
     const db = new Database(this.dbFile);
-    db.prepare(
-      'INSERT INTO Matches ' +
-        '(id, player_id, map, mode, date, duration_seconds, rounds_won, rounds_lost, kills, killshs, deaths, assists, score, mvps, over) ' +
-        'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
-    )
-      .bind([
-        match.id,
-        match.playerId,
-        match.map,
-        match.mode,
-        match.date.toISOString(),
-        match.duration,
-        match.roundsWon,
-        match.roundsLost,
-        match.kills,
-        match.killshs,
-        match.deaths,
-        match.assists,
-        match.score,
-        match.mvps,
-        match.over,
-      ])
-      .run()
-      .finalize();
-    db.close();
+    return new Promise((resolve, reject) => {
+      const statement = db.prepare(
+        'INSERT INTO Matches ' +
+          '(id, player_id, map, mode, date, duration_seconds, rounds_won, rounds_lost, kills, killshs, deaths, assists, score, mvps, over) ' +
+          'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+      );
+      statement
+        .bind([
+          match.id,
+          match.playerId,
+          match.map,
+          match.mode,
+          match.date.toISOString(),
+          match.duration,
+          match.roundsWon,
+          match.roundsLost,
+          match.kills,
+          match.killshs,
+          match.deaths,
+          match.assists,
+          match.score,
+          match.mvps,
+          match.over,
+        ])
+        .run((err) => {
+          statement.finalize();
+          db.close();
+          if (err) reject(err);
+          resolve();
+        });
+    });
   },
 
   /**
    * Updates a match
    * @param {Match} match updated match
+   * @returns {Promise} promise that resolves when the update is done
    */
   update(match) {
     const db = new Database(this.dbFile);
-    db.prepare(
-      'UPDATE Matches SET player_id = ?, map = ?, mode = ?, date = ?, duration_seconds = ?, rounds_won = ?, ' +
-        'rounds_lost = ?, kills = ?, killshs = ?, deaths = ?, assists = ?, score = ?, mvps = ?, over = ? ' +
-        'WHERE id = ?'
-    )
-      .bind([
-        match.playerId,
-        match.map,
-        match.mode,
-        match.date.toISOString(),
-        match.duration,
-        match.roundsWon,
-        match.roundsLost,
-        match.kills,
-        match.killshs,
-        match.deaths,
-        match.assists,
-        match.score,
-        match.mvps,
-        match.over,
-        match.id,
-      ])
-      .run()
-      .finalize();
-    db.close();
+    return new Promise((resolve, reject) => {
+      const statement = db.prepare(
+        'UPDATE Matches SET player_id = ?, map = ?, mode = ?, date = ?, duration_seconds = ?, rounds_won = ?, ' +
+          'rounds_lost = ?, kills = ?, killshs = ?, deaths = ?, assists = ?, score = ?, mvps = ?, over = ? ' +
+          'WHERE id = ?'
+      );
+      statement
+        .bind([
+          match.playerId,
+          match.map,
+          match.mode,
+          match.date.toISOString(),
+          match.duration,
+          match.roundsWon,
+          match.roundsLost,
+          match.kills,
+          match.killshs,
+          match.deaths,
+          match.assists,
+          match.score,
+          match.mvps,
+          match.over,
+          match.id,
+        ])
+        .run((err) => {
+          statement.finalize();
+          db.close();
+          if (err) reject(err);
+          resolve();
+        });
+    });
   },
 
   /**

@@ -33,40 +33,47 @@ module.exports = {
   /**
    * Adds a round
    * @param {Round} round round to add
+   * @returns {Promise} promise that resolves when the round is added
    */
   add(round) {
     const db = new Database(this.dbFile);
-    db.serialize(() => {
-      db.exec('PRAGMA foreign_keys = ON')
-        .prepare(
+    return new Promise((resolve, reject) => {
+      db.serialize(() => {
+        db.exec('PRAGMA foreign_keys = ON');
+        const statement = db.prepare(
           'INSERT INTO Rounds ' +
             '(id, match_id, n_round, team, equip_value, init_money, init_armor, helmet,' +
             'duration_seconds, winner, win_type, died, kills, killshs, assists, score, mvp)' +
             'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
-        )
-        .bind([
-          round.id,
-          round.matchId,
-          round.n,
-          round.team,
-          round.equipValue,
-          round.initMoney,
-          round.initArmor,
-          round.helmet,
-          round.duration,
-          round.winner,
-          round.winType,
-          round.died,
-          round.kills,
-          round.killshs,
-          round.assists,
-          round.score,
-          round.mvp,
-        ])
-        .run()
-        .finalize();
+        );
+        statement
+          .bind([
+            round.id,
+            round.matchId,
+            round.n,
+            round.team,
+            round.equipValue,
+            round.initMoney,
+            round.initArmor,
+            round.helmet,
+            round.duration,
+            round.winner,
+            round.winType,
+            round.died,
+            round.kills,
+            round.killshs,
+            round.assists,
+            round.score,
+            round.mvp,
+          ])
+          .run((err) => {
+            statement.finalize();
+            db.close();
+            if (err) reject(err);
+            resolve();
+          });
+      });
     });
-    db.close();
   },
 
   /**

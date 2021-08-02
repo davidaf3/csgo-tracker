@@ -1,6 +1,7 @@
 const fs = require('fs/promises');
 const { Database } = require('sqlite3');
 const express = require('express');
+const WebSocket = require('ws');
 const path = require('path');
 
 const app = express();
@@ -25,15 +26,35 @@ const Rounds = require('./models/round');
 const matchService = require('./services/matchService');
 const roundService = require('./services/roundService');
 
-require('./routes/rgame')(app, matchService, roundService);
+const gameEventEmitter = require('./routes/rgame')(
+  app,
+  matchService,
+  roundService
+);
 require('./routes/rmatch')(app, matchService, roundService);
 require('./routes/rsteamapi')(app);
+
+const startSever = () => {
+  const server = app.listen(8090, () => console.log('Server started'));
+
+  const wss = new WebSocket.Server({ server });
+  wss.on('connection', (ws) => {
+    const gameEventListener = (gameEvent, matchId) => {
+      ws.send(JSON.stringify({ gameEvent, matchId }));
+    };
+    gameEventEmitter.on('game-event', gameEventListener);
+
+    ws.on('close', () => {
+      gameEventEmitter.removeListener('game-event', gameEventListener);
+    });
+  });
+};
 
 /**
  * Starts the rest api
  * @param {string} dbFile path to the database file
  */
-module.exports = (dbFile) => {
+function startRestAPI(dbFile) {
   Matches.init(dbFile);
   Rounds.init(dbFile);
 
@@ -41,14 +62,20 @@ module.exports = (dbFile) => {
   roundService.init(Rounds);
 
   fs.access(dbFile)
-    .then(() => app.listen(8090, () => console.log('Server started')))
+    .then(startSever)
     .catch(async () => {
       // Creates the database for storing stats
       const db = new Database(dbFile);
       const schema = await fs.readFile(path.join(__dirname, 'schema.sql'));
       db.exec(schema.toString(), () => {
-        app.listen(8090, () => console.log('Server started'));
+        startSever();
         db.close();
       });
     });
-};
+}
+
+if (require.main === module) {
+  startRestAPI(path.join(__dirname, 'stats.db'));
+}
+
+module.exports = startRestAPI;

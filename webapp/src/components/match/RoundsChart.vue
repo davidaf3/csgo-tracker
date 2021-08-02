@@ -20,7 +20,12 @@
       </linearGradient>
     </defs>
     <g :transform="`scale(1,-1) translate(0,-${20 * maxKillsPerRound + 40})`">
-      <g v-for="round in rounds" :key="round.n" @click="selectRound(round.n)">
+      <g
+        v-for="round in rounds"
+        :key="round.id"
+        :class="roundsToAnimate.includes(round.n) ? 'animated' : null"
+        @click="selectRound(round.n)"
+      >
         <rect
           v-if="round.winner === round.team"
           :x="getRectX(round.n)"
@@ -122,29 +127,41 @@
         required: true,
       },
     },
-    setup() {
+    setup(props) {
       return {
         maxKillsPerRound: 5,
         halfTimeRound: 15,
+        roundsToAnimate: props.rounds.map(round => round.n),
       };
+    },
+    watch: {
+      rounds(newRounds, oldRounds) {
+        this.roundsToAnimate = newRounds
+          .filter(
+            newRound =>
+              oldRounds.filter(oldRound => oldRound.id === newRound.id)
+                .length === 0
+          )
+          .map(round => round.n);
+      },
     },
     mounted() {
       this.platyAnimation();
     },
-
     updated() {
       this.platyAnimation();
     },
-
     methods: {
       platyAnimation() {
         document
-          .querySelectorAll('rect, line, text, image')
+          .querySelectorAll(
+            '.animated rect, .animated line, .animated text, .animated image'
+          )
           .forEach(element => {
             const elementStyle = element.style;
             elementStyle.visibility = 'hidden';
           });
-        document.querySelectorAll('animate').forEach((element, i) => {
+        document.querySelectorAll('.animated animate').forEach((element, i) => {
           setTimeout(() => {
             const parent = element.parentElement;
             if (parent) parent.style.visibility = 'visible';
@@ -157,7 +174,7 @@
         for (let i = 0; i < round.kills; i += 1) {
           kills.push({ n: i, isHs: false });
         }
-        for (let i = 0; i < round.killshs; i += 1) {
+        for (let i = 0; i < round.killshs && i < kills.length; i += 1) {
           kills[i].isHs = true;
         }
         return kills;

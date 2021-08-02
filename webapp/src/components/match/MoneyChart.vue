@@ -19,8 +19,21 @@
       },
     },
     watch: {
-      rounds() {
-        this.updateChart();
+      rounds(newRounds, oldRounds) {
+        const addedRounds = newRounds.filter(
+          newRound =>
+            oldRounds.filter(oldRound => oldRound.id === newRound.id).length ===
+            0
+        );
+
+        if (addedRounds.length === newRounds.length) {
+          // If all rounds are new, clear the chart and add all the rounds
+          this.clearChart();
+          this.addRoundsToChart(newRounds);
+        } else {
+          // If not all rounds are new, add only the new rounds to the chart
+          this.addRoundsToChart(addedRounds);
+        }
       },
     },
     mounted() {
@@ -71,18 +84,25 @@
         chart = new Chart(ctx, config);
         this.alignCharts();
       },
-      updateChart() {
+      clearChart() {
         if (chart) {
           const { datasets, labels } = chart.data;
 
           labels.splice(0, labels.length);
-          this.rounds.forEach(round => labels.push(round.n));
 
           datasets.forEach(dataset => {
             dataset.data.splice(0, dataset.data.length);
           });
-          this.rounds.forEach(round => datasets[0].data.push(round.initMoney));
-          this.rounds.forEach(round => datasets[1].data.push(round.equipValue));
+        }
+      },
+      addRoundsToChart(newRounds) {
+        if (chart) {
+          const { datasets, labels } = chart.data;
+
+          newRounds.forEach(round => labels.push(round.n));
+
+          newRounds.forEach(round => datasets[0].data.push(round.initMoney));
+          newRounds.forEach(round => datasets[1].data.push(round.equipValue));
 
           chart.update();
           this.alignCharts();
@@ -95,7 +115,6 @@
         roundsChart.style.margin = `0 ${yScaleWidth - 10}px`;
 
         const moneyChartContainer = document.getElementById('chartContainer');
-        moneyChartContainer.style.marginRight = `${yScaleWidth - 10}px`;
         moneyChartContainer.style.width = `${this.rounds.length * 20 -
           10 +
           yScaleWidth}px`;
