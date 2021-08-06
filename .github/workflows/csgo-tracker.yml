@@ -35,6 +35,8 @@ jobs:
           Copy-Item -Path ..\webapp\dist\* -Destination  resources -Recurse
       - name: Build electronapp
         run: npm run dist
+      - name: Copy csgo config file
+        run: cp ..\gamestate_integration_stats.cfg .\dist\
       - name: Compress electronapp
         run: 7z a -tzip csgo-tracker.zip .\dist\*
       - name: Upload electronapp

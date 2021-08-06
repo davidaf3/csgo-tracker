@@ -1,6 +1,5 @@
 import { createApp } from 'vue';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import 'bootstrap';
 import * as VueRouter from 'vue-router';
 import App from './App.vue';
 import Matches from './components/match/Matches.vue';
