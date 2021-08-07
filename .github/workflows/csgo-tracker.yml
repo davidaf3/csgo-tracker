@@ -35,10 +35,13 @@ jobs:
           Copy-Item -Path ..\webapp\dist\* -Destination  resources -Recurse
       - name: Build electronapp
         run: npm run dist
-      - name: Copy csgo config file
-        run: cp ..\gamestate_integration_stats.cfg .\dist\
+      - name: Bundle installer and csgo config file
+        run: |
+          New-Item -Name "bundle" -ItemType "directory"
+          cp .\dist\csgo-tracker-installer.exe .\bundle\
+          cp ..\gamestate_integration_stats.cfg .\bundle\
       - name: Compress electronapp
-        run: 7z a -tzip csgo-tracker.zip .\dist\*
+        run: 7z a -tzip csgo-tracker.zip .\bundle\*
       - name: Upload electronapp
         uses: actions/upload-artifact@v2
         with:
