@@ -28,7 +28,7 @@
         </ul>
         <ul class="navbar-nav ms-auto">
           <li class="nav-item">
-            <a href="https://github.com/davidaf3/csgo-tracker">
+            <a href="https://github.com/davidaf3/csgo-tracker" target="_blank">
               <img
                 alt="GitHub"
                 src="../assets/github-logo.png"
