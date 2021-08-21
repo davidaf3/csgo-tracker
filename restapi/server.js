@@ -65,6 +65,7 @@ function startRestAPI(dbFile) {
     .then(startSever)
     .catch(async () => {
       // Creates the database for storing stats
+      await fs.mkdir(path.dirname(dbFile), { recursive: true });
       const db = new Database(dbFile);
       const schema = await fs.readFile(path.join(__dirname, 'schema.sql'));
       db.exec(schema.toString(), () => {

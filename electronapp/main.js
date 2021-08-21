@@ -2,11 +2,12 @@ const {
   app, protocol, BrowserWindow, shell,
 } = require('electron');
 const path = require('path');
+const os = require('os');
 
 // Start express app
 const startRestAPI = require('csgo-tracker-restapi');
 
-startRestAPI(path.join(__dirname, '..', 'stats.db'));
+startRestAPI(path.join(os.homedir(), '.csgo-tracker', 'stats.db'));
 
 function createWindow() {
   const FILE_PROTOCOL = 'file';
