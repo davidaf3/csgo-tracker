@@ -71,7 +71,7 @@
           this.matches[matchIndex] = updatedMatch;
 
           // Check if the updated match is the currently selected match
-          if (this.selectedMatch.id === matchId) {
+          if (this.selectedMatch?.id === matchId) {
             this.selectedMatch = updatedMatch;
           }
         }
@@ -86,7 +86,7 @@
           this.matches.splice(matchIndex, 1);
 
           // Check if the removed match is the currently selected match
-          if (this.selectedMatch.id === matchId) {
+          if (this.selectedMatch?.id === matchId) {
             this.selectedMatch = null;
           }
         }
