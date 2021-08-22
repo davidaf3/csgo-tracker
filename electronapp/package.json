@@ -1,5 +1,5 @@
 {
-  "name": "electronapp",
+  "name": "csgo-tracker",
   "version": "0.1.0",
   "description": "Electron app",
   "main": "main.js",
@@ -13,6 +13,16 @@
     ],
     "nsis": {
       "artifactName": "csgo-tracker-installer.exe"
+    },
+    "linux": {
+      "executableName": "csgo-tracker",
+      "desktop": {
+        "Type": "Application",
+        "Name": "csgo-tracker"
+      }
+    },
+    "appImage": {
+      "artifactName": "csgo-tracker"
     }
   },
   "scripts": {
@@ -23,7 +33,11 @@
     "dist-portable": "electron-builder --win portable",
     "postinstall": "electron-builder install-app-deps"
   },
-  "author": "David Álvarez Fidalgo",
+  "author": {
+    "name": "David Álvarez Fidalgo",
+    "email": "david.alvarez.fidalgo@gmail.com"
+  },
+  "homepage": "https://github.com/davidaf3/csgo-tracker",
   "license": "ISC",
   "dependencies": {
     "csgo-tracker-restapi": "file:../restapi"

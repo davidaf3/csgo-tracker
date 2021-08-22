@@ -5,7 +5,7 @@ on:
     branches: [master]
 
 jobs:
-  build-electronapp:
+  build-electronapp-windows:
     runs-on: windows-latest
     defaults:
       run:
@@ -17,33 +17,75 @@ jobs:
           node-version: 14
       - name: Install restapi dependencies
         run: |
-          cd ..\restapi
+          cd ../restapi
           npm ci
           echo "${{secrets.RESTAPI_SECRETS}}" | Out-File secrets.js
       - name: Install webapp dependencies
         run: |
-          cd ..\webapp
+          cd ../webapp
           npm ci
       - name: Build webapp
         run: |
-          cd ..\webapp
+          cd ../webapp
           npm run build
       - name: Install electronapp dependencies
         run: |
           npm i
           New-Item -Name "resources" -ItemType "directory"
-          Copy-Item -Path ..\webapp\dist\* -Destination  resources -Recurse
+          Copy-Item -Path ../webapp/dist/* -Destination  resources -Recurse
       - name: Build electronapp
         run: npm run dist
       - name: Bundle installer and csgo config file
         run: |
           New-Item -Name "bundle" -ItemType "directory"
-          cp .\dist\csgo-tracker-installer.exe .\bundle\
-          cp ..\gamestate_integration_stats.cfg .\bundle\
+          cp ./dist/csgo-tracker-installer.exe ./bundle/
+          cp ../gamestate_integration_stats.cfg ./bundle/
       - name: Compress electronapp
-        run: 7z a -tzip csgo-tracker.zip .\bundle\*
+        run: 7z a -tzip csgo-tracker-windows.zip ./bundle/*
       - name: Upload electronapp
         uses: actions/upload-artifact@v2
         with:
-          name: csgo-tracker.zip
-          path: electronapp\csgo-tracker.zip
+          name: csgo-tracker-windows.zip
+          path: electronapp/csgo-tracker-windows.zip
+  build-electronapp-linux:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: electronapp
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 14
+      - name: Install restapi dependencies
+        run: |
+          cd ../restapi
+          npm ci
+          echo "${{secrets.RESTAPI_SECRETS}}" > secrets.js
+      - name: Install webapp dependencies
+        run: |
+          cd ../webapp
+          npm ci
+      - name: Build webapp
+        run: |
+          cd ../webapp
+          npm run build
+      - name: Install electronapp dependencies
+        run: |
+          npm i
+          mkdir resources
+          cp -r ../webapp/dist/* resources/
+      - name: Build electronapp
+        run: npm run dist
+      - name: Bundle executable and csgo config file
+        run: |
+          mkdir bundle
+          cp ./dist/csgo-tracker ./bundle/
+          cp ../gamestate_integration_stats.cfg ./bundle/
+      - name: Compress electronapp
+        run: 7z a -tzip csgo-tracker-linux.zip ./bundle/*
+      - name: Upload electronapp
+        uses: actions/upload-artifact@v2
+        with:
+          name: csgo-tracker-linux.zip
+          path: electronapp/csgo-tracker-linux.zip
