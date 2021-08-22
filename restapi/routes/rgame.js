@@ -270,24 +270,17 @@ module.exports = (app, matchService, roundService) => {
           1000,
       });
       roundService.updateCurrentRound(roundInfo);
+
+      const finishedMatchId = matchService.getCurrentMatch().id;
       Promise.all([
         roundService.saveCurrentRound(),
         matchService.saveCurrentMatch(),
       ]).then(() => {
-        gameEventEmitter.emit(
-          'game-event',
-          'round ended',
-          matchService.getCurrentMatch().id
-        );
+        gameEventEmitter.emit('game-event', 'round ended', finishedMatchId);
+        gameEventEmitter.emit('game-event', 'match over', finishedMatchId);
       });
 
       console.log('MATCH OVER');
-      gameEventEmitter.emit(
-        'game-event',
-        'match over',
-        matchService.getCurrentMatch().id
-      );
-
       matchService.closeCurrentMatch();
     }
 
