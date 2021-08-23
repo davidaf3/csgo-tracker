@@ -14,7 +14,7 @@ csgo-tracker is a simple [Electron](https://www.electronjs.org/) app that lets y
 ## Installation
 You can download the latest stable release for your OS [here](https://github.com/davidaf3/csgo-tracker/releases). Also, you can download the latest build from the [Actions tab](https://github.com/davidaf3/csgo-tracker/actions) (you have to be logged into your GitHub account). 
 
-The downloaded .zip folder will contain a .cfg file and an executable file. Before installing or running the app you need to place the .cfg file into the csgo/cfg directory inside the CS:GO installation folder.
+The downloaded .zip folder will contain a .cfg file and an executable file. Before installing or running the app you need to place the .cfg file into the csgo/cfg directory inside the CS:GO installation folder. If your game was running when you placed the file, make sure to restart it to apply the configuration changes.
 
 To install the Windows version, you have to run the installer file. The Linux version is an [AppImage](https://appimage.org/) so you can just run the executable to start the app.
 
