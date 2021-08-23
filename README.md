@@ -8,4 +8,5 @@ csgo-tracker is a simple node.js app that lets you track your CS:GO matches and 
 - Get real time updates about your performance in the current match.
 - No ads, no account needed, everything is stored locally.
 
-![screenshot1](screenshot1small.png) ![screenshot2](screenshot2small.png)
+<img src="screenshot1.png" alt="screenshot1" width="800"/>
+<img src="screenshot2.png" alt="screenshot2" width="800"/>
