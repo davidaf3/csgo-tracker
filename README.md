@@ -27,4 +27,5 @@ To access your match history, go to the Matches tab. A list of matches will appe
 The app has two main components:
 - A REST API (restapi folder) built using Node.js and Express. It receives, processes and stores the game info into an SQLite database. It also exposes endpoints to get the matches, rounds and stats stored in the database.
 - A web app (webapp folder) built with Vue.js. It fetches info from the REST API and displays it to the user.
+
 These two components are bundled together into an Electron app (electronapp folder) in order to easily distribute them.
