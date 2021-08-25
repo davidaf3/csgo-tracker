@@ -22,3 +22,9 @@ To install the Windows version, you have to run the installer file. The Linux ve
 To track a match, you have to run csgo-tracker **before** starting the match. If you close the app before the match ends, the match stats will be incomplete. 
 
 To access your match history, go to the Matches tab. A list of matches will appear on the left hand side of the screen. Then you can click on any item of the list to see your performance in each match. You can also see your performance in any round by clicking on the chart at the bottom of the screen.
+
+## Repository Structure
+The app has two main components:
+- A REST API (restapi folder) built using Node.js and Express. It receives, processes and stores the game info into an SQLite database. It also exposes endpoints to get the matches, rounds and stats stored in the database.
+- A web app (webapp folder) built with Vue.js. It fetches info from the REST API and displays it to the user.
+These two components are bundled together into an Electron app (electronapp folder) in order to easily distribute them.
