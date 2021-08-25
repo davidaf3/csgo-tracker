@@ -38,7 +38,7 @@
     "email": "david.alvarez.fidalgo@gmail.com"
   },
   "homepage": "https://github.com/davidaf3/csgo-tracker",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "csgo-tracker-restapi": "file:../restapi"
   },
