@@ -9,3 +9,4 @@ vetur.config.js
 /electronapp/resources/
 /electronapp/dist/
 /electronapp/build/
+iconTemp.svg

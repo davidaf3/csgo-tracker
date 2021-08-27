@@ -11,6 +11,9 @@
       "!.eslintrc",
       "!.stats.db*"
     ],
+    "directories": {
+      "buildResources": "buildResources"
+    },
     "nsis": {
       "artifactName": "csgo-tracker-installer.exe"
     },

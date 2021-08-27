@@ -1,7 +1,9 @@
 <template>
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container-fluid">
-      <a class="navbar-brand" href="#">csgo-tracker</a>
+      <a class="navbar-brand" href="#">
+        <img src="/img/icon.svg" alt="csgo-tracker" width="55" />
+      </a>
       <button
         class="navbar-toggler"
         type="button"
@@ -54,7 +56,7 @@
     height: 8%;
   }
   .navbar-brand {
-    font-size: 1.4em;
+    margin-left: 0.5em;
   }
   .router-link-active {
     color: #ffffff !important;
