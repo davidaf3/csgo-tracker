@@ -30,59 +30,10 @@ module.exports = {
    */
   getAllStats() {
     return new Promise((resolve, reject) => {
-      const matchesPromise = this.Matches.getAll().then((matches) => {
-        const matchesStats = {
-          kills: 0,
-          deaths: 0,
-          totalMatches: 0,
-          victories: 0,
-          defeats: 0,
-          ties: 0,
-        };
-
-        matches.forEach((match) => {
-          matchesStats.kills += match.kills;
-          matchesStats.deaths += match.deaths;
-
-          matchesStats.totalMatches += 1;
-          if (match.roundsWon > match.roundsLost) matchesStats.victories += 1;
-          if (match.roundsWon < match.roundsLost) matchesStats.defeats += 1;
-          if (match.roundsWon === match.roundsLost) matchesStats.ties += 1;
-        });
-
-        return {
-          ...matchesStats,
-          kdr:
-            matchesStats.kills /
-            (matchesStats.deaths > 0 ? matchesStats.deaths : 1),
-          winRate:
-            matchesStats.totalMatches > 0
-              ? matchesStats.victories / matchesStats.totalMatches
-              : 0,
-        };
-      });
-
-      const roundsPromise = this.Rounds.getAll().then((rounds) => {
-        const roundsStats = {
-          totalRounds: 0,
-        };
-        let totalEquipValue = 0;
-
-        rounds.forEach((round) => {
-          roundsStats.totalRounds += 1;
-          totalEquipValue += round.equipValue;
-        });
-
-        return {
-          ...roundsStats,
-          avgEquipValue:
-            roundsStats.totalRounds > 0
-              ? totalEquipValue / roundsStats.totalRounds
-              : 0,
-        };
-      });
-
-      Promise.all([matchesPromise, roundsPromise])
+      Promise.all([
+        this.Matches.getAll().then(this.computeStatsFromMatches),
+        this.Rounds.getAll().then(this.computeStatsFromRounds),
+      ])
         .then(([matchesStats, roundsStats]) => {
           resolve({
             ...matchesStats,
@@ -97,5 +48,67 @@ module.exports = {
           reject(err);
         });
     });
+  },
+
+  /**
+   * Computes stats from a list of matches
+   * @param {Object[]} matches list of matches
+   * @return {Object} stats computed
+   */
+  computeStatsFromMatches(matches) {
+    const matchesStats = {
+      kills: 0,
+      deaths: 0,
+      totalMatches: 0,
+      victories: 0,
+      defeats: 0,
+      ties: 0,
+    };
+
+    matches.forEach((match) => {
+      matchesStats.kills += match.kills;
+      matchesStats.deaths += match.deaths;
+
+      matchesStats.totalMatches += 1;
+      if (match.roundsWon > match.roundsLost) matchesStats.victories += 1;
+      if (match.roundsWon < match.roundsLost) matchesStats.defeats += 1;
+      if (match.roundsWon === match.roundsLost) matchesStats.ties += 1;
+    });
+
+    return {
+      ...matchesStats,
+      kdr:
+        matchesStats.kills /
+        (matchesStats.deaths > 0 ? matchesStats.deaths : 1),
+      winRate:
+        matchesStats.totalMatches > 0
+          ? matchesStats.victories / matchesStats.totalMatches
+          : 0,
+    };
+  },
+
+  /**
+   * Computes stats from a list of rounds
+   * @param {Object[]} rounds list of rounds
+   * @return {Object} stats computed
+   */
+  computeStatsFromRounds(rounds) {
+    const roundsStats = {
+      totalRounds: 0,
+    };
+    let totalEquipValue = 0;
+
+    rounds.forEach((round) => {
+      roundsStats.totalRounds += 1;
+      totalEquipValue += round.equipValue;
+    });
+
+    return {
+      ...roundsStats,
+      avgEquipValue:
+        roundsStats.totalRounds > 0
+          ? totalEquipValue / roundsStats.totalRounds
+          : 0,
+    };
   },
 };
