@@ -1,6 +1,6 @@
 const EventEmitter = require('events');
 
-module.exports = (app, matchService, roundService) => {
+module.exports = (app, statsCache, matchService, roundService) => {
   const gameEventEmitter = new EventEmitter();
 
   app.post('/game', (req, res) => {
@@ -270,6 +270,9 @@ module.exports = (app, matchService, roundService) => {
           1000,
       });
       roundService.updateCurrentRound(roundInfo);
+
+      // Invalidate the stats cache
+      statsCache.del(statsCache.keys());
 
       const finishedMatchId = matchService.getCurrentMatch().id;
       Promise.all([

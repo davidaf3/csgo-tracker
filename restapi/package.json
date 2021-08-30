@@ -10,6 +10,7 @@
   "license": "MIT",
   "dependencies": {
     "express": "^4.17.1",
+    "node-cache": "^5.1.2",
     "node-fetch": "^2.6.1",
     "sqlite3": "^5.0.2",
     "uuid": "^3.4.0",

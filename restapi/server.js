@@ -2,6 +2,7 @@ const fs = require('fs/promises');
 const { Database } = require('sqlite3');
 const express = require('express');
 const WebSocket = require('ws');
+const Cache = require('node-cache');
 const path = require('path');
 
 const app = express();
@@ -27,13 +28,16 @@ const matchService = require('./services/matchService');
 const roundService = require('./services/roundService');
 const statsService = require('./services/statsService');
 
+const statsCache = new Cache();
+
 const gameEventEmitter = require('./routes/rgame')(
   app,
+  statsCache,
   matchService,
   roundService
 );
 require('./routes/rmatch')(app, matchService, roundService);
-require('./routes/rstats')(app, statsService);
+require('./routes/rstats')(app, statsCache, statsService);
 require('./routes/rsteamapi')(app);
 
 const startSever = () => {
