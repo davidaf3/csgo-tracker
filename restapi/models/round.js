@@ -77,6 +77,21 @@ module.exports = {
   },
 
   /**
+   * Gets all the rounds asynchronously
+   * @return {Promise<Round[]>} promise that resolves to the list of rounds
+   */
+  getAll() {
+    return new Promise((resolve, reject) => {
+      const db = new Database(this.dbFile);
+      db.all('SELECT * FROM ROUNDS', (err, rows) => {
+        db.close();
+        if (err) reject(err);
+        resolve(rows.map(this.rowToRound));
+      });
+    });
+  },
+
+  /**
    * Gets all the rounds of a match
    * @param {string} matchId id of the match
    * @return {Promise<Round[]>} promise that resolves to the list of rounds

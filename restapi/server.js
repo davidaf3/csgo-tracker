@@ -25,6 +25,7 @@ const Rounds = require('./models/round');
 
 const matchService = require('./services/matchService');
 const roundService = require('./services/roundService');
+const statsService = require('./services/statsService');
 
 const gameEventEmitter = require('./routes/rgame')(
   app,
@@ -32,6 +33,7 @@ const gameEventEmitter = require('./routes/rgame')(
   roundService
 );
 require('./routes/rmatch')(app, matchService, roundService);
+require('./routes/rstats')(app, statsService);
 require('./routes/rsteamapi')(app);
 
 const startSever = () => {
@@ -60,6 +62,7 @@ function startRestAPI(dbFile) {
 
   matchService.init(Matches);
   roundService.init(Rounds);
+  statsService.init(Matches, Rounds);
 
   fs.access(dbFile)
     .then(startSever)
