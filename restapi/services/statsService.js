@@ -25,14 +25,24 @@ module.exports = {
   },
 
   /**
-   * Gets all the stats available
+   * Gets all the stats
    * @returns {Promise<Stats>} promise that resolves to an object containing the stats
    */
   getAllStats() {
+    return this.computeStats(this.Matches.getAll(), this.Rounds.getAll());
+  },
+
+  /**
+   * Computes stats from matches and rounds
+   * @param {Promise<Object[]>} matchesPromise promise that resolves to a list of matches
+   * @param {Promise<Object[]>} roundsPromise promise that resolves to a list of rounds
+   * @returns {Promise<Stats>} promise that resolves to an object containing the stats
+   */
+  computeStats(matchesPromise, roundsPromise) {
     return new Promise((resolve, reject) => {
       Promise.all([
-        this.Matches.getAll().then(this.computeStatsFromMatches),
-        this.Rounds.getAll().then(this.computeStatsFromRounds),
+        matchesPromise.then(this.computeStatsFromMatches),
+        roundsPromise.then(this.computeStatsFromRounds),
       ])
         .then(([matchesStats, roundsStats]) => {
           resolve({
