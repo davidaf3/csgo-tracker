@@ -271,14 +271,14 @@ module.exports = (app, statsCache, matchService, roundService) => {
       });
       roundService.updateCurrentRound(roundInfo);
 
-      // Invalidate the stats cache
-      statsCache.del(statsCache.keys());
-
       const finishedMatchId = matchService.getCurrentMatch().id;
       Promise.all([
         roundService.saveCurrentRound(),
         matchService.saveCurrentMatch(),
       ]).then(() => {
+        // Invalidate the stats cache
+        statsCache.del(statsCache.keys());
+
         gameEventEmitter.emit('game-event', 'round ended', finishedMatchId);
         gameEventEmitter.emit('game-event', 'match over', finishedMatchId);
       });
