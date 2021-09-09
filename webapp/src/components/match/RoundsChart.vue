@@ -2,7 +2,7 @@
   <svg
     id="roundsChart"
     :height="20 * maxKillsPerRound + 40"
-    :width="rounds.length * 20"
+    :width="rounds.length * 20 + 2"
     xmlns="http://www.w3.org/2000/svg"
   >
     <defs>
@@ -28,6 +28,7 @@
       >
         <rect
           v-if="round.winner === round.team"
+          class="round-rect"
           :x="getRectX(round.n)"
           y="40"
           width="20"
@@ -45,6 +46,7 @@
         </rect>
         <rect
           v-if="round.winner !== round.team"
+          class="round-rect"
           :x="getRectX(round.n)"
           y="-40"
           width="20"
@@ -82,6 +84,14 @@
             href="/img/death.png"
           />
         </g>
+        <rect
+          class="container-rect"
+          :x="getRectX(round.n) + 1"
+          y="21"
+          width="18"
+          height="118"
+          fill="transparent"
+        />
         <g v-if="round.n === halfTimeRound">
           <line
             :x1="20 * round.n + 1.5"
@@ -146,16 +156,16 @@
       },
     },
     mounted() {
-      this.platyAnimation();
+      this.playAnimation();
     },
     updated() {
-      this.platyAnimation();
+      this.playAnimation();
     },
     methods: {
-      platyAnimation() {
+      playAnimation() {
         document
           .querySelectorAll(
-            '.animated rect, .animated line, .animated text, .animated image'
+            '.animated round-rect, .animated line, .animated text, .animated image'
           )
           .forEach(element => {
             const elementStyle = element.style;
@@ -201,13 +211,20 @@
 </script>
 
 <style scoped>
-  rect {
+  .container-rect:hover {
+    stroke-width: 1;
+    stroke: white;
+  }
+
+  .round-rect {
     stroke: rgb(40, 44, 52);
   }
+
   line {
     stroke-width: 1.5;
     stroke: white;
   }
+
   text {
     fill: white;
   }
