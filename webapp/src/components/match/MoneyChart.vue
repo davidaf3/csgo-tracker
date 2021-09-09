@@ -1,6 +1,32 @@
 <template>
-  <div id="chartContainer">
-    <canvas id="moneyChart"></canvas>
+  <div id="mainContainer">
+    <div id="chartContainer">
+      <canvas id="moneyChart" />
+    </div>
+    <div id="legendContainer">
+      <p>
+        <svg width="30" height="13">
+          <rect
+            width="30"
+            height="13"
+            fill="rgba(255, 99, 132, 0.2)"
+            stroke="rgba(255, 99, 132, 1)"
+            stroke-width="5"
+          ></rect></svg
+        >Initial money
+      </p>
+      <p>
+        <svg width="30" height="13">
+          <rect
+            width="30"
+            height="13"
+            fill="rgba(54, 162, 235, 0.2)"
+            stroke="rgba(54, 162, 235, 1)"
+            stroke-width="5"
+          ></rect></svg
+        >Equipment value
+      </p>
+    </div>
   </div>
 </template>
 
@@ -74,7 +100,7 @@
             responsive: true,
             plugins: {
               legend: {
-                position: 'top',
+                display: false,
               },
             },
           },
@@ -123,8 +149,29 @@
   };
 </script>
 
-<style>
+<style scoped>
+  #mainContainer {
+    display: flex;
+    flex-flow: row;
+  }
+
   #chartContainer {
     height: 175px;
+  }
+
+  #legendContainer {
+    margin-left: 1em;
+    display: flex;
+    flex-flow: column;
+    justify-content: center;
+    font-size: 0.8em;
+  }
+
+  #legendContainer svg {
+    margin: 0.5em;
+  }
+
+  #legendContainer p {
+    margin-bottom: 0.5em;
   }
 </style>

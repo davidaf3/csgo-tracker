@@ -225,7 +225,7 @@
     align-items: center;
   }
   #rounds {
-    margin-top: 1em;
+    margin: 1em 0 0 7em;
     display: flex;
     flex-flow: column;
     justify-content: left;
