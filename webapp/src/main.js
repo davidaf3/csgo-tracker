@@ -3,7 +3,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import * as VueRouter from 'vue-router';
 import App from './App.vue';
 import Matches from './components/match/Matches.vue';
-import Stats from './components/Stats.vue';
+import Stats from './components/stats/Stats.vue';
 
 const router = VueRouter.createRouter({
   history: VueRouter.createWebHashHistory(),

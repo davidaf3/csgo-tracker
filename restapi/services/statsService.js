@@ -8,6 +8,7 @@ module.exports = {
    * @property {number} kdr kill to death ratio
    * @property {number} hsRate headshot kill ratio
    * @property {number} maxKillsPerMatch max kills in a single match
+   * @property {number} avgKillsPerMatch average kills per match
    * @property {number} totalMatches total number of matches
    * @property {object} matchesByMap number of matches by map
    * @property {{
@@ -116,6 +117,7 @@ module.exports = {
       matchesByMap: {},
       totalDuration: 0,
       winRate: 0,
+      avgKillsPerMatch: 0,
       avgMatchDuration: 0,
       avgScore: 0,
       avgMvps: 0,
@@ -154,6 +156,8 @@ module.exports = {
     if (matchesStats.totalMatches > 0) {
       matchesStats.winRate =
         matchesStats.matchesByResult.victory / matchesStats.totalMatches;
+      matchesStats.avgKillsPerMatch =
+        matchesStats.kills / matchesStats.totalMatches;
       matchesStats.avgMatchDuration =
         matchesStats.totalDuration / matchesStats.totalMatches;
       matchesStats.avgScore = totalScore / matchesStats.totalMatches;
