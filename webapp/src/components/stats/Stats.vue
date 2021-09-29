@@ -8,7 +8,7 @@
           :labels="['Kills', 'Deaths']"
           :inner-title="`${roundNumber(stats.kdr)}`"
           inner-subtitle="KDR"
-          :side-length="250"
+          :side-length="210"
           legend-positon="bottom"
         />
       </div>
@@ -38,7 +38,7 @@
           :inner-title="`${roundNumber(stats.winRate)}`"
           inner-subtitle="Win rate"
           :palette="palettes.results"
-          :side-length="250"
+          :side-length="210"
           legend-positon="bottom"
         />
       </div>
@@ -47,11 +47,12 @@
           identifier="mapsChart"
           :data="sortedMapValues"
           :labels="sortedMapNames"
+          title="Maps"
           :inner-title="mostPlayedMap"
           inner-subtitle="Most played map"
           inner-title-size="1.8em"
           inner-subtitle-size="0.9em"
-          :side-length="250"
+          :side-length="210"
         />
       </div>
       <div class="stats-column">

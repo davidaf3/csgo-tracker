@@ -1,71 +1,79 @@
 <template>
-  <div id="mainContainer" :class="`legend-${legendPositon}`">
-    <svg
-      :id="identifier"
-      :width="sideLength"
-      :height="sideLength"
-      class="donut"
-    >
-      <g v-for="(percentage, index) in percentages" :key="index">
-        <circle
-          class="ring animated"
-          :cx="center"
-          :cy="center"
-          :r="radius"
-          fill="none"
-          :stroke="palette.colors[index]"
-          :stroke-dasharray="initialDasharray"
-        >
-          <animate
-            begin="indefinite"
-            attributeName="stroke-dasharray"
-            :from="initialDasharray"
-            :to="computedDasharray(percentage)"
-            dur="0.7s"
-            fill="freeze"
-          />
-          <animate
-            begin="indefinite"
-            attributeName="stroke-dashoffset"
-            :from="quarterLength"
-            :to="computedDashoffset(accumulatedPercentages[index])"
-            dur="0.7s"
-            fill="freeze"
-          />
-        </circle>
-        <circle
-          class="popover-anchor"
-          :cx="computePopoverXCoordinate(index)"
-          :cy="computePopoverYCoordinate(index)"
-          data-bs-toggle="popover"
-          :data-bs-placement="computePopoverPlacement(index)"
-          :data-bs-content="getPopoverContent(index)"
-        />
-      </g>
-      <text id="innerTitle" :x="center" :y="center" :font-size="innerTitleSize">
-        {{ innerTitle }}
-      </text>
-      <text
-        id="innerSubtitle"
-        :x="center"
-        :y="center"
-        :font-size="innerSubtitleSize"
+  <div class="outerContainer">
+    <h3 v-if="title" class="title">{{ title }}</h3>
+    <div class="mainContainer" :class="`legend-${legendPositon}`">
+      <svg
+        :id="identifier"
+        :width="sideLength"
+        :height="sideLength"
+        class="donut"
       >
-        {{ innerSubtitle }}
-      </text>
-    </svg>
-    <div id="legendContainer">
-      <div v-for="(value, index) in data" :key="index">
-        <svg width="15" height="15">
-          <rect
-            width="15"
-            height="15"
-            :fill="palette.darkColors[index]"
+        <g v-for="(percentage, index) in percentages" :key="index">
+          <circle
+            class="ring animated"
+            :cx="center"
+            :cy="center"
+            :r="radius"
+            fill="none"
             :stroke="palette.colors[index]"
-            stroke-width="4"
-          ></rect>
-        </svg>
-        {{ labels[index] }}
+            :stroke-dasharray="initialDasharray"
+          >
+            <animate
+              begin="indefinite"
+              attributeName="stroke-dasharray"
+              :from="initialDasharray"
+              :to="computedDasharray(percentage)"
+              dur="0.7s"
+              fill="freeze"
+            />
+            <animate
+              begin="indefinite"
+              attributeName="stroke-dashoffset"
+              :from="quarterLength"
+              :to="computedDashoffset(accumulatedPercentages[index])"
+              dur="0.7s"
+              fill="freeze"
+            />
+          </circle>
+          <circle
+            class="popover-anchor"
+            :cx="computePopoverXCoordinate(index)"
+            :cy="computePopoverYCoordinate(index)"
+            data-bs-toggle="popover"
+            :data-bs-placement="computePopoverPlacement(index)"
+            :data-bs-content="getPopoverContent(index)"
+          />
+        </g>
+        <text
+          class="innerTitle"
+          :x="center"
+          :y="center"
+          :font-size="innerTitleSize"
+        >
+          {{ innerTitle }}
+        </text>
+        <text
+          class="innerSubtitle"
+          :x="center"
+          :y="center"
+          :font-size="innerSubtitleSize"
+        >
+          {{ innerSubtitle }}
+        </text>
+      </svg>
+      <div class="legendContainer">
+        <div v-for="(value, index) in data" :key="index">
+          <svg width="15" height="15">
+            <rect
+              width="15"
+              height="15"
+              :fill="palette.darkColors[index]"
+              :stroke="palette.colors[index]"
+              stroke-width="4"
+            ></rect>
+          </svg>
+          {{ labels[index] }}
+        </div>
       </div>
     </div>
   </div>
@@ -89,6 +97,11 @@
       labels: {
         type: Array,
         required: true,
+      },
+      title: {
+        type: String,
+        required: false,
+        default: null,
       },
       innerTitle: {
         type: String,
@@ -126,7 +139,7 @@
       },
     },
     setup(props) {
-      const radius = props.sideLength / 2 - props.sideLength / 6;
+      const radius = props.sideLength / 2 - props.sideLength / 10;
 
       const valuesSum = props.data.reduce((sum, value) => sum + value, 0);
 
@@ -263,7 +276,18 @@
 </script>
 
 <style scoped>
-  #mainContainer {
+  .outerContainer {
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+  }
+
+  .title {
+    margin-top: 0.7em;
+    margin-bottom: 0;
+  }
+
+  .mainContainer {
     display: flex;
     align-items: center;
   }
@@ -280,21 +304,21 @@
     stroke-width: 20;
   }
 
-  #innerTitle,
-  #innerSubtitle {
+  .innerTitle,
+  .innerSubtitle {
     text-anchor: middle;
   }
 
-  #innerTitle {
+  .innerTitle {
     font-style: italic;
     transform: translateY(0.1em);
   }
 
-  #innerSubtitle {
+  .innerSubtitle {
     transform: translateY(2em);
   }
 
-  #legendContainer {
+  .legendContainer {
     display: flex;
     font-size: 0.8em;
   }
@@ -307,22 +331,22 @@
     flex-flow: column;
   }
 
-  .legend-side #legendContainer {
+  .legend-side .legendContainer {
     flex-flow: column;
     margin-right: 1em;
   }
 
-  .legend-bottom #legendContainer {
+  .legend-bottom .legendContainer {
     flex-flow: row;
   }
 
-  #legendContainer div {
+  .legendContainer div {
     display: flex;
     align-items: center;
     margin: 0 0.5em 1em;
   }
 
-  #legendContainer svg {
+  .legendContainer svg {
     margin-right: 0.5em;
   }
 </style>
