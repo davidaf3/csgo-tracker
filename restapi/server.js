@@ -4,6 +4,7 @@ const express = require('express');
 const WebSocket = require('ws');
 const Cache = require('node-cache');
 const path = require('path');
+const { config } = require('./config')
 
 const app = express();
 
@@ -61,9 +62,7 @@ const startSever = () => {
  * @param {string} dbFile path to the database file
  */
 function startRestAPI(dbFile) {
-  Matches.init(dbFile);
-  Rounds.init(dbFile);
-
+  config.dbFile = dbFile;
   matchService.init(Matches);
   roundService.init(Rounds);
   statsService.init(Matches, Rounds);

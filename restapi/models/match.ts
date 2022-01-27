@@ -1,4 +1,5 @@
 import { Database } from 'sqlite3';
+import { config } from './../config';
 
 export interface Match {
   /** Id of the match */
@@ -47,23 +48,13 @@ export interface Match {
   over: boolean;
 }
 
-let dbFile: string;
-
-/**
- * Initializes the module
- * @param newDbFile path to the database file
- */
-export function init(newDbFile: string): void {
-  dbFile = newDbFile;
-}
-
 /**
  * Adds a match
  * @param match match to add
  * @returns promise that resolves when the match is added
  */
 export function add(match: Match): Promise<void> {
-  const db = new Database(dbFile);
+  const db = new Database(config.dbFile);
   return new Promise((resolve, reject) => {
     const statement = db.prepare(
       'INSERT INTO Matches ' +
@@ -103,7 +94,7 @@ export function add(match: Match): Promise<void> {
  * @returns promise that resolves when the update is done
  */
 export function update(match: Match): Promise<void> {
-  const db = new Database(dbFile);
+  const db = new Database(config.dbFile);
   return new Promise((resolve, reject) => {
     const statement = db.prepare(
       'UPDATE Matches SET player_id = ?, map = ?, mode = ?, date = ?, duration_seconds = ?, rounds_won = ?, ' +
@@ -142,7 +133,7 @@ export function update(match: Match): Promise<void> {
  * @param id id of the match
  */
 export function deleteMatch(id: string): void {
-  const db = new Database(dbFile);
+  const db = new Database(config.dbFile);
   db.serialize(() => {
     db.exec('PRAGMA foreign_keys = ON')
       .prepare('DELETE FROM Matches WHERE id = ?')
@@ -159,7 +150,7 @@ export function deleteMatch(id: string): void {
  */
 export function getAll(): Promise<Match[]> {
   return new Promise((resolve, reject) => {
-    const db = new Database(dbFile);
+    const db = new Database(config.dbFile);
     db.all('SELECT * FROM MATCHES ORDER BY date DESC', (err, rows) => {
       db.close();
       if (err) reject(err);
@@ -176,7 +167,7 @@ export function getAll(): Promise<Match[]> {
  */
 export function get(id: string): Promise<Match | null> {
   return new Promise((resolve, reject) => {
-    const db = new Database(dbFile);
+    const db = new Database(config.dbFile);
     db.prepare('SELECT * FROM MATCHES WHERE id = ?')
       .bind([id])
       .get((err, row) => {

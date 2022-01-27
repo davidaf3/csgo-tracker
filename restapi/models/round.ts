@@ -1,4 +1,5 @@
 import { Database } from 'sqlite3';
+import { config } from './../config';
 
 export interface Round {
   /** Id of the round */
@@ -53,23 +54,13 @@ export interface Round {
   mvp: boolean;
 }
 
-let dbFile: string;
-
-/**
- * Initializes the module
- * @param dbFile path to the database file
- */
-export function init(newDbFile: string) {
-  dbFile = newDbFile;
-}
-
 /**
  * Adds a round
  * @param round round to add
  * @returns promise that resolves when the round is added
  */
 export function add(round: Round): Promise<void> {
-  const db = new Database(dbFile);
+  const db = new Database(config.dbFile);
   return new Promise((resolve, reject) => {
     db.serialize(() => {
       db.exec('PRAGMA foreign_keys = ON');
@@ -115,7 +106,7 @@ export function add(round: Round): Promise<void> {
  */
 export function getAll(): Promise<Round[]> {
   return new Promise((resolve, reject) => {
-    const db = new Database(dbFile);
+    const db = new Database(config.dbFile);
     db.all('SELECT * FROM ROUNDS', (err, rows) => {
       db.close();
       if (err) reject(err);
@@ -131,7 +122,7 @@ export function getAll(): Promise<Round[]> {
  */
 export function getByMatch(matchId: string): Promise<Round[]> {
   return new Promise((resolve, reject) => {
-    const db = new Database(dbFile);
+    const db = new Database(config.dbFile);
     db.prepare('SELECT * FROM ROUNDS WHERE match_id = ? ORDER BY n_round')
       .bind([matchId])
       .all((err, rows) => {
@@ -154,7 +145,7 @@ export function getByMatchAndNumber(
   n: number
 ): Promise<Round | null> {
   return new Promise((resolve, reject) => {
-    const db = new Database(dbFile);
+    const db = new Database(config.dbFile);
     db.prepare('SELECT * FROM ROUNDS WHERE match_id = ? AND n_round = ?')
       .bind([matchId, n])
       .get((err, row) => {
