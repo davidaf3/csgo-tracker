@@ -1,4 +1,5 @@
 /restapi/node_modules/
+/restapi/dist/
 /restapi/stats.db*
 /webapp/node_modules/
 /webapp/dist/

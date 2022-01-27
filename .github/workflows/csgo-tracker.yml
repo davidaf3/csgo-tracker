@@ -20,6 +20,10 @@ jobs:
           cd ../restapi
           npm ci
           echo "${{secrets.RESTAPI_SECRETS}}" | Out-File secrets.js
+      - name: Build restapi
+        run: |
+          cd ../restapi
+          npm run build
       - name: Install webapp dependencies
         run: |
           cd ../webapp
@@ -62,6 +66,10 @@ jobs:
           cd ../restapi
           npm ci
           echo "${{secrets.RESTAPI_SECRETS}}" > secrets.js
+      - name: Build restapi
+        run: |
+          cd ../restapi
+          npm run build
       - name: Install webapp dependencies
         run: |
           cd ../webapp

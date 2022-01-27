@@ -91,7 +91,7 @@ module.exports = {
    * @param {string} id match id
    */
   deleteMatch(id) {
-    this.Matches.delete(id);
+    this.Matches.deleteMatch(id);
   },
 
   /**
