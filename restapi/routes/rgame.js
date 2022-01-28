@@ -48,11 +48,18 @@ module.exports = (app, statsCache, matchService, roundService) => {
         matchId: matchService.getCurrentMatch().id,
         n: req.body.map.round + 1,
         team: req.body.player.team,
-        died: false,
         equipValue: req.body.player.state.equip_value,
         initArmor: req.body.player.state.armor,
         helmet: req.body.player.state.helmet,
+        duration: 0,
+        winner: '',
+        winType: '',
+        died: false,
+        kills: 0,
         killshs: 0,
+        assists: 0,
+        score: 0,
+        mvp: false,
       };
       roundService.createRound(round);
 
@@ -134,7 +141,7 @@ module.exports = (app, statsCache, matchService, roundService) => {
           matchService.getCurrentMatch().mvps,
         duration:
           (new Date().getTime() -
-            roundService.getCurrentRound().initDate.getTime()) /
+            roundService.getCurrentRoundInitDate().getTime()) /
           1000,
       };
 
@@ -251,7 +258,7 @@ module.exports = (app, statsCache, matchService, roundService) => {
         winType: winString,
         duration:
           (new Date().getTime() -
-            roundService.getCurrentRound().initDate.getTime()) /
+            roundService.getCurrentRoundInitDate().getTime()) /
           1000,
       };
 

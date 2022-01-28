@@ -63,10 +63,6 @@ const startSever = () => {
  */
 function startRestAPI(dbFile) {
   config.dbFile = dbFile;
-  matchService.init(Matches);
-  roundService.init(Rounds);
-  statsService.init(Matches, Rounds);
-
   fs.access(dbFile)
     .then(startSever)
     .catch(async () => {
