@@ -5,7 +5,7 @@ const path = require('path');
 const os = require('os');
 
 // Start express app
-const startRestAPI = require('csgo-tracker-restapi');
+const startRestAPI = require('csgo-tracker-restapi').default;
 
 startRestAPI(path.join(os.homedir(), '.csgo-tracker', 'stats.db'));
 

@@ -17,14 +17,17 @@ export function getCurrentRoundInitDate(): Date {
 /**
  * Creates a round
  * @param round round info
+ * @returns id of the new round
  */
-export function createRound(round: RoundState): void {
+export function createRound(round: RoundState): string {
   currentRoundInitDate = new Date();
+  const id = uuidv4();
   currentRound = {
-    id: uuidv4(),
+    id,
     initMoney: nextRoundInitMoney ?? 800,
     ...round,
   };
+  return id;
 }
 
 /**
@@ -82,7 +85,7 @@ export function findByMatch(matchId: string): Promise<Rounds.Round[]> {
  */
 export function findByMatchAndNumber(
   matchId: string,
-  n: number
+  n: string
 ): Promise<Rounds.Round | null> {
   return Rounds.getByMatchAndNumber(matchId, n);
 }

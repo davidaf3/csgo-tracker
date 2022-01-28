@@ -1,13 +1,14 @@
-const fetch = require('node-fetch');
-const { STEAM_API_KEY } = require('../secrets');
+import { Express } from 'express';
+import fetch from 'node-fetch';
+import { STEAM_API_KEY } from '../secrets';
 
-module.exports = (app) => {
+export default function (app: Express): void {
   app.get('/player/:id', async (req, res) => {
     try {
       const response = await fetch(
         `http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=${STEAM_API_KEY}&steamids=${req.params.id}`
       );
-      const result = await response.json();
+      const result = (await response.json()) as any;
       res.status(200);
       res.send(result.response.players[0]);
     } catch (err) {

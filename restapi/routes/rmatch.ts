@@ -1,5 +1,9 @@
-module.exports = (app, matchService, roundService) => {
-  app.get('/match', async (req, res) => {
+import { Express } from 'express';
+import * as matchService from '../services/matchService';
+import * as roundService from '../services/roundService';
+
+export default function (app: Express): void {
+  app.get('/match', async (_req, res) => {
     try {
       const matches = await matchService.findAll();
       res.status(200);
@@ -72,4 +76,4 @@ module.exports = (app, matchService, roundService) => {
       res.json({ error: 'An error occurred while deleting the match' });
     }
   });
-};
+}

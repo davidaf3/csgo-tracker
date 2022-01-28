@@ -1,11 +1,15 @@
-module.exports = (app, statsCache, statsService) => {
+import NodeCache from 'node-cache';
+import { Express } from 'express';
+import { Stats, getAllStats } from '../services/statsService';
+
+export default function (app: Express, statsCache: NodeCache): void {
   app.get('/stats', async (req, res) => {
     try {
-      let stats;
+      let stats: Stats;
       if (statsCache.has(req.url)) {
-        stats = statsCache.get(req.url);
+        stats = statsCache.get<Stats>(req.url) as Stats;
       } else {
-        stats = await statsService.getAllStats();
+        stats = await getAllStats();
         statsCache.set(req.url, stats);
       }
       res.status(200);

@@ -115,7 +115,7 @@ interface RoundsStats {
   avgRoundDuration: number;
 }
 
-type Stats = MatchesStats &
+export type Stats = MatchesStats &
   RoundsStats & {
     /** Average number of rounds per match */
     avgRoundsPerMatch: number;

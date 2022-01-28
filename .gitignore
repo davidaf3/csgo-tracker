@@ -3,7 +3,7 @@
 /restapi/stats.db*
 /webapp/node_modules/
 /webapp/dist/
-/restapi/secrets.js
+/restapi/secrets.ts
 /.vscode/
 vetur.config.js
 /electronapp/node_modules/

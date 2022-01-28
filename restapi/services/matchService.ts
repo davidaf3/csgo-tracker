@@ -8,15 +8,17 @@ let currentMatch: Matches.Match | null;
 /**
  * Creates a match
  * @param  match match info
- * @returns promise that resolves when the match is created
+ * @returns promise that resolves to the new match id when the match is created
  */
-export function createMatch(match: MatchState): Promise<void> {
+export async function createMatch(match: MatchState): Promise<string> {
+  const id = uuidv4();
   currentMatch = {
-    id: uuidv4(),
+    id,
     date: new Date(),
     ...match,
   };
-  return Matches.add(currentMatch);
+  await Matches.add(currentMatch);
+  return id;
 }
 
 /**

@@ -142,7 +142,7 @@ export function getByMatch(matchId: string): Promise<Round[]> {
  */
 export function getByMatchAndNumber(
   matchId: string,
-  n: number
+  n: string
 ): Promise<Round | null> {
   return new Promise((resolve, reject) => {
     const db = new Database(config.dbFile);

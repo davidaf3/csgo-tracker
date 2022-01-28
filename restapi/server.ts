@@ -1,17 +1,21 @@
-const fs = require('fs/promises');
-const { Database } = require('sqlite3');
-const express = require('express');
-const WebSocket = require('ws');
-const Cache = require('node-cache');
-const path = require('path');
-const { config } = require('./config')
+import fs from 'fs/promises';
+import { Database } from 'sqlite3';
+import express from 'express';
+import WebSocket from 'ws';
+import NodeCache from 'node-cache';
+import path from 'path';
+import { config } from './config';
+import rgame from './routes/rgame';
+import rmatch from './routes/rmatch';
+import rstats from './routes/rstats';
+import rsteamapi from './routes/rsteamapi';
 
 const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use((req, res, next) => {
+app.use((_req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Credentials', 'true');
   res.header('Access-Control-Allow-Methods', 'POST, GET, DELETE, UPDATE, PUT');
@@ -22,31 +26,19 @@ app.use((req, res, next) => {
   next();
 });
 
-const Matches = require('./models/match');
-const Rounds = require('./models/round');
+const statsCache = new NodeCache();
 
-const matchService = require('./services/matchService');
-const roundService = require('./services/roundService');
-const statsService = require('./services/statsService');
-
-const statsCache = new Cache();
-
-const gameEventEmitter = require('./routes/rgame')(
-  app,
-  statsCache,
-  matchService,
-  roundService
-);
-require('./routes/rmatch')(app, matchService, roundService);
-require('./routes/rstats')(app, statsCache, statsService);
-require('./routes/rsteamapi')(app);
+const gameEventEmitter = rgame(app, statsCache);
+rmatch(app);
+rstats(app, statsCache);
+rsteamapi(app);
 
 const startSever = () => {
   const server = app.listen(8090, () => console.log('Server started'));
 
   const wss = new WebSocket.Server({ server });
   wss.on('connection', (ws) => {
-    const gameEventListener = (gameEvent, matchId) => {
+    const gameEventListener = (gameEvent: string, matchId: string) => {
       ws.send(JSON.stringify({ gameEvent, matchId }));
     };
     gameEventEmitter.on('game-event', gameEventListener);
@@ -59,9 +51,9 @@ const startSever = () => {
 
 /**
  * Starts the rest api
- * @param {string} dbFile path to the database file
+ * @param dbFile path to the database file
  */
-function startRestAPI(dbFile) {
+export default function startRestAPI(dbFile: string) {
   config.dbFile = dbFile;
   fs.access(dbFile)
     .then(startSever)
@@ -80,5 +72,3 @@ function startRestAPI(dbFile) {
 if (require.main === module) {
   startRestAPI(path.join(__dirname, 'stats.db'));
 }
-
-module.exports = startRestAPI;
