@@ -19,7 +19,7 @@ jobs:
         run: |
           cd ../restapi
           npm ci
-          echo "${{secrets.RESTAPI_SECRETS}}" | Out-File secrets.js
+          echo "${{secrets.RESTAPI_SECRETS}}" | Out-File secrets.ts
       - name: Build restapi
         run: |
           cd ../restapi
@@ -65,7 +65,7 @@ jobs:
         run: |
           cd ../restapi
           npm ci
-          echo "${{secrets.RESTAPI_SECRETS}}" > secrets.js
+          echo "${{secrets.RESTAPI_SECRETS}}" > secrets.ts
       - name: Build restapi
         run: |
           cd ../restapi
