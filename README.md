@@ -11,6 +11,7 @@ csgo-tracker is a simple [Electron](https://www.electronjs.org/) app that lets y
 
 <img src="screenshot1.png" alt="screenshot1" width="800"/>
 <img src="screenshot2.png" alt="screenshot2" width="800"/>
+<img src="screenshot3.png" alt="screenshot3" width="800"/>
 
 ## Installation
 You can download the latest stable release for your OS [here](https://github.com/davidaf3/csgo-tracker/releases). Also, you can download the latest build from the [Actions tab](https://github.com/davidaf3/csgo-tracker/actions) (you have to be logged into your GitHub account). 
