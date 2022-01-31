@@ -80,6 +80,134 @@
         </div>
       </div>
     </div>
+    <div id="main-stats-row">
+      <div class="stats-column">
+        <div class="info-box card bg-dark">
+          <h4>{{ stats.totalRounds }}</h4>
+          <span>Rounds played</span>
+        </div>
+        <div class="info-box card bg-dark">
+          <h4>{{ roundNumber(stats.avgRoundDuration) }} s</h4>
+          <span>Avg. round duration</span>
+        </div>
+        <div class="info-box card bg-dark">
+          <h4>{{ roundNumber(stats.avgRoundsPerMatch) }}</h4>
+          <span>Avg. rounds per match</span>
+        </div>
+      </div>
+      <div class="card bg-dark">
+        <DonutChart
+          identifier="roundChart"
+          :data="[stats.totalRoundsWon, stats.totalRoundsLost]"
+          :labels="['Won', 'Lost']"
+          :inner-title="`${roundNumber(stats.roundWinRate)}`"
+          inner-title-size="2.5em"
+          inner-subtitle="Round win rate"
+          inner-subtitle-size="0.8em"
+          :palette="palettes.resultsWithoutTie"
+          :side-length="150"
+          legend-positon="bottom"
+        />
+      </div>
+      <div class="card bg-dark">
+        <DonutChart
+          identifier="pistolRoundChart"
+          :data="[stats.pistolRoundsWon, stats.pistolRoundsLost]"
+          :labels="['Won', 'Lost']"
+          :inner-title="`${roundNumber(stats.pistolRoundWinRate)}`"
+          inner-title-size="2.5em"
+          inner-subtitle="Pistol round win rate"
+          inner-subtitle-size="0.69em"
+          :palette="palettes.resultsWithoutTie"
+          :side-length="150"
+          legend-positon="bottom"
+        />
+      </div>
+      <div class="card bg-dark">
+        <BarChart
+          title="Rounds by kills"
+          :small-title="true"
+          identifier="roundsByKillsChart"
+          :data="roundsByKillsData"
+          :height="140"
+          :bar-width="36"
+          :y-axis-legend-width="31"
+        />
+      </div>
+      <div class="stats-column">
+        <div class="info-box card bg-dark">
+          <h2>{{ roundNumber(stats.avgKillsPerRound) }}</h2>
+          <span>Avg. kills per round</span>
+        </div>
+        <div class="info-box card bg-dark">
+          <h2>{{ roundNumber(stats.roundDeathPercent) }}</h2>
+          <span>Death to round ratio</span>
+        </div>
+      </div>
+    </div>
+    <div id="main-stats-row">
+      <div class="stats-column">
+        <div class="info-box card bg-dark">
+          <h2>{{ stats.mvpRounds }}</h2>
+          <span>Total MVPs won</span>
+        </div>
+        <div class="info-box card bg-dark">
+          <h2>{{ roundNumber(stats.mvpRate) }}</h2>
+          <span>MVP rate</span>
+        </div>
+      </div>
+      <div class="card bg-dark">
+        <DonutChart
+          identifier="teamsChart"
+          :data="Object.values(stats.roundsByTeam)"
+          :labels="Object.keys(stats.roundsByTeam)"
+          title="Rounds by team"
+          :small-title="true"
+          :inner-title="mostPlayedTeam"
+          inner-subtitle="Most played team"
+          inner-title-size="2.5em"
+          inner-subtitle-size="0.75em"
+          :side-length="150"
+          :palette="palettes.teams"
+        />
+      </div>
+      <div class="card bg-dark">
+        <BarChart
+          title="Win rate by team"
+          :small-title="true"
+          identifier="roundWinRateByTeamChart"
+          :data="roundWinRateByTeamData"
+          :palette="palettes.teams"
+          :height="140"
+          :bar-width="40"
+          :y-axis-legend-width="32"
+        />
+      </div>
+      <div class="stats-column">
+        <div class="info-box card bg-dark">
+          <h2>${{ roundNumber(stats.avgInitMoney) }}</h2>
+          <span>Avg. initial money</span>
+        </div>
+        <div class="info-box card bg-dark">
+          <h2>${{ roundNumber(stats.avgEquipValue) }}</h2>
+          <span>Avg. equipment value</span>
+        </div>
+      </div>
+      <div class="card bg-dark">
+        <DonutChart
+          identifier="winTypeChart"
+          :data="sortedWinTypeValues"
+          :labels="sortedWinTypeNames"
+          title="Rounds by win type"
+          :small-title="true"
+          :inner-title="mostUsualWinType"
+          inner-subtitle="Most usual win type"
+          inner-title-size="0.9em"
+          inner-subtitle-size="0.66em"
+          :side-length="150"
+        />
+      </div>
+    </div>
   </div>
 </template>
 
@@ -87,11 +215,13 @@
   import DonutChart from './DonutChart.vue';
   import { getAllStats } from '../../api/api';
   import palettes from '../../util/palette';
+  import BarChart from './BarChart.vue';
 
   export default {
     name: 'Stats',
     components: {
       DonutChart,
+      BarChart,
     },
     setup() {
       return {
@@ -104,13 +234,14 @@
       };
     },
     computed: {
-      mostPlayedMap() {
-        const maxTimesPlayed = Math.max(
-          ...Object.values(this.stats.matchesByMap)
-        );
-        return Object.keys(this.stats.matchesByMap).filter(
-          map => this.stats.matchesByMap[map] === maxTimesPlayed
+      mostPlayedTeam() {
+        const maxTeam = Math.max(...Object.values(this.stats.roundsByTeam));
+        return Object.keys(this.stats.roundsByTeam).filter(
+          team => this.stats.roundsByTeam[team] === maxTeam
         )[0];
+      },
+      mostPlayedMap() {
+        return this.sortedMapNames[0];
       },
       sortedMapValues() {
         return Object.values(this.stats.matchesByMap).sort(
@@ -123,6 +254,33 @@
             this.stats.matchesByMap[secondMap] -
             this.stats.matchesByMap[firstMap]
         );
+      },
+      mostUsualWinType() {
+        return this.sortedWinTypeNames[0];
+      },
+      sortedWinTypeValues() {
+        return Object.values(this.stats.roundsByWinType).sort(
+          (first, second) => second - first
+        );
+      },
+      sortedWinTypeNames() {
+        return Object.keys(this.stats.roundsByWinType).sort(
+          (first, second) =>
+            this.stats.roundsByWinType[second] -
+            this.stats.roundsByWinType[first]
+        );
+      },
+      roundsByKillsData() {
+        return this.stats.roundsByKills.map((element, index) => ({
+          label: index,
+          value: element,
+        }));
+      },
+      roundWinRateByTeamData() {
+        return Object.keys(this.stats.roundWinRateByTeam).map(key => ({
+          label: key,
+          value: this.roundNumber(this.stats.roundWinRateByTeam[key]),
+        }));
       },
     },
     created() {
@@ -142,6 +300,11 @@
 </script>
 
 <style scoped>
+  #stats-container {
+    display: flex;
+    flex-flow: column;
+  }
+
   #main-stats-row {
     margin-top: 1vh;
     margin-bottom: 1vh;
@@ -163,8 +326,8 @@
     padding: 0 1em;
   }
 
-  .info-box h2 {
-    text-align: center;
+  .info-box h4 {
+    margin-bottom: 0.1em;
   }
 
   .info-box span {

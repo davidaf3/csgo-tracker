@@ -41,6 +41,14 @@ const palettes = {
       'rgba(220, 53, 69, 0.2)',
     ],
   },
+  resultsWithoutTie: {
+    colors: ['rgb(25, 135, 84)', 'rgb(220, 53, 69)'],
+    darkColors: ['rgba(25, 135, 84, 0.2)', 'rgba(220, 53, 69, 0.2)'],
+  },
+  teams: {
+    colors: ['rgb(93,121,174)', 'rgb(222,155,53)'],
+    darkColors: ['rgba(93,121,174, 0.2)', 'rgba(222,155,53, 0.2)'],
+  },
 };
 
 export default palettes;

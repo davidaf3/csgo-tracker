@@ -1,6 +1,7 @@
 <template>
   <div class="outerContainer">
-    <h3 v-if="title" class="title">{{ title }}</h3>
+    <h3 v-if="title && !smallTitle" class="title">{{ title }}</h3>
+    <h5 v-if="title && smallTitle" class="small-title">{{ title }}</h5>
     <div class="mainContainer" :class="`legend-${legendPositon}`">
       <svg
         :id="identifier"
@@ -17,6 +18,7 @@
             fill="none"
             :stroke="palette.colors[index]"
             :stroke-dasharray="initialDasharray"
+            :stroke-width="(2 * sideLength) / 25"
           >
             <animate
               begin="indefinite"
@@ -80,7 +82,7 @@
 </template>
 
 <script>
-  import { Popover } from 'bootstrap';
+  import createPopovers from '../../util/popover';
   import palettes from '../../util/palette';
 
   export default {
@@ -102,6 +104,11 @@
         type: String,
         required: false,
         default: null,
+      },
+      smallTitle: {
+        type: Boolean,
+        required: false,
+        default: false,
       },
       innerTitle: {
         type: String,
@@ -139,7 +146,7 @@
       },
     },
     setup(props) {
-      const radius = props.sideLength / 2 - props.sideLength / 10;
+      const radius = props.sideLength / 2 - props.sideLength / 20;
 
       const valuesSum = props.data.reduce((sum, value) => sum + value, 0);
 
@@ -183,43 +190,11 @@
       },
     },
     mounted() {
-      const popoverTriggerList = [].slice.call(
-        document.querySelectorAll(
-          `#${this.identifier} [data-bs-toggle="popover"]`
-        )
-      );
-      const popovers = popoverTriggerList.map(
-        popoverTrigger =>
-          new Popover(popoverTrigger, {
-            container: 'body',
-            html: true,
-            sanitize: false,
-          })
-      );
-
-      popoverTriggerList.forEach((popoverTrigger, index) => {
-        const chartSector = popoverTrigger.previousElementSibling;
-        let timeout = null;
-
-        chartSector.onmouseenter = () => {
-          if (!timeout) popovers[index].show();
-          else {
-            clearTimeout(timeout);
-            timeout = null;
-          }
-        };
-
-        chartSector.onmouseleave = () => {
-          timeout = setTimeout(() => {
-            popovers[index].hide();
-            timeout = null;
-          }, 500);
-        };
-      });
-
+      this.makePopovers();
       this.playAnimation();
     },
     updated() {
+      this.makePopovers();
       this.playAnimation();
     },
     methods: {
@@ -271,11 +246,28 @@
                 ${this.labels[index]}: ${this.data[index]}
                 (${this.roundNumber(this.percentages[index])}%)`;
       },
+      makePopovers() {
+        createPopovers(
+          this.identifier,
+          element => {
+            const chartSector = element;
+            chartSector.style.strokeWidth = (2 * this.sideLength) / 20;
+          },
+          element => {
+            const chartSector = element;
+            chartSector.style.strokeWidth = (2 * this.sideLength) / 25;
+          }
+        );
+      },
     },
   };
 </script>
 
 <style scoped>
+  .donut {
+    margin: 0.5em;
+  }
+
   .outerContainer {
     display: flex;
     flex-flow: column;
@@ -283,8 +275,13 @@
   }
 
   .title {
-    margin-top: 0.7em;
-    margin-bottom: 0;
+    margin-top: 0.4em;
+    margin-bottom: 0.1em;
+  }
+
+  .small-title {
+    margin-top: 0.4em;
+    margin-bottom: 0.25em;
   }
 
   .mainContainer {
@@ -294,14 +291,6 @@
 
   text {
     fill: white;
-  }
-
-  .ring {
-    stroke-width: 15;
-  }
-
-  .ring:hover {
-    stroke-width: 20;
   }
 
   .innerTitle,
@@ -348,38 +337,5 @@
 
   .legendContainer svg {
     margin-right: 0.5em;
-  }
-</style>
-
-<style>
-  .popover {
-    background: rgba(0, 0, 0, 0.8);
-  }
-
-  .popover-body {
-    font-size: 0.8em;
-    color: white;
-    display: flex;
-    align-items: center;
-  }
-
-  .popover-body svg {
-    margin-right: 0.5em;
-  }
-
-  .bs-popover-start > .popover-arrow::after {
-    border-left-color: rgba(0, 0, 0, 0.7);
-  }
-
-  .bs-popover-top > .popover-arrow::after {
-    border-top-color: rgba(0, 0, 0, 0.7);
-  }
-
-  .bs-popover-end > .popover-arrow::after {
-    border-right-color: rgba(0, 0, 0, 0.7);
-  }
-
-  .bs-popover-bottom > .popover-arrow::after {
-    border-bottom-color: rgba(0, 0, 0, 0.7);
   }
 </style>
