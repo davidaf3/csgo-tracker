@@ -99,6 +99,12 @@ interface RoundsStats {
     T: number;
   };
 
+  /** Round win rate by team */
+  roundWinRateByTeam: {
+    CT: number;
+    T: number;
+  };
+
   /** Number of rounds by win type */
   roundsByWinType: WinTypeStats;
 
@@ -119,6 +125,12 @@ export type Stats = MatchesStats &
   RoundsStats & {
     /** Average number of rounds per match */
     avgRoundsPerMatch: number;
+
+    /** Averge kills per round */
+    avgKillsPerRound: number;
+
+    /** Percentage of rounds where the player died*/
+    roundDeathPercent: number;
   };
 
 /**
@@ -148,6 +160,14 @@ function computeStats(
         resolve({
           ...matchesStats,
           ...roundsStats,
+          avgKillsPerRound:
+            roundsStats.totalRounds > 0
+              ? matchesStats.kills / roundsStats.totalRounds
+              : 0,
+          roundDeathPercent:
+            roundsStats.totalRounds > 0
+              ? matchesStats.deaths / roundsStats.totalRounds
+              : 0,
           avgRoundsPerMatch:
             matchesStats.totalMatches > 0
               ? roundsStats.totalRounds / matchesStats.totalMatches
@@ -259,6 +279,10 @@ function computeStatsFromRounds(rounds: Rounds.Round[]): RoundsStats {
       CT: 0,
       T: 0,
     },
+    roundWinRateByTeam: {
+      CT: 0,
+      T: 0,
+    },
     roundsByWinType: {
       ct_win_elimination: 0,
       ct_win_defuse: 0,
@@ -274,12 +298,17 @@ function computeStatsFromRounds(rounds: Rounds.Round[]): RoundsStats {
   let totalEquipValue = 0;
   let totalInitMoney = 0;
   let totalRoundDuration = 0;
+  let roundsWonByTeam = {
+    CT: 0,
+    T: 0,
+  };
 
   rounds.forEach((round) => {
     roundsStats.totalRounds += 1;
 
     if (round.winner === round.team) {
       roundsStats.totalRoundsWon += 1;
+      roundsWonByTeam[round.team as 'CT' | 'T'] += 1;
       if (round.n === 1 || round.n === 16) roundsStats.pistolRoundsWon += 1;
     } else {
       roundsStats.totalRoundsLost += 1;
@@ -294,16 +323,21 @@ function computeStatsFromRounds(rounds: Rounds.Round[]): RoundsStats {
     totalEquipValue += round.equipValue;
     totalInitMoney += round.initMoney;
     totalRoundDuration += round.duration;
-    roundsStats.roundsByKills[round.kills] += 1;
+    roundsStats.roundsByKills[round.kills > 0 ? round.kills : 0] += 1;
   });
 
   if (roundsStats.totalRounds > 0) {
     roundsStats.roundWinRate =
       roundsStats.totalRoundsWon / roundsStats.totalRounds;
-    roundsStats.mvpRate = roundsStats.mvpRounds / roundsStats.totalRounds;
+    roundsStats.mvpRate = roundsStats.mvpRounds / roundsStats.totalRoundsWon;
     roundsStats.avgEquipValue = totalEquipValue / roundsStats.totalRounds;
     roundsStats.avgInitMoney = totalInitMoney / roundsStats.totalRounds;
     roundsStats.avgRoundDuration = totalRoundDuration / roundsStats.totalRounds;
+    (['CT', 'T'] as Array<'CT' | 'T'>).map((team) => {
+      roundsStats.roundWinRateByTeam[team] =
+        roundsWonByTeam[team] /
+        roundsStats.roundsByTeam[team];
+    });
   }
 
   return {

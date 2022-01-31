@@ -4,7 +4,7 @@
   "description": "",
   "main": "dist/server.js",
   "scripts": {
-    "build": "tsc && node copyAssets.js",
+    "build": "tsc && node dist/copyAssets.js",
     "start": "node dist/server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
