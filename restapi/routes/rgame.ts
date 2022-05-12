@@ -1,10 +1,10 @@
 import EventEmitter from 'events';
-import NodeCache from 'node-cache';
 import { Express } from 'express';
+import * as statsCache from '../statsCache'
 import * as matchService from '../services/matchService';
 import * as roundService from '../services/roundService';
 
-export default function(app: Express, statsCache: NodeCache): EventEmitter {
+export default function(app: Express): EventEmitter {
   const gameEventEmitter = new EventEmitter();
 
   app.post('/game', (req, res) => {
@@ -232,9 +232,7 @@ export default function(app: Express, statsCache: NodeCache): EventEmitter {
         roundService.saveCurrentRound(),
         matchService.saveCurrentMatch(),
       ]).then(() => {
-        // Invalidate the stats cache
-        statsCache.del(statsCache.keys());
-
+        statsCache.invalidate();
         gameEventEmitter.emit('game-event', 'round ended', finishedMatchId);
         gameEventEmitter.emit('game-event', 'match over', finishedMatchId);
       });

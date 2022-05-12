@@ -1,6 +1,6 @@
 {
   "name": "csgo-tracker-restapi",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "",
   "main": "dist/server.js",
   "scripts": {
@@ -12,7 +12,6 @@
   "license": "MIT",
   "dependencies": {
     "express": "^4.17.1",
-    "node-cache": "^5.1.2",
     "node-fetch": "^2.6.7",
     "sqlite3": "^5.0.2",
     "uuid": "^3.4.0",

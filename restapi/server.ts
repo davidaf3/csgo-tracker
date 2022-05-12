@@ -2,7 +2,6 @@ import fs from 'fs/promises';
 import { Database } from 'sqlite3';
 import express from 'express';
 import WebSocket from 'ws';
-import NodeCache from 'node-cache';
 import path from 'path';
 import { config } from './config';
 import rgame from './routes/rgame';
@@ -26,11 +25,9 @@ app.use((_req, res, next) => {
   next();
 });
 
-const statsCache = new NodeCache();
-
-const gameEventEmitter = rgame(app, statsCache);
+const gameEventEmitter = rgame(app);
 rmatch(app);
-rstats(app, statsCache);
+rstats(app);
 rsteamapi(app);
 
 const startSever = () => {

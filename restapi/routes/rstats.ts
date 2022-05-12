@@ -1,13 +1,13 @@
-import NodeCache from 'node-cache';
 import { Express } from 'express';
 import { Stats, getAllStats } from '../services/statsService';
+import * as statsCache from '../statsCache';
 
-export default function (app: Express, statsCache: NodeCache): void {
+export default function (app: Express): void {
   app.get('/stats', async (req, res) => {
     try {
       let stats: Stats;
       if (statsCache.has(req.url)) {
-        stats = statsCache.get<Stats>(req.url) as Stats;
+        stats = statsCache.get(req.url) as Stats;
       } else {
         stats = await getAllStats();
         statsCache.set(req.url, stats);
@@ -19,4 +19,4 @@ export default function (app: Express, statsCache: NodeCache): void {
       res.json({ error: 'An error occurred while getting the stats' });
     }
   });
-};
+}
