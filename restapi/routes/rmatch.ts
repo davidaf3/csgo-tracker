@@ -66,6 +66,24 @@ export default function (app: Express): void {
     }
   });
 
+  app.post('/match/:id/forceEnd', async (req, res) => {
+    try {
+      const match = await matchService.forceMatchEnd(
+        req.params.id
+      );
+      if (match) {
+        res.status(200);
+        res.json(match);
+      } else {
+        res.status(404);
+        res.json({ error: 'Match not found' });
+      }
+    } catch (err) {
+      res.status(500);
+      res.json({ error: 'An error occurred while forcing the match end' });
+    }
+  });
+
   app.delete('/match/:id', (req, res) => {
     try {
       matchService.deleteMatch(req.params.id);

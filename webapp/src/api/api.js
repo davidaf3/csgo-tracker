@@ -35,12 +35,29 @@ export async function getMatches() {
 /**
  * Gets a match
  * @param {string} id match id
- * @return {Promise<Match>} match
+ * @return {Promise<Match|null>} match
  */
 export async function getMatch(id) {
   try {
     const response = await fetch(`http://localhost:8090/match/${id}`, {
       method: 'GET',
+    });
+    return await response.json();
+  } catch (err) {
+    return null;
+  }
+}
+
+/**
+ * Forces a match to end
+ * @param {string} id match id
+ * @return {Promise<Match|null>} finished match or null if
+ * no such match was found
+ */
+export async function forceMatchEnd(id) {
+  try {
+    const response = await fetch(`http://localhost:8090/match/${id}/forceEnd`, {
+      method: 'POST',
     });
     return await response.json();
   } catch (err) {

@@ -1,26 +1,38 @@
 <template>
   <div id="details">
-    <div id="matchInfo">
-      <img
-        :src="`img/map-icons/map_icon_${match.map}.svg`"
-        :alt="match.map"
-        height="50"
-      />
-      <div class="matchInfoBox">
-        <h5>Map</h5>
-        <span>{{ match.map }}</span>
+    <div id="matchHeader">
+      <div id="matchInfo">
+        <img
+          :src="`img/map-icons/map_icon_${match.map}.svg`"
+          :alt="match.map"
+          height="50"
+        />
+        <div class="matchInfoBox">
+          <h5>Map</h5>
+          <span>{{ match.map }}</span>
+        </div>
+        <div class="matchInfoBox">
+          <h5>Mode</h5>
+          <span>{{ capitalizedGameMode }}</span>
+        </div>
+        <div class="matchInfoBox">
+          <h5>Date</h5>
+          <span>{{ formattedDate }}</span>
+        </div>
+        <div class="matchInfoBox">
+          <h5>Duration</h5>
+          <span>{{ Math.round(match.duration / 60) }} min</span>
+        </div>
       </div>
-      <div class="matchInfoBox">
-        <h5>Mode</h5>
-        <span>{{ capitalizedGameMode }}</span>
-      </div>
-      <div class="matchInfoBox">
-        <h5>Date</h5>
-        <span>{{ formattedDate }}</span>
-      </div>
-      <div class="matchInfoBox">
-        <h5>Duration</h5>
-        <span>{{ Math.round(match.duration / 60) }} min</span>
+      <div id="matchButtons">
+        <button
+          v-if="!match.over"
+          type="button"
+          class="btn btn-primary"
+          @click="forceMatchEnd(match.id)"
+        >
+          Force end
+        </button>
       </div>
     </div>
     <h1>{{ match.roundsWon }} - {{ match.roundsLost }}</h1>
@@ -73,9 +85,7 @@
           <li class="list-group-item">
             Winner: {{ rounds[selectedRound - 1].winner }}
           </li>
-          <li class="list-group-item">
-            Win type: {{ winType }}
-          </li>
+          <li class="list-group-item">Win type: {{ winType }}</li>
           <li class="list-group-item">
             Duration: {{ Math.round(rounds[selectedRound - 1].duration) }} s
           </li>
@@ -135,6 +145,10 @@
         type: Object,
         required: true,
       },
+      forceMatchEnd: {
+        type: Function,
+        required: true,
+      },
     },
     data() {
       return {
@@ -146,7 +160,9 @@
     },
     computed: {
       capitalizedGameMode() {
-        return this.match.mode.charAt(0).toUpperCase() + this.match.mode.slice(1);
+        return (
+          this.match.mode.charAt(0).toUpperCase() + this.match.mode.slice(1)
+        );
       },
       formattedDate() {
         const dateString = this.matchDate.toLocaleDateString('en', {
@@ -179,7 +195,8 @@
           : 0;
       },
       winType() {
-        const parsedWinType = this.rounds[this.selectedRound - 1].winType.split('_')[2];
+        const parsedWinType =
+          this.rounds[this.selectedRound - 1].winType.split('_')[2];
         return parsedWinType.charAt(0).toUpperCase() + parsedWinType.slice(1);
       },
     },
@@ -196,13 +213,13 @@
     },
     methods: {
       updateRounds() {
-        getRounds(this.match.id).then(rounds => {
+        getRounds(this.match.id).then((rounds) => {
           this.rounds = rounds;
           this.selectedRound = null;
         });
       },
       updatePlayer() {
-        getPlayerInfo(this.match.playerId).then(player => {
+        getPlayerInfo(this.match.playerId).then((player) => {
           this.player = player;
         });
       },
@@ -231,6 +248,11 @@
     justify-content: left;
     align-items: left;
   }
+  #matchHeader {
+    display: flex;
+    flex-flow: row;
+    width: 100%;
+  }
   #matchInfo {
     align-self: flex-start;
     display: flex;
@@ -238,6 +260,17 @@
     justify-content: center;
     align-items: center;
     margin: 1em 0 0 3em;
+  }
+  #matchButtons {
+    margin: 1em 3em 0 auto;
+    display: flex;
+    flex-flow: column;
+  }
+  #matchButtons button {
+    margin-bottom: 0.5em;
+  }
+  #matchButtons button:last-of-type {
+    margin-bottom: 0;
   }
   .matchInfoBox {
     margin-left: 2em;

@@ -10,13 +10,17 @@
       />
     </div>
     <div id="match-details">
-      <MatchDetails v-if="selectedMatch" :match="selectedMatch" />
+      <MatchDetails
+        v-if="selectedMatch"
+        :match="selectedMatch"
+        :force-match-end="forceMatchEndClick"
+      />
     </div>
   </div>
 </template>
 
 <script>
-  import { getMatches, getMatch } from '../../api/api';
+  import { getMatches, getMatch, forceMatchEnd } from '../../api/api';
   import MatchPreview from './MatchPreview.vue';
   import MatchDetails from './MatchDetails.vue';
 
@@ -46,7 +50,7 @@
     },
     methods: {
       updateMatches() {
-        getMatches().then(matches => {
+        getMatches().then((matches) => {
           this.matches = matches;
         });
       },
@@ -65,7 +69,7 @@
       async retrieveAndUpdateMatch(matchId) {
         const updatedMatch = await getMatch(matchId);
         const matchIndex = this.matches.findIndex(
-          match => match.id === matchId
+          (match) => match.id === matchId
         );
 
         if (updatedMatch && matchIndex >= 0) {
@@ -79,7 +83,7 @@
       },
       removeMatchIfNotOver(matchId) {
         const matchIndex = this.matches.findIndex(
-          match => match.id === matchId
+          (match) => match.id === matchId
         );
 
         // Remove the match if it is not over
@@ -91,6 +95,18 @@
             this.selectedMatch = null;
           }
         }
+      },
+      async forceMatchEndClick(id) {
+        const match = await forceMatchEnd(id);
+        if (!match) return;
+
+        if (match.id === this.selectedMatch.id) {
+          this.selectMatch(match);
+        }
+        const index = this.matches.findIndex(
+          (matchInList) => matchInList.id === match.id
+        );
+        if (index >= 0) this.matches[index] = match;
       },
     },
   };
