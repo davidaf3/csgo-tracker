@@ -69,12 +69,15 @@ export function saveCurrentRound(): Promise<void> {
 }
 
 /**
- * Finds all rounds of a match
+ * Finds all rounds of a match, ordered by round number
  * @param matchId id of the match
  * @returns list of rounds of the match
  */
-export function findByMatch(matchId: string): Promise<Rounds.Round[]> {
-  return Rounds.getByMatch(matchId);
+export async function findByMatch(matchId: string): Promise<Rounds.Round[]> {
+  const rounds = await Rounds.getByMatch(matchId);
+  if (currentRound && matchId === currentRound.matchId)
+    rounds[currentRound.n - 1] = currentRound;
+  return rounds;
 }
 
 /**
@@ -83,9 +86,15 @@ export function findByMatch(matchId: string): Promise<Rounds.Round[]> {
  * @param n number of the round
  * @returns the round or null if there was no such round
  */
-export function findByMatchAndNumber(
+export async function findByMatchAndNumber(
   matchId: string,
   n: string
 ): Promise<Rounds.Round | null> {
-  return Rounds.getByMatchAndNumber(matchId, n);
+  if (
+    currentRound &&
+    matchId === currentRound.matchId &&
+    Number(n) === currentRound.n
+  )
+    return currentRound;
+  return await Rounds.getByMatchAndNumber(matchId, n);
 }

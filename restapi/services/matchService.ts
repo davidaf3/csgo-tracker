@@ -67,7 +67,7 @@ export function deleteMatch(id: string): void {
 }
 
 /**
- * Finds all matches asynchronously
+ * Finds all matches asynchronously, ordered by date
  * @return promise that resolves to the list of matches
  */
 export function findAll(): Promise<Matches.Match[]> {
@@ -80,6 +80,8 @@ export function findAll(): Promise<Matches.Match[]> {
  * @return {Promise<Matches.Match|null>} promise that resolves to the match
  * or null if there is no such match
  */
-export function findById(id: string): Promise<Matches.Match | null> {
-  return Matches.get(id);
+export async function findById(id: string): Promise<Matches.Match | null> {
+  if (currentMatch && id === currentMatch.id)
+    return currentMatch;
+  return await Matches.get(id);
 }
