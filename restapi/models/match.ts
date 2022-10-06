@@ -145,7 +145,7 @@ export function deleteMatch(id: string): void {
 }
 
 /**
- * Gets all the matches asynchronously
+ * Gets all the matches asynchronously, ordered by date
  * @return promise that resolves to the list of matches
  */
 export function getAll(): Promise<Match[]> {

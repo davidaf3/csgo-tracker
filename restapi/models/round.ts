@@ -116,7 +116,7 @@ export function getAll(): Promise<Round[]> {
 }
 
 /**
- * Gets all the rounds of a match
+ * Gets all the rounds of a match, ordered by round number
  * @param matchId id of the match
  * @return promise that resolves to the list of rounds
  */

@@ -30,7 +30,7 @@ export function has(key: string): boolean {
 }
 
 /**
- * Invalidates the hole cache
+ * Invalidates the whole cache
  */
 export function invalidate() {
   statsCache.clear();
