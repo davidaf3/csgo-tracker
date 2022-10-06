@@ -49,6 +49,16 @@ export async function getMatch(id) {
 }
 
 /**
+ * Deletes a match
+ * @param {string} id match id
+ */
+export function deleteMatch(id) {
+  fetch(`http://localhost:8090/match/${id}`, {
+    method: 'DELETE',
+  });
+}
+
+/**
  * Forces a match to end
  * @param {string} id match id
  * @return {Promise<Match|null>} finished match or null if

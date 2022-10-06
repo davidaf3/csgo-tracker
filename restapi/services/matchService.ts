@@ -65,6 +65,7 @@ export function closeCurrentMatch(): void {
  */
 export function deleteMatch(id: string): void {
   Matches.deleteMatch(id);
+  if (id === currentMatch?.id) closeCurrentMatch();
 }
 
 /**

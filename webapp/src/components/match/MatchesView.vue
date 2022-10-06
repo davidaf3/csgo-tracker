@@ -14,13 +14,19 @@
         v-if="selectedMatch"
         :match="selectedMatch"
         :force-match-end="forceMatchEndClick"
+        :delete-match="deleteMatchClick"
       />
     </div>
   </div>
 </template>
 
 <script>
-  import { getMatches, getMatch, forceMatchEnd } from '../../api/api';
+  import {
+    getMatches,
+    getMatch,
+    forceMatchEnd,
+    deleteMatch
+  } from '../../api/api';
   import MatchPreview from './MatchPreview.vue';
   import MatchDetails from './MatchDetails.vue';
 
@@ -107,6 +113,16 @@
           (matchInList) => matchInList.id === match.id
         );
         if (index >= 0) this.matches[index] = match;
+      },
+      async deleteMatchClick(id) {
+        deleteMatch(id);
+
+        const index = this.matches.findIndex((match) => match.id === id);
+        if (index >= 0) this.matches.splice(index, 1);
+
+        if (this.selectedMatch?.id === id) {
+          this.selectedMatch = null;
+        }
       },
     },
   };

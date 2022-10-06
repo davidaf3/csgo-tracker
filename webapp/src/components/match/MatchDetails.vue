@@ -26,6 +26,13 @@
       </div>
       <div id="matchButtons">
         <button
+          type="button"
+          class="btn btn-danger"
+          @click="deleteMatch(match.id)"
+        >
+          Delete
+        </button>
+        <button
           v-if="!match.over"
           type="button"
           class="btn btn-primary"
@@ -146,6 +153,10 @@
         required: true,
       },
       forceMatchEnd: {
+        type: Function,
+        required: true,
+      },
+      deleteMatch: {
         type: Function,
         required: true,
       },
