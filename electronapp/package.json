@@ -46,9 +46,9 @@
     "csgo-tracker-restapi": "file:../restapi"
   },
   "devDependencies": {
-    "electron": "^13.1.7",
-    "electron-builder": "^22.11.7",
-    "eslint": "^7.32.0",
-    "eslint-config-airbnb": "^18.2.1"
+    "electron": "^21.1.0",
+    "electron-builder": "^23.3.3",
+    "eslint": "^8.24.0",
+    "eslint-config-airbnb": "^19.0.4"
   }
 }

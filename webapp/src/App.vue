@@ -1,6 +1,6 @@
 <template>
   <div id="app" class="conainer-fluid">
-    <Nav />
+    <NavBar />
     <div id="content" class="container-fluid">
       <router-view></router-view>
     </div>
@@ -8,12 +8,12 @@
 </template>
 
 <script>
-  import Nav from './components/Nav.vue';
+  import NavBar from './components/NavBar.vue';
 
   export default {
     name: 'App',
     components: {
-      Nav,
+      NavBar,
     },
   };
 </script>

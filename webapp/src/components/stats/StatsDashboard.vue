@@ -218,7 +218,7 @@
   import BarChart from './BarChart.vue';
 
   export default {
-    name: 'Stats',
+    name: 'StatsDashboard',
     components: {
       DonutChart,
       BarChart,

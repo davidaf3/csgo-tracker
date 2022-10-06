@@ -23,7 +23,7 @@
   const socket = new WebSocket('ws://localhost:8090');
 
   export default {
-    name: 'Matches',
+    name: 'MatchesView',
     components: {
       MatchPreview,
       MatchDetails,

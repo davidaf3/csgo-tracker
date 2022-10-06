@@ -18,19 +18,19 @@
       <div id="navbarSupportedContent" class="collapse navbar-collapse">
         <ul class="navbar-nav">
           <li class="nav-item">
-            <router-link to="/matches" class="nav-link">
-              Matches
-            </router-link>
+            <router-link to="/matches" class="nav-link"> Matches </router-link>
           </li>
           <li class="nav-item">
-            <router-link to="/stats" class="nav-link">
-              Stats
-            </router-link>
+            <router-link to="/stats" class="nav-link"> Stats </router-link>
           </li>
         </ul>
         <ul class="navbar-nav ms-auto">
           <li class="nav-item">
-            <a href="https://github.com/davidaf3/csgo-tracker" target="_blank">
+            <a
+              href="https://github.com/davidaf3/csgo-tracker"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <img
                 alt="GitHub"
                 src="../assets/github-logo.png"
@@ -47,7 +47,7 @@
 
 <script>
   export default {
-    name: 'Nav',
+    name: 'NavBar',
   };
 </script>
 

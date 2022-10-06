@@ -25,6 +25,7 @@
         :key="round.id"
         :class="roundsToAnimate.includes(round.n) ? 'animated' : null"
         @click="selectRound(round.n)"
+        @keypress="selectRound(round.n)"
       >
         <rect
           v-if="round.winner === round.team"
