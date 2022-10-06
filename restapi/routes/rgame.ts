@@ -244,12 +244,12 @@ export default function(app: Express): EventEmitter {
     // Match quit
     if (currentMatch && req.body.previously?.map === true) {
       console.log('QUIT');
+      gameEventEmitter.emit('game-event', 'quit', currentMatch.id);
 
-      if (!currentMatch.over) {
+      /* if (!currentMatch.over) {
         matchService.deleteMatch(currentMatch.id);
-        gameEventEmitter.emit('game-event', 'quit', currentMatch.id);
         matchService.closeCurrentMatch();
-      }
+      } */
     }
 
     /* if (req.body.player?.steamid !== matchService.getCurrentMatch()?.playerId) {

@@ -52,7 +52,6 @@
       this.wsMessageCallbacks.set('match started', this.retrieveAndAddMatch);
       this.wsMessageCallbacks.set('you died', this.retrieveAndUpdateMatch);
       this.wsMessageCallbacks.set('round ended', this.retrieveAndUpdateMatch);
-      this.wsMessageCallbacks.set('quit', this.removeMatchIfNotOver);
     },
     methods: {
       updateMatches() {
@@ -84,21 +83,6 @@
           // Check if the updated match is the currently selected match
           if (this.selectedMatch?.id === matchId) {
             this.selectedMatch = updatedMatch;
-          }
-        }
-      },
-      removeMatchIfNotOver(matchId) {
-        const matchIndex = this.matches.findIndex(
-          (match) => match.id === matchId
-        );
-
-        // Remove the match if it is not over
-        if (matchIndex >= 0 && !this.matches[matchIndex].over) {
-          this.matches.splice(matchIndex, 1);
-
-          // Check if the removed match is the currently selected match
-          if (this.selectedMatch?.id === matchId) {
-            this.selectedMatch = null;
           }
         }
       },
