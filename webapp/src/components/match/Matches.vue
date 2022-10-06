@@ -40,6 +40,7 @@
 
       this.wsMessageCallbacks = new Map();
       this.wsMessageCallbacks.set('match started', this.retrieveAndAddMatch);
+      this.wsMessageCallbacks.set('you died', this.retrieveAndUpdateMatch);
       this.wsMessageCallbacks.set('round ended', this.retrieveAndUpdateMatch);
       this.wsMessageCallbacks.set('quit', this.removeMatchIfNotOver);
     },
