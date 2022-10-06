@@ -38,3 +38,6 @@ create table Rounds(
     mvp NUMBER not null,
     FOREIGN KEY (match_id) REFERENCES Matches(id) ON DELETE CASCADE
 );
+
+create index Index_Rounds_MatchID on Rounds(match_id);
+create index Index_Rounds_MatchID_NRound on Rounds(match_id, n_round);
