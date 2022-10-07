@@ -301,8 +301,8 @@
 
 <style scoped>
   #stats-container {
-    display: flex;
-    flex-flow: column;
+    height: 100%;
+    display: grid;
   }
 
   #main-stats-row {

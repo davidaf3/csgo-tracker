@@ -262,18 +262,18 @@
   #matchHeader {
     display: flex;
     flex-flow: row;
+    align-items: center;
+    padding: 1em 3em;
     width: 100%;
   }
   #matchInfo {
-    align-self: flex-start;
     display: flex;
     flex-flow: row;
     justify-content: center;
     align-items: center;
-    margin: 1em 0 0 3em;
   }
   #matchButtons {
-    margin: 1em 3em 0 auto;
+    margin-left: auto;
     display: flex;
     flex-flow: column;
   }

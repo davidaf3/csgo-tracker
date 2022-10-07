@@ -248,7 +248,6 @@ export default function(app: Express): EventEmitter {
 
       /* if (!currentMatch.over) {
         matchService.deleteMatch(currentMatch.id);
-        matchService.closeCurrentMatch();
       } */
     }
 
