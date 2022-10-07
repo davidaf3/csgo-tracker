@@ -42,6 +42,7 @@
             :cx="computePopoverXCoordinate(index)"
             :cy="computePopoverYCoordinate(index)"
             data-bs-toggle="popover"
+            data-bs-custom-class="custom-popover"
             :data-bs-placement="computePopoverPlacement(index)"
             :data-bs-content="getPopoverContent(index)"
           />

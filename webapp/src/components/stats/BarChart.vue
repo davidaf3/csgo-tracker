@@ -59,6 +59,7 @@
             :cx="getBarX(index) + halfBarWidth"
             :cy="getBarHeight(item) / 2 + 21.5"
             data-bs-toggle="popover"
+            data-bs-custom-class="custom-popover"
             data-bs-placement="right"
             :data-bs-content="getPopoverContent(index)"
           />
