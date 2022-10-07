@@ -13,11 +13,11 @@ export default function createPopovers(
   previousSiblingOnMouseEnter,
   previousSiblingOnMouseLeave
 ) {
-  const popoverTriggerList = [].slice.call(
-    document.querySelectorAll(`#${identifier} [data-bs-toggle="popover"]`)
+  const popoverTriggerList = document.querySelectorAll(
+    `#${identifier} [data-bs-toggle="popover"]`
   );
-  const popovers = popoverTriggerList.map(
-    popoverTrigger =>
+  const popovers = [...popoverTriggerList].map(
+    (popoverTrigger) =>
       new Popover(popoverTrigger, {
         container: 'body',
         html: true,
@@ -25,26 +25,31 @@ export default function createPopovers(
       })
   );
 
-  popoverTriggerList.forEach((popoverTrigger, index) => {
+  popoverTriggerList.forEach((popoverTrigger, i) => {
     const previousSibling = popoverTrigger.previousElementSibling;
-    let timeout = null;
+    let leaveTimeout = null;
+
+    const setLeaveTimeout = () => {
+      leaveTimeout = setTimeout(() => {
+        popovers[i].hide();
+        leaveTimeout = null;
+      }, 500);
+    };
+
+    const clearLeaveTiemout = () => {
+      clearTimeout(leaveTimeout);
+      leaveTimeout = null;
+    };
 
     previousSibling.onmouseenter = () => {
-      if (!timeout) {
-        popovers[index].show();
-        previousSiblingOnMouseEnter(previousSibling);
-      } else {
-        clearTimeout(timeout);
-        timeout = null;
-      }
+      previousSiblingOnMouseEnter(previousSibling);
+      if (!leaveTimeout) popovers[i].show();
+      else clearLeaveTiemout();
     };
 
     previousSibling.onmouseleave = () => {
       previousSiblingOnMouseLeave(previousSibling);
-      timeout = setTimeout(() => {
-        popovers[index].hide();
-        timeout = null;
-      }, 500);
+      setLeaveTimeout();
     };
   });
 }
