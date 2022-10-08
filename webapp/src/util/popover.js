@@ -28,28 +28,25 @@ export default function createPopovers(
   popoverTriggerList.forEach((popoverTrigger, i) => {
     const previousSibling = popoverTrigger.previousElementSibling;
     let leaveTimeout = null;
+    let shown = false;
 
-    const setLeaveTimeout = () => {
-      leaveTimeout = setTimeout(() => {
-        popovers[i].hide();
-        leaveTimeout = null;
-      }, 500);
-    };
-
-    const clearLeaveTiemout = () => {
-      clearTimeout(leaveTimeout);
-      leaveTimeout = null;
-    };
+    popoverTrigger.addEventListener('hidden.bs.popover', () => {
+      shown = false;
+    });
 
     previousSibling.onmouseenter = () => {
       previousSiblingOnMouseEnter(previousSibling);
-      if (!leaveTimeout) popovers[i].show();
-      else clearLeaveTiemout();
+      if (!shown) {
+        shown = true;
+        popovers[i].show();
+      } else clearTimeout(leaveTimeout);
     };
 
     previousSibling.onmouseleave = () => {
       previousSiblingOnMouseLeave(previousSibling);
-      setLeaveTimeout();
+      leaveTimeout = setTimeout(() => {
+        popovers[i].hide();
+      }, 500);
     };
   });
 }
