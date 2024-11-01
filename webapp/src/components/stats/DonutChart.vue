@@ -25,7 +25,7 @@
               attributeName="stroke-dasharray"
               :from="initialDasharray"
               :to="computedDasharray(percentage)"
-              dur="0.7s"
+              dur="0.5s"
               fill="freeze"
             />
             <animate
@@ -33,7 +33,7 @@
               attributeName="stroke-dashoffset"
               :from="quarterLength"
               :to="computedDashoffset(accumulatedPercentages[index])"
-              dur="0.7s"
+              dur="0.5s"
               fill="freeze"
             />
           </circle>
@@ -82,186 +82,173 @@
   </div>
 </template>
 
-<script>
+<script setup>
+  import { computed, onMounted, watchEffect } from 'vue';
   import createPopovers from '../../util/popover';
   import palettes from '../../util/palette';
 
-  export default {
-    name: 'DonutChart',
-    props: {
-      identifier: {
-        type: String,
-        required: true,
-      },
-      data: {
-        type: Array,
-        required: true,
-      },
-      labels: {
-        type: Array,
-        required: true,
-      },
-      title: {
-        type: String,
-        required: false,
-        default: null,
-      },
-      smallTitle: {
-        type: Boolean,
-        required: false,
-        default: false,
-      },
-      innerTitle: {
-        type: String,
-        required: false,
-        default: null,
-      },
-      innerSubtitle: {
-        type: String,
-        required: false,
-        default: null,
-      },
-      innerTitleSize: {
-        type: String,
-        required: false,
-        default: '3em',
-      },
-      innerSubtitleSize: {
-        type: String,
-        required: false,
-        default: '1.1em',
-      },
-      palette: {
-        type: Object,
-        required: false,
-        default: palettes.basic,
-      },
-      sideLength: {
-        type: Number,
-        required: true,
-      },
-      legendPositon: {
-        type: String,
-        required: false,
-        default: 'side',
-      },
+  const props = defineProps({
+    identifier: {
+      type: String,
+      required: true,
     },
-    setup(props) {
-      const radius = props.sideLength / 2 - props.sideLength / 20;
+    data: {
+      type: Array,
+      required: true,
+    },
+    labels: {
+      type: Array,
+      required: true,
+    },
+    title: {
+      type: String,
+      required: false,
+      default: null,
+    },
+    smallTitle: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    innerTitle: {
+      type: String,
+      required: false,
+      default: null,
+    },
+    innerSubtitle: {
+      type: String,
+      required: false,
+      default: null,
+    },
+    innerTitleSize: {
+      type: String,
+      required: false,
+      default: '3em',
+    },
+    innerSubtitleSize: {
+      type: String,
+      required: false,
+      default: '1.1em',
+    },
+    palette: {
+      type: Object,
+      required: false,
+      default: palettes.basic,
+    },
+    sideLength: {
+      type: Number,
+      required: true,
+    },
+    legendPositon: {
+      type: String,
+      required: false,
+      default: 'side',
+    },
+  });
 
-      const valuesSum = props.data.reduce((sum, value) => sum + value, 0);
+  const radius = props.sideLength / 2 - props.sideLength / 20;
+  const valuesSum = props.data.reduce((sum, value) => sum + value, 0);
+  const quarterLength = (Math.PI * radius) / 2;
 
-      const percentages = [];
-      const accumulatedPercentages = [0];
-      const anglesForLabels = [];
+  const percentages = [];
+  const accumulatedPercentages = [0];
+  const anglesForLabels = [];
 
-      props.data.forEach((value, index) => {
-        const percentage = valuesSum > 0 ? (value / valuesSum) * 100 : 0;
-        percentages.push(percentage);
+  props.data.forEach((value, index) => {
+    const percentage = valuesSum > 0 ? (value / valuesSum) * 100 : 0;
+    percentages.push(percentage);
 
-        const accumulatedPercentage =
-          accumulatedPercentages[index] + percentage;
-        accumulatedPercentages.push(accumulatedPercentage);
+    const accumulatedPercentage = accumulatedPercentages[index] + percentage;
+    accumulatedPercentages.push(accumulatedPercentage);
 
-        const percentageForLabel =
-          percentage / 2 + accumulatedPercentages[index];
-        const angle = 2 * Math.PI * (percentageForLabel / 100);
+    const percentageForLabel = percentage / 2 + accumulatedPercentages[index];
+    const angle = 2 * Math.PI * (percentageForLabel / 100);
 
-        // In the chart the sectors are displayed from the top and grow clockwise,
-        // but in trigonometry the angles start from the right and grow counter clockwise.
-        // So we have to transform the computed angle
-        const displayedAngle = -(angle - Math.PI / 2);
-        anglesForLabels.push(displayedAngle);
+    // In the chart the sectors are displayed from the top and grow clockwise,
+    // but in trigonometry the angles start from the right and grow counter clockwise.
+    // So we have to transform the computed angle
+    const displayedAngle = -(angle - Math.PI / 2);
+    anglesForLabels.push(displayedAngle);
+  });
+
+  const initialDasharray = computed(() => `0 ${Math.PI * 2 * radius}`);
+  const center = computed(() => props.sideLength / 2);
+
+  function playAnimation() {
+    document
+      .querySelectorAll(`#${props.identifier} .animated animate`)
+      .forEach((element) => {
+        element.beginElement();
       });
+  }
 
-      return {
-        percentages,
-        accumulatedPercentages,
-        anglesForLabels,
-        radius,
-        quarterLength: (Math.PI * radius) / 2,
-      };
-    },
-    computed: {
-      initialDasharray() {
-        return `0 ${Math.PI * 2 * this.radius}`;
-      },
-      center() {
-        return this.sideLength / 2;
-      },
-    },
-    mounted() {
-      this.makePopovers();
-      this.playAnimation();
-    },
-    updated() {
-      this.makePopovers();
-      this.playAnimation();
-    },
-    methods: {
-      computedDasharray(percentage) {
-        return `${(2 * Math.PI * this.radius * percentage) / 100}
-          ${(2 * Math.PI * this.radius * (100 - percentage)) / 100}`;
-      },
-      computedDashoffset(percentageOffset) {
-        return `${(-2 * Math.PI * this.radius * percentageOffset) / 100 +
-          this.quarterLength}`;
-      },
-      playAnimation() {
-        document
-          .querySelectorAll(`#${this.identifier} .animated animate`)
-          .forEach(element => {
-            element.beginElement();
-          });
-      },
-      computePopoverXCoordinate(index) {
-        const offsetX = Math.cos(this.anglesForLabels[index]) * this.radius;
-        return this.center + offsetX;
-      },
-      computePopoverYCoordinate(index) {
-        const offsetY = Math.sin(this.anglesForLabels[index]) * this.radius;
-        // The y coordinates are inversed in svg,
-        // so we substract the offset instead of adding it
-        return this.center - offsetY;
-      },
-      computePopoverPlacement(index) {
-        return this.percentages[index] / 2 +
-          this.accumulatedPercentages[index] >
-          50
-          ? 'left'
-          : 'right';
-      },
-      roundNumber(number) {
-        return Math.round((number + Number.EPSILON) * 100) / 100;
-      },
-      getPopoverContent(index) {
-        return `<svg width="13" height="13">
+  function computePopoverXCoordinate(index) {
+    const offsetX = Math.cos(anglesForLabels[index]) * radius;
+    return center.value + offsetX;
+  }
+
+  function computePopoverYCoordinate(index) {
+    const offsetY = Math.sin(anglesForLabels[index]) * radius;
+    // The y coordinates are inversed in svg,
+    // so we substract the offset instead of adding it
+    return center.value - offsetY;
+  }
+
+  function computePopoverPlacement(index) {
+    return percentages[index] / 2 + accumulatedPercentages[index] > 50
+      ? 'left'
+      : 'right';
+  }
+
+  function roundNumber(number) {
+    return Math.round((number + Number.EPSILON) * 100) / 100;
+  }
+
+  function getPopoverContent(index) {
+    return `<svg width="13" height="13">
                   <rect
                     width="13"
                     height="13"
-                    fill="${this.palette.darkColors[index]}"
-                    stroke="${this.palette.colors[index]}"
+                    fill="${props.palette.darkColors[index]}"
+                    stroke="${props.palette.colors[index]}"
                     stroke-width="4"
                   ></rect>
                 </svg>
-                ${this.labels[index]}: ${this.data[index]}
-                (${this.roundNumber(this.percentages[index])}%)`;
+                ${props.labels[index]}: ${props.data[index]}
+                (${roundNumber(percentages[index])}%)`;
+  }
+
+  function makePopovers() {
+    createPopovers(
+      props.identifier,
+      (element) => {
+        const chartSector = element;
+        chartSector.style.strokeWidth = (2 * props.sideLength) / 20;
       },
-      makePopovers() {
-        createPopovers(
-          this.identifier,
-          element => {
-            const chartSector = element;
-            chartSector.style.strokeWidth = (2 * this.sideLength) / 20;
-          },
-          element => {
-            const chartSector = element;
-            chartSector.style.strokeWidth = (2 * this.sideLength) / 25;
-          }
-        );
-      },
-    },
-  };
+      (element) => {
+        const chartSector = element;
+        chartSector.style.strokeWidth = (2 * props.sideLength) / 25;
+      }
+    );
+  }
+
+  onMounted(() => {
+    watchEffect(() => {
+      makePopovers();
+      playAnimation();
+    });
+  });
+
+  function computedDasharray(percentage) {
+    return `${(2 * Math.PI * radius * percentage) / 100}
+        ${(2 * Math.PI * radius * (100 - percentage)) / 100}`;
+  }
+
+  function computedDashoffset(percentageOffset) {
+    return `${
+      (-2 * Math.PI * radius * percentageOffset) / 100 + quarterLength
+    }`;
+  }
 </script>
 
 <style scoped>

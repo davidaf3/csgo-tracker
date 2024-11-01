@@ -211,92 +211,71 @@
   </div>
 </template>
 
-<script>
+<script setup>
+  import { computed, watchEffect, ref } from 'vue';
   import DonutChart from './DonutChart.vue';
   import { getAllStats } from '../../api/api';
   import palettes from '../../util/palette';
   import BarChart from './BarChart.vue';
 
-  export default {
-    name: 'StatsDashboard',
-    components: {
-      DonutChart,
-      BarChart,
-    },
-    setup() {
-      return {
-        palettes,
-      };
-    },
-    data() {
-      return {
-        stats: null,
-      };
-    },
-    computed: {
-      mostPlayedTeam() {
-        const maxTeam = Math.max(...Object.values(this.stats.roundsByTeam));
-        return Object.keys(this.stats.roundsByTeam).filter(
-          team => this.stats.roundsByTeam[team] === maxTeam
-        )[0];
-      },
-      mostPlayedMap() {
-        return this.sortedMapNames[0];
-      },
-      sortedMapValues() {
-        return Object.values(this.stats.matchesByMap).sort(
-          (first, second) => second - first
-        );
-      },
-      sortedMapNames() {
-        return Object.keys(this.stats.matchesByMap).sort(
-          (firstMap, secondMap) =>
-            this.stats.matchesByMap[secondMap] -
-            this.stats.matchesByMap[firstMap]
-        );
-      },
-      mostUsualWinType() {
-        return this.sortedWinTypeNames[0];
-      },
-      sortedWinTypeValues() {
-        return Object.values(this.stats.roundsByWinType).sort(
-          (first, second) => second - first
-        );
-      },
-      sortedWinTypeNames() {
-        return Object.keys(this.stats.roundsByWinType).sort(
-          (first, second) =>
-            this.stats.roundsByWinType[second] -
-            this.stats.roundsByWinType[first]
-        );
-      },
-      roundsByKillsData() {
-        return this.stats.roundsByKills.map((element, index) => ({
-          label: index,
-          value: element,
-        }));
-      },
-      roundWinRateByTeamData() {
-        return Object.keys(this.stats.roundWinRateByTeam).map(key => ({
-          label: key,
-          value: this.roundNumber(this.stats.roundWinRateByTeam[key]),
-        }));
-      },
-    },
-    created() {
-      this.updateStats();
-    },
-    methods: {
-      updateStats() {
-        getAllStats().then(stats => {
-          this.stats = stats;
-        });
-      },
-      roundNumber(number) {
-        return Math.round((number + Number.EPSILON) * 100) / 100;
-      },
-    },
-  };
+  const stats = ref(null);
+
+  function updateStats() {
+    getAllStats().then((newStats) => {
+      stats.value = newStats;
+    });
+  }
+
+  function roundNumber(number) {
+    return Math.round((number + Number.EPSILON) * 100) / 100;
+  }
+
+  const mostPlayedTeam = computed(() => {
+    const maxTeam = Math.max(...Object.values(stats.value.roundsByTeam));
+    return Object.keys(stats.value.roundsByTeam).filter(
+      (team) => stats.value.roundsByTeam[team] === maxTeam
+    )[0];
+  });
+  const sortedMapValues = computed(() =>
+    Object.values(stats.value.matchesByMap).sort(
+      (first, second) => second - first
+    )
+  );
+  const sortedMapNames = computed(() =>
+    Object.keys(stats.value.matchesByMap).sort(
+      (firstMap, secondMap) =>
+        stats.value.matchesByMap[secondMap] - stats.value.matchesByMap[firstMap]
+    )
+  );
+  const sortedWinTypeValues = computed(() =>
+    Object.values(stats.value.roundsByWinType).sort(
+      (first, second) => second - first
+    )
+  );
+  const sortedWinTypeNames = computed(() =>
+    Object.keys(stats.value.roundsByWinType).sort(
+      (first, second) =>
+        stats.value.roundsByWinType[second] - stats.value.roundsByWinType[first]
+    )
+  );
+  const mostPlayedMap = computed(() => sortedMapNames.value[0]);
+  const mostUsualWinType = computed(() => sortedWinTypeNames.value[0]);
+  const roundsByKillsData = computed(() =>
+    stats.value.roundsByKills.map((element, index) => ({
+      label: index,
+      value: element,
+    }))
+  );
+  const roundWinRateByTeamData = computed(() =>
+    Object.keys(stats.value.roundWinRateByTeam).map((key) => ({
+      label: key,
+      value: roundNumber(stats.value.roundWinRateByTeam[key]),
+    }))
+  );
+
+  watchEffect(() => {
+    updateStats();
+  });
 </script>
 
 <style scoped>

@@ -69,150 +69,143 @@
   </div>
 </template>
 
-<script>
+<script setup>
+  import { computed, onMounted, watchEffect } from 'vue';
   import createPopovers from '../../util/popover';
   import palettes from '../../util/palette';
 
-  export default {
-    name: 'RoundsChart',
-    props: {
-      identifier: {
-        type: String,
-        required: true,
-      },
-      title: {
-        type: String,
-        required: false,
-        default: null,
-      },
-      smallTitle: {
-        type: Boolean,
-        required: false,
-        default: false,
-      },
-      data: {
-        type: Array,
-        required: true,
-      },
-      height: {
-        type: Number,
-        required: true,
-      },
-      barWidth: {
-        type: Number,
-        required: true,
-      },
-      yAxisLegendWidth: {
-        type: Number,
-        required: true,
-      },
-      palette: {
-        type: Object,
-        required: false,
-        default: palettes.basic,
-      },
+  const props = defineProps({
+    identifier: {
+      type: String,
+      required: true,
     },
-    computed: {
-      maxYAxis() {
-        const maxValue = Math.max(...this.data.map(element => element.value));
-        const maxValueDigits = Math.floor(Math.log10(maxValue));
-        if (maxValueDigits >= 0) {
-          return (
-            (Math.floor(maxValue / 10 ** maxValueDigits) + 1) *
-            10 ** maxValueDigits
-          );
-        }
-        return 1;
-      },
-      width() {
-        return (
-          this.barWidth * 1.5 * this.data.length +
-          this.yAxisLegendWidth +
-          this.halfBarWidth
+    title: {
+      type: String,
+      required: false,
+      default: null,
+    },
+    smallTitle: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    data: {
+      type: Array,
+      required: true,
+    },
+    height: {
+      type: Number,
+      required: true,
+    },
+    barWidth: {
+      type: Number,
+      required: true,
+    },
+    yAxisLegendWidth: {
+      type: Number,
+      required: true,
+    },
+    palette: {
+      type: Object,
+      required: false,
+      default: palettes.basic,
+    },
+  });
+
+  const maxYAxis = computed(() => {
+    const maxValue = Math.max(...props.data.map((element) => element.value));
+    const maxValueDigits = Math.floor(Math.log10(maxValue));
+    if (maxValueDigits >= 0) {
+      return (
+        (Math.floor(maxValue / 10 ** maxValueDigits) + 1) * 10 ** maxValueDigits
+      );
+    }
+    return 1;
+  });
+  const halfBarWidth = computed(() => props.barWidth / 2);
+  const width = computed(
+    () =>
+      props.barWidth * 1.5 * props.data.length +
+      props.yAxisLegendWidth +
+      halfBarWidth.value
+  );
+  const yAxisValues = computed(() => {
+    const values = [];
+    for (let i = 1; i <= 4; i += 1) {
+      values.push(maxYAxis.value * (i / 4));
+    }
+    return values;
+  });
+
+  function playAnimation() {
+    document.querySelectorAll(`#${props.identifier} rect`).forEach((element) => {
+      const elementStyle = element.style;
+      elementStyle.visibility = 'hidden';
+    });
+    document
+      .querySelectorAll(`#${props.identifier} animate`)
+      .forEach((element) => {
+        const parent = element.parentElement;
+        if (parent) parent.style.visibility = 'visible';
+        element.beginElement();
+      });
+  }
+
+  function getBarX(index) {
+    return (
+      index * props.barWidth +
+      (index + 1) * halfBarWidth.value +
+      props.yAxisLegendWidth
+    );
+  }
+
+  function getBarHeight(item) {
+    return (props.height - 31.5) * (item.value / maxYAxis.value);
+  }
+
+  function getPopoverContent(index) {
+    return `<svg width="13" height="13">
+                    <rect
+                      width="13"
+                      height="13"
+                      fill="${props.palette.darkColors[index]}"
+                      stroke="${props.palette.colors[index]}"
+                      stroke-width="4"
+                    ></rect>
+                  </svg>
+                  ${props.data[index].label}: ${props.data[index].value}`;
+  }
+
+  function makePopovers() {
+    createPopovers(
+      props.identifier,
+      (element) => {
+        element.setAttribute(
+          'fill',
+          element
+            .getAttribute('fill')
+            .replace('rgb', 'rgba')
+            .replace(')', ', 0.75)')
         );
       },
-      halfBarWidth() {
-        return this.barWidth / 2;
-      },
-      yAxisValues() {
-        const values = [];
-        for (let i = 1; i <= 4; i += 1) {
-          values.push(this.maxYAxis * (i / 4));
-        }
-        return values;
-      },
-    },
-    mounted() {
-      this.makePopovers();
-      this.playAnimation();
-    },
-    updated() {
-      this.makePopovers();
-      this.playAnimation();
-    },
-    methods: {
-      playAnimation() {
-        document
-          .querySelectorAll(`#${this.identifier} rect`)
-          .forEach(element => {
-            const elementStyle = element.style;
-            elementStyle.visibility = 'hidden';
-          });
-        document
-          .querySelectorAll(`#${this.identifier} animate`)
-          .forEach(element => {
-            const parent = element.parentElement;
-            if (parent) parent.style.visibility = 'visible';
-            element.beginElement();
-          });
-      },
-      getBarX(index) {
-        return (
-          index * this.barWidth +
-          (index + 1) * this.halfBarWidth +
-          this.yAxisLegendWidth
+      (element) => {
+        element.setAttribute(
+          'fill',
+          element
+            .getAttribute('fill')
+            .replace('rgba', 'rgb')
+            .replace(', 0.75)', ')')
         );
-      },
-      getBarHeight(item) {
-        return (this.height - 31.5) * (item.value / this.maxYAxis);
-      },
-      getPopoverContent(index) {
-        return `<svg width="13" height="13">
-                  <rect
-                    width="13"
-                    height="13"
-                    fill="${this.palette.darkColors[index]}"
-                    stroke="${this.palette.colors[index]}"
-                    stroke-width="4"
-                  ></rect>
-                </svg>
-                ${this.data[index].label}: ${this.data[index].value}`;
-      },
-      makePopovers() {
-        createPopovers(
-          this.identifier,
-          element => {
-            element.setAttribute(
-              'fill',
-              element
-                .getAttribute('fill')
-                .replace('rgb', 'rgba')
-                .replace(')', ', 0.75)')
-            );
-          },
-          element => {
-            element.setAttribute(
-              'fill',
-              element
-                .getAttribute('fill')
-                .replace('rgba', 'rgb')
-                .replace(', 0.75)', ')')
-            );
-          }
-        );
-      },
-    },
-  };
+      }
+    );
+  }
+
+  onMounted(() => {
+    watchEffect(() => {
+      makePopovers();
+      playAnimation();
+    });
+  });
 </script>
 
 <style scoped>

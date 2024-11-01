@@ -15,6 +15,7 @@
     "indent": "off",
     "arrow-parens": "off",
     "no-confusing-arrow": "off",
+    "function-paren-newline": "off",
     "comma-dangle": [
       "error",
       {

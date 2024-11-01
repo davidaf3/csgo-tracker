@@ -39,68 +39,60 @@
   </div>
 </template>
 
-<script>
-  export default {
-    name: 'MatchPreview',
-    props: {
-      match: {
-        type: Object,
-        required: true,
-      },
-      selected: {
-        type: Boolean,
-        default: false,
-      },
+<script setup>
+  import { computed } from 'vue';
+
+  const props = defineProps({
+    match: {
+      type: Object,
+      required: true,
     },
-    setup(props) {
-      return {
-        matchDate: new Date(props.match.date),
-      };
+    selected: {
+      type: Boolean,
+      default: false,
     },
-    computed: {
-      capitalizedGameMode() {
-        return (
-          this.match.mode.charAt(0).toUpperCase() + this.match.mode.slice(1)
-        );
-      },
-      formattedMatchDate() {
-        return this.matchDate.toLocaleDateString('en', {
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric',
-        });
-      },
-      formattedMatchTime() {
-        return this.matchDate
-          .toLocaleTimeString()
-          .slice(0, this.matchDate.toLocaleTimeString().lastIndexOf(':'));
-      },
-      matchClass() {
-        if (!this.match.over) {
-          return 'bg-primary';
-        }
-        if (this.match.roundsWon > this.match.roundsLost) {
-          return 'bg-success';
-        }
-        if (this.match.roundsWon < this.match.roundsLost) {
-          return 'bg-danger';
-        }
-        return 'bg-secondary';
-      },
-      matchResult() {
-        if (!this.match.over) {
-          return 'Live';
-        }
-        if (this.match.roundsWon > this.match.roundsLost) {
-          return 'Victory';
-        }
-        if (this.match.roundsWon < this.match.roundsLost) {
-          return 'Defeat';
-        }
-        return 'Tie';
-      },
-    },
-  };
+  });
+
+  const matchDate = computed(() => new Date(props.match.date));
+
+  const capitalizedGameMode = computed(
+    () => props.match.mode.charAt(0).toUpperCase() + props.match.mode.slice(1)
+  );
+
+  const formattedMatchDate = computed(() =>
+    matchDate.value.toLocaleDateString('en', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    })
+  );
+
+  const formattedMatchTime = computed(() => {
+    const timeString = matchDate.value.toLocaleTimeString();
+    return timeString.slice(0, timeString.lastIndexOf(':'));
+  });
+
+  const matchResult = computed(() => {
+    if (!props.match.over) {
+      return 'Live';
+    }
+    if (props.match.roundsWon > props.match.roundsLost) {
+      return 'Victory';
+    }
+    if (props.match.roundsWon < props.match.roundsLost) {
+      return 'Defeat';
+    }
+    return 'Tie';
+  });
+
+  const matchClasses = new Map([
+    ['Live', 'bg-primary'],
+    ['Victory', 'bg-success'],
+    ['Defeat', 'bg-danger'],
+    ['Tie', 'bg-secondary'],
+  ]);
+
+  const matchClass = computed(() => matchClasses.get(matchResult.value));
 </script>
 
 <style lang="scss" scoped>

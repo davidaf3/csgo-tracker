@@ -12,8 +12,9 @@
             fill="rgba(255, 99, 132, 0.2)"
             stroke="rgba(255, 99, 132, 1)"
             stroke-width="5"
-          ></rect></svg
-        >Initial money
+          ></rect>
+        </svg>
+        Initial money
       </p>
       <p>
         <svg width="30" height="13">
@@ -23,130 +24,126 @@
             fill="rgba(54, 162, 235, 0.2)"
             stroke="rgba(54, 162, 235, 1)"
             stroke-width="5"
-          ></rect></svg
-        >Equipment value
+          ></rect>
+        </svg>
+        Equipment value
       </p>
     </div>
   </div>
 </template>
 
-<script>
+<script setup>
+  import { onMounted, onUnmounted, watch } from 'vue';
   import { Chart, registerables } from 'chart.js';
+
+  const props = defineProps({
+    rounds: {
+      type: Array,
+      required: true,
+    },
+  });
 
   Chart.register(...registerables);
   let chart = null;
 
-  export default {
-    name: 'MoneyChart',
-    props: {
-      rounds: {
-        type: Array,
-        required: true,
-      },
-    },
-    watch: {
-      rounds(newRounds, oldRounds) {
-        const addedRounds = newRounds.filter(
-          newRound =>
-            oldRounds.filter(oldRound => oldRound.id === newRound.id).length ===
-            0
-        );
+  function alignCharts() {
+    const yScaleWidth = Math.floor(chart.scales.y.width);
 
-        if (addedRounds.length === newRounds.length) {
-          // If all rounds are new, clear the chart and add all the rounds
-          this.clearChart();
-          this.addRoundsToChart(newRounds);
-        } else {
-          // If not all rounds are new, add only the new rounds to the chart
-          this.addRoundsToChart(addedRounds);
-        }
-      },
-    },
-    mounted() {
-      if (chart === null) {
-        this.createChart();
-      }
-    },
-    unmounted() {
-      chart.destroy();
-      chart = null;
-    },
-    methods: {
-      createChart() {
-        const data = {
-          labels: this.rounds.map(round => round.n),
-          datasets: [
-            {
-              label: 'Initial money',
-              data: this.rounds.map(round => round.initMoney),
-              borderColor: 'rgba(255, 99, 132, 1)',
-              backgroundColor: 'rgba(255, 99, 132, 0.2)',
-            },
-            {
-              label: 'Equipment value',
-              data: this.rounds.map(round => round.equipValue),
-              borderColor: 'rgba(54, 162, 235, 1)',
-              backgroundColor: 'rgba(54, 162, 235, 0.2)',
-            },
-          ],
-        };
+    const roundsChart = document.getElementById('roundsChart');
+    if (roundsChart) roundsChart.style.margin = `0 ${yScaleWidth - 10}px`;
 
-        const config = {
-          type: 'line',
-          data,
-          options: {
-            color: '#fff',
-            maintainAspectRatio: false,
-            responsive: true,
-            plugins: {
-              legend: {
-                display: false,
-              },
-            },
+    const moneyChartContainer = document.getElementById('chartContainer');
+    moneyChartContainer.style.width = `${
+      props.rounds.length * 20 - 10 + yScaleWidth
+    }px`;
+  }
+
+  function createChart() {
+    const data = {
+      labels: props.rounds.map((round) => round.n),
+      datasets: [
+        {
+          label: 'Initial money',
+          data: props.rounds.map((round) => round.initMoney),
+          borderColor: 'rgba(255, 99, 132, 1)',
+          backgroundColor: 'rgba(255, 99, 132, 0.2)',
+        },
+        {
+          label: 'Equipment value',
+          data: props.rounds.map((round) => round.equipValue),
+          borderColor: 'rgba(54, 162, 235, 1)',
+          backgroundColor: 'rgba(54, 162, 235, 0.2)',
+        },
+      ],
+    };
+
+    const config = {
+      type: 'line',
+      data,
+      options: {
+        color: '#fff',
+        maintainAspectRatio: false,
+        responsive: true,
+        plugins: {
+          legend: {
+            display: false,
           },
-        };
-
-        const ctx = document.getElementById('moneyChart').getContext('2d');
-        chart = new Chart(ctx, config);
-        this.alignCharts();
+        },
       },
-      clearChart() {
-        if (chart) {
-          const { datasets, labels } = chart.data;
+    };
 
-          labels.splice(0, labels.length);
+    const ctx = document.getElementById('moneyChart').getContext('2d');
+    chart = new Chart(ctx, config);
+    alignCharts();
+  }
 
-          datasets.forEach(dataset => {
-            dataset.data.splice(0, dataset.data.length);
-          });
-        }
-      },
-      addRoundsToChart(newRounds) {
-        if (chart) {
-          const { datasets, labels } = chart.data;
+  function clearChart() {
+    if (chart) {
+      const { datasets, labels } = chart.data;
+      labels.splice(0, labels.length);
+      datasets.forEach((dataset) => {
+        dataset.data.splice(0, dataset.data.length);
+      });
+    }
+  }
 
-          newRounds.forEach(round => labels.push(round.n));
+  function addRoundsToChart(newRounds) {
+    if (chart) {
+      const { datasets, labels } = chart.data;
+      newRounds.forEach((round) => labels.push(round.n));
+      newRounds.forEach((round) => datasets[0].data.push(round.initMoney));
+      newRounds.forEach((round) => datasets[1].data.push(round.equipValue));
+      chart.update();
+      alignCharts();
+    }
+  }
 
-          newRounds.forEach(round => datasets[0].data.push(round.initMoney));
-          newRounds.forEach(round => datasets[1].data.push(round.equipValue));
+  onMounted(() => {
+    if (chart === null) createChart();
+  });
 
-          chart.update();
-          this.alignCharts();
-        }
-      },
-      alignCharts() {
-        const yScaleWidth = Math.floor(chart.scales.y.width);
+  onUnmounted(() => {
+    chart.destroy();
+    chart = null;
+  });
 
-        const roundsChart = document.getElementById('roundsChart');
-        roundsChart.style.margin = `0 ${yScaleWidth - 10}px`;
+  watch(
+    () => props.rounds,
+    (rounds, prevRounds) => {
+      const addedRounds = rounds.filter(
+        (round) => !prevRounds.some((prevRound) => prevRound.id === round.id)
+      );
 
-        const moneyChartContainer = document.getElementById('chartContainer');
-        moneyChartContainer.style.width = `${this.rounds.length * 20 -
-          10 +
-          yScaleWidth}px`;
-      },
-    },
-  };
+      if (addedRounds.length === rounds.length) {
+        // If all rounds are new, clear the chart and add all the rounds
+        clearChart();
+        addRoundsToChart(rounds);
+      } else {
+        // If not all rounds are new, add only the new rounds to the chart
+        addRoundsToChart(addedRounds);
+      }
+    }
+  );
 </script>
 
 <style scoped>

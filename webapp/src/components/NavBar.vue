@@ -45,12 +45,6 @@
   </nav>
 </template>
 
-<script>
-  export default {
-    name: 'NavBar',
-  };
-</script>
-
 <style scoped>
   nav {
     height: 8%;

@@ -136,109 +136,89 @@
   </div>
 </template>
 
-<script>
+<script setup>
+  import { computed, ref, watchEffect } from 'vue';
   import RoundsChart from './RoundsChart.vue';
   import MoneyChart from './MoneyChart.vue';
   import { getRounds, getPlayerInfo } from '../../api/api';
 
-  export default {
-    name: 'MatchDetails',
-    components: {
-      RoundsChart,
-      MoneyChart,
+  const props = defineProps({
+    match: {
+      type: Object,
+      required: true,
     },
-    props: {
-      match: {
-        type: Object,
-        required: true,
-      },
-      forceMatchEnd: {
-        type: Function,
-        required: true,
-      },
-      deleteMatch: {
-        type: Function,
-        required: true,
-      },
+    forceMatchEnd: {
+      type: Function,
+      required: true,
     },
-    data() {
-      return {
-        rounds: [],
-        selectedRound: null,
-        player: null,
-        matchDate: new Date(this.match.date),
-      };
+    deleteMatch: {
+      type: Function,
+      required: true,
     },
-    computed: {
-      capitalizedGameMode() {
-        return (
-          this.match.mode.charAt(0).toUpperCase() + this.match.mode.slice(1)
-        );
-      },
-      formattedDate() {
-        const dateString = this.matchDate.toLocaleDateString('en', {
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric',
-        });
-        const timeString = this.matchDate
-          .toLocaleTimeString()
-          .slice(0, this.matchDate.toLocaleTimeString().lastIndexOf(':'));
+  });
 
-        return `${dateString}, ${timeString}`;
-      },
-      kdr() {
-        return (
-          Math.round(
-            (this.match.kills /
-              (this.match.deaths > 0 ? this.match.deaths : 1) +
-              Number.EPSILON) *
-              100
-          ) / 100
-        );
-      },
-      hsPerCent() {
-        return this.match.kills > 0
-          ? Math.round(
-              ((this.match.killshs / this.match.kills) * 100 + Number.EPSILON) *
-                100
-            ) / 100
-          : 0;
-      },
-      winType() {
-        const parsedWinType =
-          this.rounds[this.selectedRound - 1].winType.split('_')[2];
-        return parsedWinType.charAt(0).toUpperCase() + parsedWinType.slice(1);
-      },
-    },
-    watch: {
-      match() {
-        this.updateRounds();
-        this.updatePlayer();
-        this.matchDate = new Date(this.match.date);
-      },
-    },
-    created() {
-      this.updateRounds();
-      this.updatePlayer();
-    },
-    methods: {
-      updateRounds() {
-        getRounds(this.match.id).then((rounds) => {
-          this.rounds = rounds;
-          this.selectedRound = null;
-        });
-      },
-      updatePlayer() {
-        getPlayerInfo(this.match.playerId).then((player) => {
-          this.player = player;
-        });
-      },
-      setSelectedRound(nRound) {
-        this.selectedRound = nRound;
-      },
-    },
-  };
+  const selectedRound = ref(null);
+  const rounds = ref([]);
+  const player = ref(null);
+
+  async function updateRounds(match) {
+    rounds.value = await getRounds(match.id);
+    selectedRound.value = null;
+  }
+
+  async function updatePlayer(match) {
+    player.value = await getPlayerInfo(match.playerId);
+  }
+
+  function setSelectedRound(nRound) {
+    selectedRound.value = nRound;
+  }
+
+  watchEffect(() => {
+    updateRounds(props.match);
+    updatePlayer(props.match);
+  });
+
+  const matchDate = computed(() => new Date(props.match.date));
+
+  const capitalizedGameMode = computed(
+    () => props.match.mode.charAt(0).toUpperCase() + props.match.mode.slice(1)
+  );
+
+  const formattedDate = computed(() => {
+    const dateString = matchDate.value.toLocaleDateString('en', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+    let timeString = matchDate.value.toLocaleTimeString();
+    timeString = timeString.slice(0, timeString.lastIndexOf(':'));
+    return `${dateString}, ${timeString}`;
+  });
+
+  const kdr = computed(
+    () =>
+      Math.round(
+        (props.match.kills / (props.match.deaths > 0 ? props.match.deaths : 1) +
+          Number.EPSILON) *
+          100
+      ) / 100
+  );
+
+  const hsPerCent = computed(() =>
+    props.match.kills > 0
+      ? Math.round(
+          ((props.match.killshs / props.match.kills) * 100 + Number.EPSILON) *
+            100
+        ) / 100
+      : 0
+  );
+
+  const winType = computed(() => {
+    const parsedWinType =
+      rounds.value[selectedRound.value - 1].winType.split('_')[2];
+    return parsedWinType.charAt(0).toUpperCase() + parsedWinType.slice(1);
+  });
 </script>
 
 <style scoped>
@@ -315,5 +295,11 @@
     color: white;
     background-color: #282c34;
     border-color: rgba(255, 255, 255, 0.25);
+  }
+  td {
+    text-align: center;
+  }
+  thead td:nth-child(5) {
+    padding: 0.5rem 0.75rem;
   }
 </style>

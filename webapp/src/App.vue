@@ -2,20 +2,13 @@
   <div id="app" class="conainer-fluid">
     <NavBar />
     <div id="content" class="container-fluid">
-      <router-view></router-view>
+      <RouterView></RouterView>
     </div>
   </div>
 </template>
 
-<script>
+<script setup>
   import NavBar from './components/NavBar.vue';
-
-  export default {
-    name: 'App',
-    components: {
-      NavBar,
-    },
-  };
 </script>
 
 <style>
@@ -67,4 +60,4 @@
   .popover-body svg {
     margin-right: 0.5em;
   }
-  </style>
+</style>

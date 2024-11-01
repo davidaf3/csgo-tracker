@@ -23,7 +23,7 @@
       <g
         v-for="round in rounds"
         :key="round.id"
-        :class="roundsToAnimate.includes(round.n) ? 'animated' : null"
+        :class="roundsToAnimate.has(round.n) ? 'animated' : null"
         @click="selectRound(round.n)"
         @keypress="selectRound(round.n)"
       >
@@ -68,7 +68,7 @@
           <image
             v-for="kill in roundToKills(round)"
             :key="kill.n"
-            :x="getImgX(round.n)"
+            :x="getRectX(round.n) + 3"
             :y="-(kill.n * 20 + 57)"
             transform="scale(1,-1)"
             width="14"
@@ -77,7 +77,7 @@
           />
           <image
             v-if="round.died"
-            :x="getImgX(round.n)"
+            :x="getRectX(round.n) + 3"
             y="-37"
             transform="scale(1,-1)"
             width="14"
@@ -125,90 +125,82 @@
   </svg>
 </template>
 
-<script>
-  export default {
-    name: 'RoundsChart',
-    props: {
-      rounds: {
-        type: Array,
-        required: true,
-      },
-      selectRound: {
-        type: Function,
-        required: true,
-      },
+<script setup>
+  import { onMounted, onUpdated, watch } from 'vue';
+
+  const props = defineProps({
+    rounds: {
+      type: Array,
+      required: true,
     },
-    setup(props) {
-      return {
-        maxKillsPerRound: 5,
-        halfTimeRound: 15,
-        roundsToAnimate: props.rounds.map(round => round.n),
-      };
+    selectRound: {
+      type: Function,
+      required: true,
     },
-    watch: {
-      rounds(newRounds, oldRounds) {
-        this.roundsToAnimate = newRounds
-          .filter(
-            newRound =>
-              oldRounds.filter(oldRound => oldRound.id === newRound.id)
-                .length === 0
-          )
-          .map(round => round.n);
-      },
-    },
-    mounted() {
-      this.playAnimation();
-    },
-    updated() {
-      this.playAnimation();
-    },
-    methods: {
-      playAnimation() {
-        document
-          .querySelectorAll(
-            '.animated round-rect, .animated line, .animated text, .animated image'
-          )
-          .forEach(element => {
-            const elementStyle = element.style;
-            elementStyle.visibility = 'hidden';
-          });
-        document.querySelectorAll('.animated animate').forEach((element, i) => {
-          setTimeout(() => {
-            const parent = element.parentElement;
-            if (parent) parent.style.visibility = 'visible';
-            element.beginElement();
-          }, i * 50);
-        });
-      },
-      roundToKills(round) {
-        const kills = [];
-        for (let i = 0; i < round.kills; i += 1) {
-          kills.push({ n: i, isHs: false });
-        }
-        for (let i = 0; i < round.killshs && i < kills.length; i += 1) {
-          kills[i].isHs = true;
-        }
-        return kills;
-      },
-      showKillsAndDeath(nRound) {
-        document
-          .querySelectorAll(`#killsAndDeath${nRound} image`)
-          .forEach(element => {
-            const elementStyle = element.style;
-            elementStyle.visibility = 'visible';
-          });
-      },
-      showHalfMark() {
-        document.querySelector('#halfMark').style.visibility = 'visible';
-      },
-      getRectX(nRound) {
-        return 20 * (nRound - 1) + (nRound > this.halfTimeRound ? 3 : 0);
-      },
-      getImgX(nRound) {
-        return 20 * (nRound - 1) + 3 + (nRound > this.halfTimeRound ? 3 : 0);
-      },
-    },
-  };
+  });
+
+  const maxKillsPerRound = 5;
+  const halfTimeRound = 15;
+  const roundsToAnimate = new Set(props.rounds.map(round => round.n));
+
+  watch(
+    () => props.rounds,
+    (rounds, prevRounds) => {
+      rounds.forEach((round) => {
+        const isNew = !prevRounds.some(
+          (prevRound) => prevRound.id === round.id
+        );
+        if (isNew) roundsToAnimate.add(round.n);
+        else roundsToAnimate.delete(round.n);
+      });
+    }
+  );
+
+  function playAnimation() {
+    document
+      .querySelectorAll(
+        '.animated round-rect, .animated line, .animated text, .animated image'
+      )
+      .forEach(element => {
+        const elementStyle = element.style;
+        elementStyle.visibility = 'hidden';
+      });
+    document.querySelectorAll('.animated animate').forEach((element, i) => {
+      setTimeout(() => {
+        const parent = element.parentElement;
+        if (parent) parent.style.visibility = 'visible';
+        element.beginElement();
+      }, i * 50);
+    });
+  }
+
+  onMounted(playAnimation);
+  onUpdated(playAnimation);
+
+  function roundToKills(round) {
+    const kills = [];
+    for (let i = 0; i < round.kills; i += 1) {
+      kills.push({ n: i, isHs: i < round.killshs });
+    }
+    return kills;
+  }
+
+  function showKillsAndDeath(nRound) {
+    document
+      .querySelectorAll(`#killsAndDeath${nRound} image`)
+      .forEach(element => {
+        const elementStyle = element.style;
+        elementStyle.visibility = 'visible';
+      });
+  }
+
+  function showHalfMark() {
+    document.querySelector('#halfMark').style.visibility = 'visible';
+  }
+
+  function getRectX(nRound) {
+    return 20 * (nRound - 1) + (nRound > this.halfTimeRound ? 3 : 0);
+  }
 </script>
 
 <style scoped>
