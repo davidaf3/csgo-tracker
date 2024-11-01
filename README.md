@@ -2,10 +2,10 @@
 # <img src="icon.svg" width="50"/> csgo-tracker
 ![CI for csgo-tracker](https://github.com/davidaf3/csgo-tracker/actions/workflows/csgo-tracker.yml/badge.svg)
 
-csgo-tracker is a simple [Electron](https://www.electronjs.org/) app that lets you track your CS:GO matches and stats using [Valve's game state integration](https://developer.valvesoftware.com/wiki/Counter-Strike:_Global_Offensive_Game_State_Integration).
+csgo-tracker is a simple [Electron](https://www.electronjs.org/) app that lets you track your Counter-Strike 2 matches and stats using [Valve's game state integration](https://developer.valvesoftware.com/wiki/Counter-Strike:_Global_Offensive_Game_State_Integration).
 
 ## Features
-- Keep track of your CS:GO stats and matches.
+- Keep track of your CS2 stats and matches.
 - Get real time updates about your performance in the current match.
 - No ads, no account needed, everything is stored locally.
 
@@ -16,7 +16,7 @@ csgo-tracker is a simple [Electron](https://www.electronjs.org/) app that lets y
 ## Installation
 You can download the latest stable release for your OS [here](https://github.com/davidaf3/csgo-tracker/releases). Also, you can download the latest build from the [Actions tab](https://github.com/davidaf3/csgo-tracker/actions) (you have to be logged into your GitHub account). 
 
-The downloaded .zip folder will contain a .cfg file and an executable file. Before installing or running the app you need to place the .cfg file into the csgo/cfg directory inside the CS:GO installation folder. If your game was running when you placed the file, make sure to restart it to apply the configuration changes.
+The downloaded .zip folder will contain a .cfg file and an executable file. Before installing or running the app you need to place the .cfg file into the game/csgo/cfg directory inside the CS2 installation folder. If your game was running when you placed the file, make sure to restart it to apply the configuration changes.
 
 To install the Windows version, you have to run the installer file. The Linux version is an [AppImage](https://appimage.org/) so you can just run the executable to start the app.
 
