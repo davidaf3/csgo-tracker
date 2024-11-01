@@ -48,7 +48,7 @@ jobs:
       - name: Compress electronapp
         run: 7z a -tzip csgo-tracker-windows.zip ./bundle/*
       - name: Upload electronapp
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: csgo-tracker-windows.zip
           path: electronapp/csgo-tracker-windows.zip
@@ -95,7 +95,7 @@ jobs:
       - name: Compress electronapp
         run: 7z a -tzip csgo-tracker-linux.zip ./bundle/*
       - name: Upload electronapp
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: csgo-tracker-linux.zip
           path: electronapp/csgo-tracker-linux.zip
