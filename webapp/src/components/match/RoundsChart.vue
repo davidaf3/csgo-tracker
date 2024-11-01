@@ -7,16 +7,34 @@
   >
     <defs>
       <linearGradient id="deathGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-        <stop offset="0%" style="stop-color:rgb(191,16,4);stop-opacity:0.5" />
-        <stop offset="100%" style="stop-color:rgb(40,44,52);stop-opacity:1" />
+        <stop
+          offset="0%"
+          style="stop-color: rgb(191, 16, 4); stop-opacity: 0.5"
+        />
+        <stop
+          offset="100%"
+          style="stop-color: rgb(40, 44, 52); stop-opacity: 1"
+        />
       </linearGradient>
       <linearGradient id="TGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-        <stop offset="0%" style="stop-color:rgb(222,155,53);stop-opacity:1" />
-        <stop offset="100%" style="stop-color:rgb(40,44,52);stop-opacity:1" />
+        <stop
+          offset="0%"
+          style="stop-color: rgb(222, 155, 53); stop-opacity: 1"
+        />
+        <stop
+          offset="100%"
+          style="stop-color: rgb(40, 44, 52); stop-opacity: 1"
+        />
       </linearGradient>
       <linearGradient id="CTGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-        <stop offset="0%" style="stop-color:rgb(93,121,174);stop-opacity:1" />
-        <stop offset="100%" style="stop-color:rgb(40,44,52);stop-opacity:1" />
+        <stop
+          offset="0%"
+          style="stop-color: rgb(93, 121, 174); stop-opacity: 1"
+        />
+        <stop
+          offset="100%"
+          style="stop-color: rgb(40, 44, 52); stop-opacity: 1"
+        />
       </linearGradient>
     </defs>
     <g :transform="`scale(1,-1) translate(0,-${20 * maxKillsPerRound + 40})`">
@@ -126,7 +144,9 @@
 </template>
 
 <script setup>
-  import { onMounted, onUpdated, watch } from 'vue';
+  import {
+    computed, onMounted, onUpdated, watch
+  } from 'vue';
 
   const props = defineProps({
     rounds: {
@@ -140,8 +160,14 @@
   });
 
   const maxKillsPerRound = 5;
-  const halfTimeRound = 15;
-  const roundsToAnimate = new Set(props.rounds.map(round => round.n));
+  const roundsToAnimate = new Set(props.rounds.map((round) => round.n));
+
+  const halfTimeRound = computed(() => {
+    const secondHalfStart = props.rounds.find(
+      (round) => round.team !== props.rounds[0].team
+    );
+    return secondHalfStart ? secondHalfStart.n - 1 : Infinity;
+  });
 
   watch(
     () => props.rounds,
@@ -161,7 +187,7 @@
       .querySelectorAll(
         '.animated round-rect, .animated line, .animated text, .animated image'
       )
-      .forEach(element => {
+      .forEach((element) => {
         const elementStyle = element.style;
         elementStyle.visibility = 'hidden';
       });
@@ -188,7 +214,7 @@
   function showKillsAndDeath(nRound) {
     document
       .querySelectorAll(`#killsAndDeath${nRound} image`)
-      .forEach(element => {
+      .forEach((element) => {
         const elementStyle = element.style;
         elementStyle.visibility = 'visible';
       });
@@ -199,7 +225,7 @@
   }
 
   function getRectX(nRound) {
-    return 20 * (nRound - 1) + (nRound > this.halfTimeRound ? 3 : 0);
+    return 20 * (nRound - 1) + (nRound > halfTimeRound.value ? 3 : 0);
   }
 </script>
 
