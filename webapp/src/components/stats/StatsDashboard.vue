@@ -131,7 +131,6 @@
           :data="roundsByKillsData"
           :height="140"
           :bar-width="36"
-          :y-axis-legend-width="31"
         />
       </div>
       <div class="stats-column">
@@ -180,7 +179,6 @@
           :palette="palettes.teams"
           :height="140"
           :bar-width="40"
-          :y-axis-legend-width="32"
         />
       </div>
       <div class="stats-column">

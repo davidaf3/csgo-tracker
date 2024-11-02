@@ -20,7 +20,7 @@
         <text
           v-for="(value, index) in yAxisValues"
           :key="index"
-          font-size="0.75em"
+          :font-size="`${legendFontSize}rem`"
           transform="scale(1,-1)"
           dominant-baseline="middle"
           text-anchor="end"
@@ -31,6 +31,7 @@
         </text>
         <g v-for="(item, index) in data" :key="index">
           <text
+            :font-size="`${legendFontSize}rem`"
             transform="scale(1,-1)"
             text-anchor="middle"
             :x="getBarX(index) + halfBarWidth"
@@ -101,16 +102,14 @@
       type: Number,
       required: true,
     },
-    yAxisLegendWidth: {
-      type: Number,
-      required: true,
-    },
     palette: {
       type: Object,
       required: false,
       default: palettes.basic,
     },
   });
+
+  const legendFontSize = 0.75;
 
   const maxYAxis = computed(() => {
     const maxValue = Math.max(...props.data.map((element) => element.value));
@@ -126,7 +125,7 @@
   const width = computed(
     () =>
       props.barWidth * 1.5 * props.data.length +
-      props.yAxisLegendWidth +
+      yAxisLegendWidth.value +
       halfBarWidth.value
   );
   const yAxisValues = computed(() => {
@@ -136,12 +135,25 @@
     }
     return values;
   });
+  const yAxisLegendWidth = computed(() => {
+    const rootFontSize = parseFloat(
+      getComputedStyle(document.documentElement).fontSize
+    );
+    const averageCharWidth = rootFontSize * legendFontSize * 0.8;
+    const textLengths = yAxisValues.value.map(
+      (value) => value.toString().length
+    );
+    const longest = textLengths.length > 0 ? Math.max(...textLengths) : 0;
+    return longest * averageCharWidth;
+  });
 
   function playAnimation() {
-    document.querySelectorAll(`#${props.identifier} rect`).forEach((element) => {
-      const elementStyle = element.style;
-      elementStyle.visibility = 'hidden';
-    });
+    document
+      .querySelectorAll(`#${props.identifier} rect`)
+      .forEach((element) => {
+        const elementStyle = element.style;
+        elementStyle.visibility = 'hidden';
+      });
     document
       .querySelectorAll(`#${props.identifier} animate`)
       .forEach((element) => {
@@ -155,7 +167,7 @@
     return (
       index * props.barWidth +
       (index + 1) * halfBarWidth.value +
-      props.yAxisLegendWidth
+      yAxisLegendWidth.value
     );
   }
 
