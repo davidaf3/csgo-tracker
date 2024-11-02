@@ -59,7 +59,7 @@ jobs:
         working-directory: electronapp
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v1
+      - uses: actions/setup-node@v4
         with:
           node-version: 20.18.0
       - name: Install restapi dependencies
