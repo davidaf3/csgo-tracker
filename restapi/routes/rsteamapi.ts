@@ -1,5 +1,4 @@
 import { Express } from 'express';
-import fetch from 'node-fetch';
 import { STEAM_API_KEY } from '../secrets';
 
 export default function (app: Express): void {

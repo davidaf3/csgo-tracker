@@ -33,7 +33,7 @@
             >
               <img
                 alt="GitHub"
-                src="../assets/github-logo.png"
+                src="/img/github-logo.png"
                 width="25"
                 height="25"
               />

@@ -3,7 +3,7 @@
     <div id="matchHeader">
       <div id="matchInfo">
         <img
-          :src="`img/map-icons/map_icon_${match.map}.svg`"
+          :src="`/img/map-icons/map_icon_${match.map}.svg`"
           :alt="match.map"
           height="50"
         />

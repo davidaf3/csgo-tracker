@@ -12,6 +12,10 @@
 </script>
 
 <style>
+  :root {
+    --bs-body-color: white;
+  }
+
   html,
   body {
     height: 100%;

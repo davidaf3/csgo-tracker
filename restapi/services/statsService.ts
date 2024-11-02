@@ -318,7 +318,9 @@ function computeStatsFromRounds(rounds: Rounds.Round[]): RoundsStats {
     if (round.mvp) roundsStats.mvpRounds += 1;
 
     roundsStats.roundsByTeam[round.team as 'CT' | 'T'] += 1;
-    roundsStats.roundsByWinType[round.winType as keyof WinTypeStats] += 1;
+    if (round.winType) {
+      roundsStats.roundsByWinType[round.winType as keyof WinTypeStats] += 1;
+    }
 
     totalEquipValue += round.equipValue;
     totalInitMoney += round.initMoney;

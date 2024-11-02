@@ -1,5 +1,5 @@
+import { randomUUID } from 'crypto';
 import * as Matches from '../models/match';
-import { v4 as uuidv4 } from 'uuid';
 import { findByMatch, RoundState } from './roundService';
 
 export type MatchState = Omit<Matches.Match, 'id' | 'date'>;
@@ -12,7 +12,7 @@ let currentMatch: Matches.Match | null;
  * @returns promise that resolves to the new match id when the match is created
  */
 export async function createMatch(match: MatchState): Promise<string> {
-  const id = uuidv4();
+  const id = randomUUID();
   currentMatch = {
     id,
     date: new Date(),

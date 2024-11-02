@@ -3,7 +3,7 @@
     <div class="row g-0">
       <div class="col card-img">
         <img
-          :src="`img/maps-opaque/${match.map}.jpg`"
+          :src="`/img/maps-opaque/${match.map}.jpg`"
           :alt="match.map"
           height="130"
         />
@@ -28,7 +28,7 @@
           <p v-if="match.over">{{ Math.round(match.duration / 60) }} min</p>
           <p v-else>
             <img
-              src="img/match-in-progress.svg"
+              src="/img/match-in-progress.svg"
               alt="In progress"
               height="20"
             />

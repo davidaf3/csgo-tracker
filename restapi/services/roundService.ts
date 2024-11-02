@@ -1,5 +1,5 @@
+import { randomUUID } from 'crypto';
 import * as Rounds from '../models/round';
-import { v4 as uuidv4 } from 'uuid';
 
 export type RoundState = Omit<Rounds.Round, 'id' | 'initMoney'>;
 
@@ -21,7 +21,7 @@ export function getCurrentRoundInitDate(): Date {
  */
 export function createRound(round: RoundState): string {
   currentRoundInitDate = new Date();
-  const id = uuidv4();
+  const id = randomUUID();
   currentRound = {
     id,
     initMoney: nextRoundInitMoney ?? 800,
