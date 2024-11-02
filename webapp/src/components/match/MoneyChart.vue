@@ -9,8 +9,8 @@
           <rect
             width="30"
             height="13"
-            fill="rgba(255, 99, 132, 0.2)"
-            stroke="rgba(255, 99, 132, 1)"
+            :fill="palettes.basic.darkColors[0]"
+            :stroke="palettes.basic.colors[0]"
             stroke-width="5"
           ></rect>
         </svg>
@@ -21,8 +21,8 @@
           <rect
             width="30"
             height="13"
-            fill="rgba(54, 162, 235, 0.2)"
-            stroke="rgba(54, 162, 235, 1)"
+            :fill="palettes.basic.darkColors[1]"
+            :stroke="palettes.basic.colors[1]"
             stroke-width="5"
           ></rect>
         </svg>
@@ -35,6 +35,7 @@
 <script setup>
   import { onMounted, onUnmounted, watch } from 'vue';
   import { Chart, registerables } from 'chart.js';
+  import palettes from '../../util/palette';
 
   const props = defineProps({
     rounds: {
@@ -65,14 +66,14 @@
         {
           label: 'Initial money',
           data: props.rounds.map((round) => round.initMoney),
-          borderColor: 'rgba(255, 99, 132, 1)',
-          backgroundColor: 'rgba(255, 99, 132, 0.2)',
+          borderColor: palettes.basic.colors[0],
+          backgroundColor: palettes.basic.darkColors[0],
         },
         {
           label: 'Equipment value',
           data: props.rounds.map((round) => round.equipValue),
-          borderColor: 'rgba(54, 162, 235, 1)',
-          backgroundColor: 'rgba(54, 162, 235, 0.2)',
+          borderColor: palettes.basic.colors[1],
+          backgroundColor: palettes.basic.darkColors[1],
         },
       ],
     };
@@ -87,6 +88,18 @@
         plugins: {
           legend: {
             display: false,
+          },
+        },
+        scales: {
+          x: {
+            grid: {
+              display: false,
+            },
+          },
+          y: {
+            grid: {
+              display: false,
+            },
           },
         },
       },
