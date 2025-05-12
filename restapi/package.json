@@ -13,12 +13,14 @@
   "dependencies": {
     "express": "^4.21.1",
     "sqlite3": "^5.1.7",
+    "typescript": "*",
     "ws": "^8.18.0"
   },
   "devDependencies": {
     "@types/express": "^5.0.0",
     "@types/node": "^20.14.8",
     "@types/ws": "^8.5.12",
+    "csgo-gsi-types": "^1.0.7",
     "eslint": "^8.24.0",
     "eslint-config-airbnb": "^19.0.4"
   }
