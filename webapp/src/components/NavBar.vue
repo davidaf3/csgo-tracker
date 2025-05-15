@@ -19,9 +19,9 @@
         <div class="navbar-nav" id="filter-controls">
           <select v-model="gameMode" @change="updateGameMode" class="form-select form-select-sm bg-dark text-white">
             <option value="">All Modes</option>
-            <option value="competitive">Competitive</option>
-            <option value="scrimcomp2v2">Wingman</option>
-            <option value="casual">Casual</option>
+            <option value="competitive">{{ Gamemodes["competitive"] }}</option>
+            <option value="scrimcomp2v2">{{ Gamemodes["scrimcomp2v2"] }}</option>
+            <option value="casual">{{ Gamemodes["casual"] }}</option>
           </select>
         </div>
         <ul class="navbar-nav">
@@ -56,6 +56,7 @@
 <script setup>
 import { ref, watch } from 'vue';
 import { selectedGameMode, setGameMode } from '../store/filters';
+import { Gamemodes } from '../util/gamemodes';
 
 // Local ref bound to the global state
 const gameMode = ref(selectedGameMode.value);

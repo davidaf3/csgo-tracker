@@ -45,6 +45,7 @@
 
 <script setup>
   import { computed } from 'vue';
+  import { Gamemodes } from '../../util/gamemodes.js';
 
   const props = defineProps({
     match: {
@@ -60,7 +61,7 @@
   const matchDate = computed(() => new Date(props.match.date));
 
   const capitalizedGameMode = computed(
-    () => props.match.mode.charAt(0).toUpperCase() + props.match.mode.slice(1)
+    () => Gamemodes[props.match.mode] ?? (props.match.mode.charAt(0).toUpperCase() + props.match.mode.slice(1))
   );
 
   const formattedMatchDate = computed(() =>

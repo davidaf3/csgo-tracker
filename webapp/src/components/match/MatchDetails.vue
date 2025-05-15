@@ -141,6 +141,7 @@
   import RoundsChart from './RoundsChart.vue';
   import MoneyChart from './MoneyChart.vue';
   import { getRounds, getPlayerInfo } from '../../api/api';
+  import { Gamemodes } from '../../util/gamemodes.js';
 
   const props = defineProps({
     match: {
@@ -182,7 +183,7 @@
   const matchDate = computed(() => new Date(props.match.date));
 
   const capitalizedGameMode = computed(
-    () => props.match.mode.charAt(0).toUpperCase() + props.match.mode.slice(1)
+    () => Gamemodes[props.match.mode] ?? (props.match.mode.charAt(0).toUpperCase() + props.match.mode.slice(1))
   );
 
   const formattedDate = computed(() => {
