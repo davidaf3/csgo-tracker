@@ -6,6 +6,10 @@
           :src="`/img/maps-opaque/${match.map}.jpg`"
           :alt="match.map"
           height="130"
+          @error="(e) => {
+            e.target.onerror = null;
+            e.target.src = '/img/maps-opaque/notfound.jpg';
+          }"
         />
         <div class="img-top-left">
           {{ match.map }}
