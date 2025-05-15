@@ -70,7 +70,7 @@
   let socket = null;
 
   onMounted(() => {
-    socket = new WebSocket('ws://localhost:8090');
+    socket = new WebSocket('ws://127.0.0.1:8090');
     socket.addEventListener('message', (message) => {
       const { gameEvent, matchId } = JSON.parse(message.data);
       const callback = wsMessageCallbacks.get(gameEvent);

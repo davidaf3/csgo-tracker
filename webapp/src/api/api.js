@@ -19,11 +19,13 @@
 
 /**
  * Gets all the matches
+ * @param {Object} opts options
+ * @param {string} opts.mode name of the gamemode
  * @return {Promise<Match[]>} match list
  */
-export async function getMatches() {
+export async function getMatches(opts) {
   try {
-    const response = await fetch('http://localhost:8090/match', {
+    const response = await fetch('http://127.0.0.1:8090/match', {
       method: 'GET',
     });
     return await response.json();
@@ -39,7 +41,7 @@ export async function getMatches() {
  */
 export async function getMatch(id) {
   try {
-    const response = await fetch(`http://localhost:8090/match/${id}`, {
+    const response = await fetch(`http://127.0.0.1:8090/match/${id}`, {
       method: 'GET',
     });
     return await response.json();
@@ -53,7 +55,7 @@ export async function getMatch(id) {
  * @param {string} id match id
  */
 export function deleteMatch(id) {
-  fetch(`http://localhost:8090/match/${id}`, {
+  fetch(`http://127.0.0.1:8090/match/${id}`, {
     method: 'DELETE',
   });
 }
@@ -66,7 +68,7 @@ export function deleteMatch(id) {
  */
 export async function forceMatchEnd(id) {
   try {
-    const response = await fetch(`http://localhost:8090/match/${id}/forceEnd`, {
+    const response = await fetch(`http://127.0.0.1:8090/match/${id}/forceEnd`, {
       method: 'POST',
     });
     return await response.json();
@@ -104,7 +106,7 @@ export async function forceMatchEnd(id) {
 export async function getRounds(matchId) {
   try {
     const response = await fetch(
-      `http://localhost:8090/match/${matchId}/round`,
+      `http://127.0.0.1:8090/match/${matchId}/round`,
       {
         method: 'GET',
       }
@@ -170,7 +172,7 @@ export async function getRounds(matchId) {
  */
 export async function getAllStats() {
   try {
-    const response = await fetch('http://localhost:8090/stats', {
+    const response = await fetch('http://127.0.0.1:8090/stats', {
       method: 'GET',
     });
     return await response.json();
@@ -186,7 +188,7 @@ export async function getAllStats() {
  */
 export async function getPlayerInfo(steamId) {
   try {
-    const response = await fetch(`http://localhost:8090/player/${steamId}`, {
+    const response = await fetch(`http://127.0.0.1:8090/player/${steamId}`, {
       method: 'GET',
     });
     return await response.json();
