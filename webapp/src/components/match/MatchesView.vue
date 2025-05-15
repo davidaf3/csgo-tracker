@@ -73,8 +73,10 @@
 
   const wsMessageCallbacks = new Map([
     ['match started', retrieveAndAddMatch],
+    ['you killed', retrieveAndUpdateMatch],
     ['you died', retrieveAndUpdateMatch],
     ['round ended', retrieveAndUpdateMatch],
+    ['quit', retrieveAndUpdateMatch]
   ]);
 
   let socket = null;

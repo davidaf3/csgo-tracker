@@ -7,20 +7,31 @@ import * as roundService from '../services/roundService';
 export default function(app: Express): EventEmitter {
   const gameEventEmitter = new EventEmitter();
 
+  const supportedGamemodes = [
+    'competitive',
+    'casual',
+    'scrimcomp2v2',
+  ];
+
   
   app.post('/game', (req, res) => {
     const body = req.body;
-    console.log('GAME EVENT', body);
+    // console.log('GAME EVENT', body); // Useful for debugging
     const currentMatch = matchService.getCurrentMatch();
     const currentRound = roundService.getCurrentRound();
+
+    // const isCompetitive = () => body.map?.mode === 'competitive';
+    // const isCasual = () => body.map?.mode === 'casual';
+    // const isWingman = () => body.map?.mode === 'scrimcomp2v2';
+
 
     // Match start
     if (
       !currentMatch
       // && body.added?.player?.match_stats
-      // && body.map?.phase === 'live'
-      && body.previously?.player == true
-      // && body.map.mode === 'scrimcomp2v2'
+      && (body.map?.phase === 'live' || body.map?.phase === 'warmup')
+      && body.player
+      && supportedGamemodes.includes(body.map?.mode)
     ) {
       console.log('MATCH STARTED');
 
@@ -45,10 +56,10 @@ export default function(app: Express): EventEmitter {
 
     // Round start
     if (
-      currentMatch &&
-      body.previously?.round?.phase === 'freezetime' &&
-      body.round?.phase === 'live' &&
-      body.map?.phase !== 'warmup'
+      currentMatch
+      && body.map?.phase !== 'warmup'
+      && body.round?.phase === 'live'
+      && body.previously?.round?.phase === 'freezetime'
     ) {
       console.log('ROUND STARTED');
 
@@ -100,6 +111,37 @@ export default function(app: Express): EventEmitter {
 
       gameEventEmitter.emit('game-event', 'you died', currentMatch.id);
     }
+
+    // Player kill
+    // This won't work with the other stuff apparently, could be cool to have update real time though - Lucasion
+    // if (
+    //   currentMatch &&
+    //   currentRound &&
+    //   body.player?.match_stats?.kills > currentMatch.kills &&
+    //   body.player?.steamid === currentMatch.playerId &&
+    //   body.map?.phase !== 'warmup'
+    // ) {
+    //   console.log('YOU KILLED');
+
+    //   const roundInfo = {
+    //     kills: body.player.match_stats.kills - currentMatch.kills,
+    //     killshs: body.player.state.round_killhs ?? 0,
+    //     assists: body.player.match_stats.assists - currentMatch.assists,
+    //     score: body.player.match_stats.score - currentMatch.score,
+    //     mvp: body.player.match_stats.mvps > currentMatch.mvps,
+    //   };
+    //   roundService.updateCurrentRound(roundInfo);
+
+    //   matchService.updateCurrentMatch({
+    //     kills: body.player.match_stats.kills,
+    //     killshs: currentMatch.killshs + roundInfo.killshs,
+    //     assists: body.player.match_stats.assists,
+    //     score: body.player.match_stats.score,
+    //     mvps: body.player.match_stats.mvps,
+    //   });
+
+    //   gameEventEmitter.emit('game-event', 'you killed', currentMatch.id);
+    // }
 
     // Round end
     if (
@@ -251,9 +293,10 @@ export default function(app: Express): EventEmitter {
       console.log('QUIT');
       gameEventEmitter.emit('game-event', 'quit', currentMatch.id);
 
-      /* if (!currentMatch.over) {
-        matchService.deleteMatch(currentMatch.id);
-      } */
+      if (!currentMatch.over) {
+        // matchService.deleteMatch(currentMatch.id);
+        matchService.forceMatchEnd(currentMatch.id);
+      }
     }
 
     /* if (body.player?.steamid !== matchService.getCurrentMatch()?.playerId) {

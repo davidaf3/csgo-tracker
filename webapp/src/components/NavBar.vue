@@ -20,9 +20,8 @@
           <select v-model="gameMode" @change="updateGameMode" class="form-select form-select-sm bg-dark text-white">
             <option value="">All Modes</option>
             <option value="competitive">Competitive</option>
-            <option value="casual">Casual</option>
-            <option value="deathmatch">Deathmatch</option>
             <option value="scrimcomp2v2">Wingman</option>
+            <option value="casual">Casual</option>
           </select>
         </div>
         <ul class="navbar-nav">

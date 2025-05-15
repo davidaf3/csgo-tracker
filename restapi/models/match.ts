@@ -160,7 +160,12 @@ export function getAll(): Promise<Match[]> {
 }
 
 /**
+ * Gets all matches for a specific game mode, ordered by date
+ * @param mode the game mode to filter by
+ * @return promise that resolves to the list of matches
+ /**
  * Gets all the matches by mode asynchronously, ordered by date
+ * @param mode game mode filter
  * @return promise that resolves to the list of matches
  */
 export function getAllByMode(mode: string): Promise<Match[]> {
