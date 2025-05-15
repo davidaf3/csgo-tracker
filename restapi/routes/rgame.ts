@@ -17,8 +17,10 @@ export default function(app: Express): EventEmitter {
     // Match start
     if (
       !currentMatch
-      && body.added.player?.match_stats
-      && body.map.mode === 'scrimcomp2v2'
+      // && body.added?.player?.match_stats
+      // && body.map?.phase === 'live'
+      && body.previously?.player == true
+      // && body.map.mode === 'scrimcomp2v2'
     ) {
       console.log('MATCH STARTED');
 
