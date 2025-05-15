@@ -1,13 +1,4 @@
 <template>
-  <div id="filter-controls">
-    <select v-model="selectedGameMode" @change="fetchMatches">
-      <option value="">All Modes</option>
-      <option value="competitive">Competitive</option>
-      <option value="casual">Casual</option>
-      <option value="deathmatch">Deathmatch</option>
-      <option value="scrimcomp2v2">Wingman</option>
-    </select>
-  </div>
   <div id="matches-panel">
     <div id="matches-list">
       <MatchPreview
@@ -30,7 +21,7 @@
 </template>
 
 <script setup>
-  import { onMounted, onUnmounted, ref } from 'vue';
+  import { onMounted, onUnmounted, ref, watch } from 'vue';
   import {
     getMatches,
     getMatch,
@@ -39,10 +30,10 @@
   } from '../../api/api';
   import MatchPreview from './MatchPreview.vue';
   import MatchDetails from './MatchDetails.vue';
+  import { selectedGameMode } from '../../store/filters';
 
   const matches = ref([]);
   const selectedMatch = ref(null);
-  const selectedGameMode = ref('');
 
   async function fetchMatches() {
     const filter = selectedGameMode.value ? { mode: selectedGameMode.value } : {};
@@ -51,6 +42,11 @@
 
   // Initial fetch on component load
   fetchMatches();
+
+  // Watch for changes in the global filter
+  watch(selectedGameMode, () => {
+    fetchMatches();
+  });
 
   function selectMatch(match) {
     selectedMatch.value = match;
@@ -131,18 +127,6 @@
     margin-top: 1vh;
     margin-bottom: 1vh;
     display: flex;
-  }
-  #filter-controls {
-    margin: 1em 0;
-  }
-  #filter-controls select {
-    padding: 0.5em;
-    border-radius: 4px;
-    /* Themed */
-    background-color: #212529;
-    border: 1px solid #ccc;
-    color: #fff;
-    font-size: 1em;
   }
   #matches-list {
     height: 85vh;

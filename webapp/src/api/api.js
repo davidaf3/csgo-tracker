@@ -173,11 +173,18 @@ export async function getRounds(matchId) {
 
 /**
  * Gets all the stats
+ * @param {Object} opts options
+ * @param {string?} opts.mode name of the gamemode
  * @return {Promise<Stats>} object containing the stats
  */
-export async function getAllStats() {
+export async function getAllStats(opts) {
+  opts = opts ?? {};
+  
   try {
-    const response = await fetch('http://127.0.0.1:8090/stats', {
+    const params = new URLSearchParams();
+    if (opts.mode) params.append('mode', opts.mode);
+    
+    const response = await fetch(`http://127.0.0.1:8090/stats?${params.toString()}`, {
       method: 'GET',
     });
     return await response.json();

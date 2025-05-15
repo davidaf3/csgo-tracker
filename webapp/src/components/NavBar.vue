@@ -16,6 +16,15 @@
         <span class="navbar-toggler-icon"></span>
       </button>
       <div id="navbarSupportedContent" class="collapse navbar-collapse">
+        <div class="navbar-nav" id="filter-controls">
+          <select v-model="gameMode" @change="updateGameMode" class="form-select form-select-sm bg-dark text-white">
+            <option value="">All Modes</option>
+            <option value="competitive">Competitive</option>
+            <option value="casual">Casual</option>
+            <option value="deathmatch">Deathmatch</option>
+            <option value="scrimcomp2v2">Wingman</option>
+          </select>
+        </div>
         <ul class="navbar-nav">
           <li class="nav-item">
             <router-link to="/matches" class="nav-link"> Matches </router-link>
@@ -45,14 +54,44 @@
   </nav>
 </template>
 
+<script setup>
+import { ref, watch } from 'vue';
+import { selectedGameMode, setGameMode } from '../store/filters';
+
+// Local ref bound to the global state
+const gameMode = ref(selectedGameMode.value);
+
+// Update the global state when local selection changes
+function updateGameMode() {
+  setGameMode(gameMode.value);
+}
+
+// Keep local state in sync with global state
+watch(selectedGameMode, (newMode) => {
+  gameMode.value = newMode;
+});
+</script>
+
 <style scoped>
   nav {
     height: 8%;
   }
+
   .navbar-brand {
     margin-left: 0.5em;
   }
+
   .router-link-active {
     color: #ffffff !important;
+  }
+
+  #filter-controls {
+    width: 180px;
+  }
+
+  #filter-controls select {
+    border-radius: 4px;
+    border: 1px solid #6c757d;
+    font-size: 0.9em;
   }
 </style>
