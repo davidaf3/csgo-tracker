@@ -5,7 +5,9 @@ import * as roundService from '../services/roundService';
 export default function (app: Express): void {
   app.get('/match', async (_req, res) => {
     try {
-      const matches = await matchService.findAll();
+      const mode = _req.query.mode as string || null;
+      
+      const matches = mode ? await matchService.findAllByMode(mode) : await matchService.findAll();
       res.status(200);
       res.json(matches);
     } catch (err) {

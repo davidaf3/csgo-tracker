@@ -114,6 +114,14 @@ export function findAll(): Promise<Matches.Match[]> {
 }
 
 /**
+ * Finds all matches by mode asynchronously, ordered by date
+ * @return promise that resolves to the list of matches
+ */
+export function findAllByMode(mode: string): Promise<Matches.Match[]> {
+  return Matches.getAllByMode(mode);
+}
+
+/**
  * Finds a match by id
  * @param {string} id match id
  * @return {Promise<Matches.Match|null>} promise that resolves to the match

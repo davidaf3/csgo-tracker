@@ -20,12 +20,17 @@
 /**
  * Gets all the matches
  * @param {Object} opts options
- * @param {string} opts.mode name of the gamemode
+ * @param {string?} opts.mode name of the gamemode
  * @return {Promise<Match[]>} match list
  */
 export async function getMatches(opts) {
+  opts = opts ?? {};
+  
   try {
-    const response = await fetch('http://127.0.0.1:8090/match', {
+    const params = new URLSearchParams();
+    if (opts.mode) params.append('mode', opts.mode);
+
+    const response = await fetch(`http://127.0.0.1:8090/match?${params.toString()}`, {
       method: 'GET',
     });
     return await response.json();

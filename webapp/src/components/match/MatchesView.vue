@@ -1,4 +1,13 @@
 <template>
+  <div id="filter-controls">
+    <select v-model="selectedGameMode" @change="fetchMatches">
+      <option value="">All Modes</option>
+      <option value="competitive">Competitive</option>
+      <option value="casual">Casual</option>
+      <option value="deathmatch">Deathmatch</option>
+      <option value="scrimcomp2v2">Wingman</option>
+    </select>
+  </div>
   <div id="matches-panel">
     <div id="matches-list">
       <MatchPreview
@@ -33,10 +42,15 @@
 
   const matches = ref([]);
   const selectedMatch = ref(null);
+  const selectedGameMode = ref('');
 
-  getMatches().then((retrievedMatches) => {
-    matches.value = retrievedMatches;
-  });
+  async function fetchMatches() {
+    const filter = selectedGameMode.value ? { mode: selectedGameMode.value } : {};
+    matches.value = await getMatches(filter);
+  }
+
+  // Initial fetch on component load
+  fetchMatches();
 
   function selectMatch(match) {
     selectedMatch.value = match;
@@ -118,8 +132,20 @@
     margin-bottom: 1vh;
     display: flex;
   }
+  #filter-controls {
+    margin: 1em 0;
+  }
+  #filter-controls select {
+    padding: 0.5em;
+    border-radius: 4px;
+    /* Themed */
+    background-color: #212529;
+    border: 1px solid #ccc;
+    color: #fff;
+    font-size: 1em;
+  }
   #matches-list {
-    height: 90vh;
+    height: 85vh;
     display: flex;
     flex-direction: column;
     overflow-y: auto;
@@ -127,7 +153,7 @@
   }
   #match-details {
     flex: 1;
-    height: 90vh;
+    height: 85vh;
     overflow-y: auto;
   }
 </style>
