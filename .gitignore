@@ -11,3 +11,5 @@ vetur.config.js
 /electronapp/dist/
 /electronapp/build/
 iconTemp.svg
+electronapp/csgo-tracker-windows.zip
+electronapp/bundle
