@@ -60,7 +60,7 @@
         <tbody>
           <tr>
             <td v-if="player">
-              <a :href="player.profileurl">
+              <a :href="player.profileurl" target="_blank">
                 <img class="avatar" :src="player.avatar" alt="avatar" />{{
                   player.personaname
                 }}</a
