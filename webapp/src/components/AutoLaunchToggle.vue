@@ -1,6 +1,6 @@
 <template>
   <div class="auto-launch-toggle">
-    <span class="auto-launch-label">Auto-start with Windows</span>
+    <span class="auto-launch-label">Auto-start on boot</span>
     <label class="switch">
       <input type="checkbox" v-model="autoLaunchEnabled" @change="toggleAutoLaunch">
       <span class="slider round"></span>
