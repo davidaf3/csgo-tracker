@@ -34,6 +34,9 @@
         </ul>
         <ul class="navbar-nav ms-auto">
           <li class="nav-item">
+            <auto-launch-toggle class="nav-link"></auto-launch-toggle>
+          </li>
+          <li class="nav-item">
             <a
               href="https://github.com/davidaf3/csgo-tracker"
               target="_blank"
@@ -57,6 +60,7 @@
 import { ref, watch } from 'vue';
 import { selectedGameMode, setGameMode } from '../store/filters';
 import { Gamemodes } from '../util/gamemodes';
+import AutoLaunchToggle from './AutoLaunchToggle.vue';
 
 // Local ref bound to the global state
 const gameMode = ref(selectedGameMode.value);
@@ -93,5 +97,20 @@ watch(selectedGameMode, (newMode) => {
     border-radius: 4px;
     border: 1px solid #6c757d;
     font-size: 0.9em;
+  }
+  .header-right {
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+  }
+
+  .github-link {
+    display: flex;
+    align-items: center;
+  }
+
+  .github-logo {
+    width: 24px;
+    height: 24px;
   }
 </style>

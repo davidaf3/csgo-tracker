@@ -1,14 +1,17 @@
 const {
-  app, protocol, BrowserWindow, shell, screen, Tray, Menu, dialog
+  app, protocol, BrowserWindow, shell, screen, Tray, Menu, dialog, ipcMain
 } = require('electron');
 const path = require('path');
 const os = require('os');
+const AutoLaunch = require('auto-launch');
 
 // Start express app
 const startRestAPI = require('csgo-tracker-restapi').default;
 
 const WIDTH = 1776;
 const HEIGHT = 1000;
+
+const startsInTray = process.argv.includes('--hidden');
 
 /**
  * @type {BrowserWindow}
@@ -63,7 +66,6 @@ function createWindow() {
   });
 
   const { screenWidth, screenHeight } = screen.getPrimaryDisplay().workArea;
-
   mainWindow = new BrowserWindow({
     show: false,
     backgroundColor: '#282c34',
@@ -71,6 +73,10 @@ function createWindow() {
     height: HEIGHT,
     x: screenWidth / 2 - WIDTH / 2,
     y: screenHeight / 2 - HEIGHT / 2,
+    webPreferences: {
+      contextIsolation: true,
+      preload: path.join(__dirname, 'preload.js')
+    }
   });
 
   mainWindow.webContents.setWindowOpenHandler((details) => {
@@ -82,7 +88,11 @@ function createWindow() {
   mainWindow.loadURL('file:///index.html');
 
   mainWindow.once('ready-to-show', () => {
-    mainWindow?.show();
+    if (startsInTray) {
+      mainWindow?.hide();
+    } else {
+      mainWindow?.show();
+    }
   });
 
   mainWindow.on('close', (event) => {
@@ -121,5 +131,39 @@ app.on('window-all-closed', () => {
   if (!app.isQuitting) return;
   if (process.platform !== 'darwin') {
     app.quit();
+  }
+});
+
+// Setup auto-launch
+const autoLauncher = new AutoLaunch({
+  name: 'CSGO Tracker',
+  isHidden: true
+});
+
+// IPC handlers for auto-launch functionality
+ipcMain.handle('get-auto-launch-status', async () => {
+  try {
+    return await autoLauncher.isEnabled();
+  } catch (err) {
+    console.error('Auto-launch status error:', err);
+    return false;
+  }
+});
+
+ipcMain.handle('set-auto-launch', async (event, enabled) => {
+  try {
+    if (enabled) {
+      await autoLauncher.enable();
+      console.log("Autolaunch enabled");
+      
+    } else {
+      await autoLauncher.disable();
+      console.log("Autolaunch disabled");
+      
+    }
+    return true;
+  } catch (err) {
+    console.error('Auto-launch set error:', err);
+    return false;
   }
 });
