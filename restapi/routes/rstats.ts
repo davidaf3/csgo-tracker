@@ -5,11 +5,13 @@ import * as statsCache from '../statsCache';
 export default function (app: Express): void {
   app.get('/stats', async (req, res) => {
     try {
+      const mode = req.query.mode as string | undefined;
+      
       let stats: Stats;
       if (statsCache.has(req.url)) {
         stats = statsCache.get(req.url) as Stats;
       } else {
-        stats = await getAllStats();
+        stats = await getAllStats(mode);
         statsCache.set(req.url, stats);
       }
       res.status(200);

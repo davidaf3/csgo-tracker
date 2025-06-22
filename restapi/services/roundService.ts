@@ -31,6 +31,14 @@ export function createRound(round: RoundState): string {
 }
 
 /**
+ * Closes the current round
+ */
+export function closeCurrentRound(): void {
+  currentRound = null;
+  nextRoundInitMoney = null;
+}
+
+/**
  * Sets the initial money for the next round
  * @param money initial money for the next round
  */

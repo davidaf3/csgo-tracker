@@ -6,6 +6,10 @@
           :src="`/img/maps-opaque/${match.map}.jpg`"
           :alt="match.map"
           height="130"
+          @error="(e) => {
+            e.target.onerror = null;
+            e.target.src = '/img/maps-opaque/notfound.jpg';
+          }"
         />
         <div class="img-top-left">
           {{ match.map }}
@@ -41,6 +45,7 @@
 
 <script setup>
   import { computed } from 'vue';
+  import { Gamemodes } from '../../util/gamemodes.js';
 
   const props = defineProps({
     match: {
@@ -56,7 +61,7 @@
   const matchDate = computed(() => new Date(props.match.date));
 
   const capitalizedGameMode = computed(
-    () => props.match.mode.charAt(0).toUpperCase() + props.match.mode.slice(1)
+    () => Gamemodes[props.match.mode] ?? (props.match.mode.charAt(0).toUpperCase() + props.match.mode.slice(1))
   );
 
   const formattedMatchDate = computed(() =>

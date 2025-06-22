@@ -21,7 +21,7 @@
 </template>
 
 <script setup>
-  import { onMounted, onUnmounted, ref } from 'vue';
+  import { onMounted, onUnmounted, ref, watch } from 'vue';
   import {
     getMatches,
     getMatch,
@@ -30,12 +30,22 @@
   } from '../../api/api';
   import MatchPreview from './MatchPreview.vue';
   import MatchDetails from './MatchDetails.vue';
+  import { selectedGameMode } from '../../store/filters';
 
   const matches = ref([]);
   const selectedMatch = ref(null);
 
-  getMatches().then((retrievedMatches) => {
-    matches.value = retrievedMatches;
+  async function fetchMatches() {
+    const filter = selectedGameMode.value ? { mode: selectedGameMode.value } : {};
+    matches.value = await getMatches(filter);
+  }
+
+  // Initial fetch on component load
+  fetchMatches();
+
+  // Watch for changes in the global filter
+  watch(selectedGameMode, () => {
+    fetchMatches();
   });
 
   function selectMatch(match) {
@@ -63,14 +73,16 @@
 
   const wsMessageCallbacks = new Map([
     ['match started', retrieveAndAddMatch],
+    ['you killed', retrieveAndUpdateMatch],
     ['you died', retrieveAndUpdateMatch],
     ['round ended', retrieveAndUpdateMatch],
+    ['quit', retrieveAndUpdateMatch]
   ]);
 
   let socket = null;
 
   onMounted(() => {
-    socket = new WebSocket('ws://localhost:8090');
+    socket = new WebSocket('ws://127.0.0.1:8090');
     socket.addEventListener('message', (message) => {
       const { gameEvent, matchId } = JSON.parse(message.data);
       const callback = wsMessageCallbacks.get(gameEvent);
@@ -119,7 +131,7 @@
     display: flex;
   }
   #matches-list {
-    height: 90vh;
+    height: 85vh;
     display: flex;
     flex-direction: column;
     overflow-y: auto;
@@ -127,7 +139,7 @@
   }
   #match-details {
     flex: 1;
-    height: 90vh;
+    height: 85vh;
     overflow-y: auto;
   }
 </style>

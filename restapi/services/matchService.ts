@@ -1,6 +1,7 @@
 import { randomUUID } from 'crypto';
 import * as Matches from '../models/match';
 import { findByMatch, RoundState } from './roundService';
+import { invalidate } from '../statsCache';
 
 export type MatchState = Omit<Matches.Match, 'id' | 'date'>;
 
@@ -47,8 +48,8 @@ export function updateCurrentMatch(updatedMatch: Partial<MatchState>) {
  * Saves the current match
  * @returns promise that resolves when the match is saved
  */
-export function saveCurrentMatch(): Promise<void> {
-  if (currentMatch) return Matches.update(currentMatch);
+export async function saveCurrentMatch(): Promise<void> {
+  if (currentMatch) return await Matches.update(currentMatch);
   return new Promise((resolve) => resolve());
 }
 
@@ -85,7 +86,9 @@ export async function forceMatchEnd(id: string): Promise<Matches.Match | null> {
 
   match.over = true;
   if (match.id === currentMatch?.id) closeCurrentMatch();
-  Matches.update(match);
+  await Matches.update(match);
+
+  invalidate();
   return match;
 }
 
@@ -111,6 +114,14 @@ function addRound(match: Matches.Match, round: RoundState): void {
  */
 export function findAll(): Promise<Matches.Match[]> {
   return Matches.getAll();
+}
+
+/**
+ * Finds all matches by mode asynchronously, ordered by date
+ * @return promise that resolves to the list of matches
+ */
+export function findAllByMode(mode: string): Promise<Matches.Match[]> {
+  return Matches.getAllByMode(mode);
 }
 
 /**

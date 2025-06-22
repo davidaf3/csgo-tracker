@@ -160,6 +160,26 @@ export function getAll(): Promise<Match[]> {
 }
 
 /**
+ * Gets all matches for a specific game mode, ordered by date
+ * @param mode the game mode to filter by
+ * @return promise that resolves to the list of matches
+ /**
+ * Gets all the matches by mode asynchronously, ordered by date
+ * @param mode game mode filter
+ * @return promise that resolves to the list of matches
+ */
+export function getAllByMode(mode: string): Promise<Match[]> {
+  return new Promise((resolve, reject) => {
+    const db = new Database(config.dbFile);
+    db.all('SELECT * FROM MATCHES WHERE mode = ? ORDER BY date DESC', [mode], (err, rows) => {
+      db.close();
+      if (err) reject(err);
+      resolve(rows.map(rowToMatch));
+    });
+  });
+}
+
+/**
  * Gets a match by id asynchronously
  * @param {string} id id of the match
  * @return {Promise<Match|null>} promise that resolves to the match

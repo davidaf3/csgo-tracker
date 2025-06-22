@@ -135,10 +135,13 @@ export type Stats = MatchesStats &
 
 /**
  * Gets all the stats
+ * @param mode optional mode filter
  * @returns promise that resolves to an object containing the stats
  */
-export function getAllStats(): Promise<Stats> {
-  return computeStats(Matches.getAll(), Rounds.getAll());
+export function getAllStats(mode?: string): Promise<Stats> {
+  const matchesPromise = mode ? Matches.getAllByMode(mode) : Matches.getAll();
+  const roundsPromise = mode ? Rounds.getAllByMode(mode) : Rounds.getAll();
+  return computeStats(matchesPromise, roundsPromise);
 }
 
 /**

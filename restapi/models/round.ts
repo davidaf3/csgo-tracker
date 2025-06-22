@@ -158,6 +158,28 @@ export function getByMatchAndNumber(
 }
 
 /**
+ * Gets all the rounds for a specific game mode, joining with the matches table
+ * @param mode game mode filter
+ * @return promise that resolves to the list of rounds for the specified mode
+ */
+export function getAllByMode(mode: string): Promise<Round[]> {
+  return new Promise((resolve, reject) => {
+    const db = new Database(config.dbFile);
+    db.all(
+      `SELECT r.* FROM ROUNDS r
+       JOIN MATCHES m ON r.match_id = m.id
+       WHERE m.mode = ?`,
+      [mode],
+      (err, rows) => {
+        db.close();
+        if (err) reject(err);
+        resolve(rows.map(rowToRound));
+      }
+    );
+  });
+}
+
+/**
  * Maps a row to a round
  * @param row row to map
  * @returns round object

@@ -210,16 +210,18 @@
 </template>
 
 <script setup>
-  import { computed, watchEffect, ref } from 'vue';
+  import { computed, watchEffect, ref, watch } from 'vue';
   import DonutChart from './DonutChart.vue';
   import { getAllStats } from '../../api/api';
   import palettes from '../../util/palette';
   import BarChart from './BarChart.vue';
+  import { selectedGameMode } from '../../store/filters';
 
   const stats = ref(null);
 
   function updateStats() {
-    getAllStats().then((newStats) => {
+    const options = selectedGameMode.value ? { mode: selectedGameMode.value } : {};
+    getAllStats(options).then((newStats) => {
       stats.value = newStats;
     });
   }
@@ -272,6 +274,10 @@
   );
 
   watchEffect(() => {
+    updateStats();
+  });
+
+  watch(selectedGameMode, () => {
     updateStats();
   });
 </script>
