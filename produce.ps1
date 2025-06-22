@@ -3,6 +3,13 @@
 $ErrorActionPreference = "Stop"
 $rootDir = Split-Path -Parent $PSCommandPath
 
+# Check if --install 
+$installAfter = $false
+if ($args -contains "--install") {
+  $installAfter = $true
+  Write-Host "Will install after build." -ForegroundColor Yellow
+}
+
 # Create function to handle errors
 function Handle-Error {
   param($ErrorMessage)
@@ -73,6 +80,12 @@ try {
 
   Write-Host "Build completed successfully!" -ForegroundColor Green
   Write-Host "Output: $rootDir/electronapp/csgo-tracker-windows.zip" -ForegroundColor Green
+
+  if ($installAfter) {
+    Write-Host "Installing csgo-tracker..." -ForegroundColor Cyan
+    Start-Process -FilePath "./electronapp/bundle/csgo-tracker-installer.exe" -Wait
+    Write-Host "Installation completed!" -ForegroundColor Green
+  }
 
 } catch {
   Handle-Error $_.Exception.Message
