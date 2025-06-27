@@ -20,7 +20,6 @@ jobs:
           cd ../restapi
           npm ci
           npm install -g typescript
-          echo "${{secrets.RESTAPI_SECRETS}}" | Out-File secrets.ts
       - name: Build restapi
         run: |
           cd ../restapi
@@ -67,7 +66,6 @@ jobs:
           cd ../restapi
           npm ci
           npm install -g typescript
-          echo "${{secrets.RESTAPI_SECRETS}}" > secrets.ts
       - name: Build restapi
         run: |
           cd ../restapi

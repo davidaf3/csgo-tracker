@@ -137,7 +137,7 @@
 </template>
 
 <script setup>
-  import { computed, ref, watchEffect } from 'vue';
+  import { computed, ref, watch } from 'vue';
   import RoundsChart from './RoundsChart.vue';
   import MoneyChart from './MoneyChart.vue';
   import { getRounds, getPlayerInfo } from '../../api/api';
@@ -167,6 +167,7 @@
   }
 
   async function updatePlayer(match) {
+    if (player.value?.steamid === match.playerId) return;
     player.value = await getPlayerInfo(match.playerId);
   }
 
@@ -174,10 +175,14 @@
     selectedRound.value = nRound;
   }
 
-  watchEffect(() => {
-    updateRounds(props.match);
-    updatePlayer(props.match);
-  });
+  watch(
+    () => props.match,
+    async (newMatch) => {
+      updateRounds(newMatch);
+      updatePlayer(newMatch);
+    },
+    { immediate: true, deep: false }
+  );
 
   const matchDate = computed(() => new Date(props.match.date));
 

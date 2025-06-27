@@ -17,6 +17,9 @@
  * @property {boolean} over wheter the match is over or not
  */
 
+const STEAM_API_PROXY_URL =
+  'https://steam-player-proxy.david-alvarez-fidalgo.workers.dev';
+
 /**
  * Gets all the matches
  * @return {Promise<Match[]>} match list
@@ -27,7 +30,7 @@ export async function getMatches() {
       method: 'GET',
     });
     return await response.json();
-  } catch (err) {
+  } catch {
     return [];
   }
 }
@@ -43,7 +46,7 @@ export async function getMatch(id) {
       method: 'GET',
     });
     return await response.json();
-  } catch (err) {
+  } catch {
     return null;
   }
 }
@@ -70,7 +73,7 @@ export async function forceMatchEnd(id) {
       method: 'POST',
     });
     return await response.json();
-  } catch (err) {
+  } catch {
     return null;
   }
 }
@@ -110,7 +113,7 @@ export async function getRounds(matchId) {
       }
     );
     return await response.json();
-  } catch (err) {
+  } catch {
     return [];
   }
 }
@@ -174,7 +177,7 @@ export async function getAllStats() {
       method: 'GET',
     });
     return await response.json();
-  } catch (err) {
+  } catch {
     return null;
   }
 }
@@ -186,11 +189,11 @@ export async function getAllStats() {
  */
 export async function getPlayerInfo(steamId) {
   try {
-    const response = await fetch(`http://localhost:8090/player/${steamId}`, {
+    const response = await fetch(`${STEAM_API_PROXY_URL}/?steamId=${steamId}`, {
       method: 'GET',
     });
     return await response.json();
-  } catch (err) {
+  } catch {
     return {};
   }
 }

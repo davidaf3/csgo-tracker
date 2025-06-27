@@ -7,7 +7,6 @@ import { config } from './config';
 import rgame from './routes/rgame';
 import rmatch from './routes/rmatch';
 import rstats from './routes/rstats';
-import rsteamapi from './routes/rsteamapi';
 
 const app = express();
 
@@ -28,7 +27,6 @@ app.use((_req, res, next) => {
 const gameEventEmitter = rgame(app);
 rmatch(app);
 rstats(app);
-rsteamapi(app);
 
 const startSever = () => {
   const server = app.listen(8090, () => console.log('Server started'));
